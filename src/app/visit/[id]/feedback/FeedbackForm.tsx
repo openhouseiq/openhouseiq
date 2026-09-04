@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { HoneypotField } from "@/components/ui/HoneypotField";
 
 export function FeedbackForm({ listingId }: { listingId: string }) {
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,12 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
 
     const form = e.currentTarget;
     const formData = new FormData(form);
+
+    if (String(formData.get("website") ?? "")) {
+      setLoading(false);
+      setSubmitted(true);
+      return;
+    }
 
     const supabase = createClient();
     const { error: insertError } = await supabase.from("feedback").insert({
@@ -51,6 +58,7 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <HoneypotField />
       <div>
         <label className="mb-1.5 block text-sm font-medium text-ink">Rating</label>
         <div className="flex gap-1">
