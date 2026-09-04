@@ -11,3 +11,5 @@ one is idempotent-ish (safe to re-run individual statements won't be, since
 | `0003_agent_details.sql` | Adds `agent_name`/`agent_email` to `listings` so visitors see who's hosting |
 | `0004_read_tracking.sql` | Adds `read_at` to `feedback`/`offers` for the dashboard's "new" badges |
 | `0005_column_security.sql` | Restricts agents to only updating the `read_at` column on `feedback`/`offers`, so visitor-submitted content can't be altered |
+| `0006_data_constraints.sql` | Adds CHECK constraints (positive prices/amounts, non-empty required text) so invalid data can't be inserted even via a direct API call |
+| `0007_captcha_lockdown.sql` | Removes the public insert policies on `feedback`/`offers` — submissions now only go through the CAPTCHA-verified `/api/feedback` and `/api/offers` routes, which use the service role key |

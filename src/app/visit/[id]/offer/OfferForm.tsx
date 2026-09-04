@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { HoneypotField } from "@/components/ui/HoneypotField";
+import { Turnstile } from "@/components/ui/Turnstile";
 
 export function OfferForm({ listingId }: { listingId: string }) {
   const [loading, setLoading] = useState(false);
@@ -19,29 +19,29 @@ export function OfferForm({ listingId }: { listingId: string }) {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    if (String(formData.get("website") ?? "")) {
-      setLoading(false);
-      setSubmitted(true);
-      return;
-    }
-
-    const supabase = createClient();
-    const { error: insertError } = await supabase.from("offers").insert({
-      listing_id: listingId,
-      name: String(formData.get("name") ?? ""),
-      email: String(formData.get("email") ?? ""),
-      phone: String(formData.get("phone") ?? "") || null,
-      offer_amount: Number(formData.get("offer_amount")),
-      financing_type: String(formData.get("financing_type") ?? "") || null,
-      settlement_term: String(formData.get("settlement_term") ?? "") || null,
-      waive_inspection: formData.get("waive_inspection") === "on",
-      notes: String(formData.get("notes") ?? "") || null,
+    const res = await fetch("/api/offers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        website: String(formData.get("website") ?? ""),
+        turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
+        listingId,
+        name: String(formData.get("name") ?? ""),
+        email: String(formData.get("email") ?? ""),
+        phone: String(formData.get("phone") ?? "") || null,
+        offerAmount: Number(formData.get("offer_amount")),
+        financingType: String(formData.get("financing_type") ?? "") || null,
+        settlementTerm: String(formData.get("settlement_term") ?? "") || null,
+        waiveInspection: formData.get("waive_inspection") === "on",
+        notes: String(formData.get("notes") ?? "") || null,
+      }),
     });
 
+    const result = await res.json();
     setLoading(false);
 
-    if (insertError) {
-      setError(insertError.message);
+    if (!res.ok) {
+      setError(result.error ?? "Something went wrong.");
       return;
     }
 
@@ -96,6 +96,8 @@ export function OfferForm({ listingId }: { listingId: string }) {
       </label>
 
       <TextAreaField label="Notes (optional)" id="notes" rows={3} />
+
+      <Turnstile />
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
 
