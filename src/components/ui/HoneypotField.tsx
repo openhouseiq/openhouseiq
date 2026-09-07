@@ -1,8 +1,10 @@
+export const HONEYPOT_FIELD_NAME = "ohq_confirm_hp";
+
 export function HoneypotField() {
   return (
     <input
       type="text"
-      name="website"
+      name={HONEYPOT_FIELD_NAME}
       tabIndex={-1}
       autoComplete="off"
       aria-hidden="true"

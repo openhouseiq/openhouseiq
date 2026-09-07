@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
-import { HoneypotField } from "@/components/ui/HoneypotField";
+import { HoneypotField, HONEYPOT_FIELD_NAME } from "@/components/ui/HoneypotField";
 import { Turnstile } from "@/components/ui/Turnstile";
 
 export function FeedbackForm({ listingId }: { listingId: string }) {
@@ -26,7 +26,7 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          website: String(formData.get("website") ?? ""),
+          website: String(formData.get(HONEYPOT_FIELD_NAME) ?? ""),
           turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
           listingId,
           isAnonymous,
