@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
-import { HoneypotField, HONEYPOT_FIELD_NAME } from "@/components/ui/HoneypotField";
 import { Turnstile } from "@/components/ui/Turnstile";
 
 export function OfferForm({ listingId }: { listingId: string }) {
@@ -24,7 +23,6 @@ export function OfferForm({ listingId }: { listingId: string }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          website: String(formData.get(HONEYPOT_FIELD_NAME) ?? ""),
           turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
           listingId,
           name: String(formData.get("name") ?? ""),
@@ -63,7 +61,6 @@ export function OfferForm({ listingId }: { listingId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <HoneypotField />
       <Field label="Name" id="name" type="text" required />
       <Field label="Email" id="email" type="email" required />
       <Field label="Phone" id="phone" type="tel" />

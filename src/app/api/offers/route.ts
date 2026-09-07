@@ -5,11 +5,6 @@ import { createServiceClient } from "@/lib/supabase/service";
 export async function POST(request: Request) {
   const body = await request.json();
 
-  // Honeypot: pretend success without touching the database.
-  if (String(body.website ?? "")) {
-    return NextResponse.json({ success: true });
-  }
-
   const verified = await verifyTurnstileToken(String(body.turnstileToken ?? ""));
   if (!verified) {
     return NextResponse.json(
