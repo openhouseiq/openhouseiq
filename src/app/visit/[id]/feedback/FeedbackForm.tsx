@@ -26,7 +26,6 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [isAnonymous, setIsAnonymous] = useState(false);
   const [interestLevel, setInterestLevel] = useState<InterestLevel | null>(null);
   const [ratingPrice, setRatingPrice] = useState(0);
   const [ratingCondition, setRatingCondition] = useState(0);
@@ -40,6 +39,20 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    if (!interestLevel) {
+      setError("Please let us know how interested you are.");
+      return;
+    }
+    if (!ratingPrice || !ratingCondition || !ratingLocation || !ratingLayout) {
+      setError("Please rate price, condition, location, and layout.");
+      return;
+    }
+    if (!timeframe) {
+      setError("Please select a purchase timeframe.");
+      return;
+    }
+
     setLoading(true);
 
     const form = e.currentTarget;
@@ -52,20 +65,20 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
         body: JSON.stringify({
           turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
           listingId,
-          isAnonymous,
-          name: isAnonymous ? null : String(formData.get("name") ?? ""),
-          email: isAnonymous ? null : String(formData.get("email") ?? ""),
-          phone: isAnonymous ? null : String(formData.get("phone") ?? "") || null,
-          comments: String(formData.get("comments") ?? "") || null,
-          interestLevel: interestLevel || null,
-          ratingPrice: ratingPrice || null,
-          ratingCondition: ratingCondition || null,
-          ratingLocation: ratingLocation || null,
-          ratingLayout: ratingLayout || null,
+          isAnonymous: false,
+          name: String(formData.get("name") ?? ""),
+          email: String(formData.get("email") ?? ""),
+          phone: String(formData.get("phone") ?? ""),
+          comments: String(formData.get("comments") ?? ""),
+          interestLevel,
+          ratingPrice,
+          ratingCondition,
+          ratingLocation,
+          ratingLayout,
           preApproved,
           workingWithAgent,
-          purchaseTimeframe: timeframe || null,
-          wantsFollowup: isAnonymous ? false : wantsFollowup,
+          purchaseTimeframe: timeframe,
+          wantsFollowup,
         }),
       });
 
@@ -160,10 +173,13 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
           <select
             id="timeframe"
             value={timeframe}
+            required
             onChange={(e) => setTimeframe(e.target.value as PurchaseTimeframe)}
             className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
           >
-            <option value="">Prefer not to say</option>
+            <option value="" disabled>
+              Select one…
+            </option>
             {TIMEFRAMES.map((tf) => (
               <option key={tf.value} value={tf.value}>
                 {tf.label}
@@ -173,34 +189,20 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
         </div>
       </div>
 
+      <Field label="Name" id="name" type="text" required />
+      <Field label="Email" id="email" type="email" required />
+      <Field label="Phone" id="phone" type="tel" required />
       <label className="flex items-center gap-2 text-sm text-ink">
         <input
           type="checkbox"
-          checked={isAnonymous}
-          onChange={(e) => setIsAnonymous(e.target.checked)}
+          checked={wantsFollowup}
+          onChange={(e) => setWantsFollowup(e.target.checked)}
           className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
         />
-        Submit anonymously
+        I&apos;d like the agent to follow up with me
       </label>
 
-      {!isAnonymous ? (
-        <>
-          <Field label="Name" id="name" type="text" required={!isAnonymous} />
-          <Field label="Email" id="email" type="email" required={!isAnonymous} />
-          <Field label="Phone (optional)" id="phone" type="tel" />
-          <label className="flex items-center gap-2 text-sm text-ink">
-            <input
-              type="checkbox"
-              checked={wantsFollowup}
-              onChange={(e) => setWantsFollowup(e.target.checked)}
-              className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
-            />
-            I&apos;d like the agent to follow up with me
-          </label>
-        </>
-      ) : null}
-
-      <TextAreaField label="Comments" id="comments" rows={4} />
+      <TextAreaField label="Comments" id="comments" rows={4} required />
 
       <Turnstile />
 
