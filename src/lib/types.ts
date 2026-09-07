@@ -21,6 +21,19 @@ export type ListingPhoto = {
   created_at: string;
 };
 
+export type InterestLevel =
+  | "not_interested"
+  | "considering"
+  | "very_interested"
+  | "ready_to_offer";
+
+export type PurchaseTimeframe =
+  | "immediately"
+  | "one_to_three_months"
+  | "three_to_six_months"
+  | "six_plus_months"
+  | "just_browsing";
+
 export type Feedback = {
   id: string;
   listing_id: string;
@@ -30,6 +43,15 @@ export type Feedback = {
   phone: string | null;
   rating: number | null;
   comments: string | null;
+  interest_level: InterestLevel | null;
+  rating_price: number | null;
+  rating_condition: number | null;
+  rating_location: number | null;
+  rating_layout: number | null;
+  pre_approved: boolean | null;
+  working_with_agent: boolean | null;
+  purchase_timeframe: PurchaseTimeframe | null;
+  wants_followup: boolean | null;
   read_at: string | null;
   created_at: string;
 };

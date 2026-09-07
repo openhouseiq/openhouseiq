@@ -21,8 +21,16 @@ export async function POST(request: Request) {
     name: isAnonymous ? null : body.name || null,
     email: isAnonymous ? null : body.email || null,
     phone: isAnonymous ? null : body.phone || null,
-    rating: body.rating || null,
     comments: body.comments || null,
+    interest_level: body.interestLevel || null,
+    rating_price: body.ratingPrice || null,
+    rating_condition: body.ratingCondition || null,
+    rating_location: body.ratingLocation || null,
+    rating_layout: body.ratingLayout || null,
+    pre_approved: Boolean(body.preApproved),
+    working_with_agent: Boolean(body.workingWithAgent),
+    purchase_timeframe: body.purchaseTimeframe || null,
+    wants_followup: Boolean(body.wantsFollowup),
   });
 
   if (error) {

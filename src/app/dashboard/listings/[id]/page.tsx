@@ -14,6 +14,37 @@ const FINANCING_LABELS: Record<string, string> = {
   financing: "Financing (not yet approved)",
 };
 
+const INTEREST_LEVEL_LABELS: Record<string, string> = {
+  not_interested: "Not interested",
+  considering: "Considering",
+  very_interested: "Very interested",
+  ready_to_offer: "Ready to make an offer",
+};
+
+const INTEREST_LEVEL_STYLES: Record<string, string> = {
+  not_interested: "bg-line text-ink-soft",
+  considering: "bg-line text-ink-soft",
+  very_interested: "bg-brass text-paper",
+  ready_to_offer: "bg-pine text-paper",
+};
+
+const TIMEFRAME_LABELS: Record<string, string> = {
+  immediately: "Immediately",
+  one_to_three_months: "1–3 months",
+  three_to_six_months: "3–6 months",
+  six_plus_months: "6+ months",
+  just_browsing: "Just browsing",
+};
+
+function CategoryStars({ label, value }: { label: string; value: number | null }) {
+  if (!value) return null;
+  return (
+    <p className="text-xs text-ink-soft">
+      {label}: <span className="text-brass">{"★".repeat(value)}{"☆".repeat(5 - value)}</span>
+    </p>
+  );
+}
+
 export default async function ListingDetailPage({
   params,
 }: {
@@ -194,18 +225,52 @@ export default async function ListingDetailPage({
                           </span>
                         ) : null}
                       </div>
-                      {item.rating ? (
-                        <p className="text-sm text-brass">
-                          {"★".repeat(item.rating)}
-                          {"☆".repeat(5 - item.rating)}
-                        </p>
+                      {item.interest_level ? (
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                            INTEREST_LEVEL_STYLES[item.interest_level] ??
+                            "bg-line text-ink-soft"
+                          }`}
+                        >
+                          {INTEREST_LEVEL_LABELS[item.interest_level] ?? item.interest_level}
+                        </span>
                       ) : null}
                     </div>
                     {!item.is_anonymous && (item.email || item.phone) ? (
                       <p className="mt-0.5 text-xs text-ink-soft">
                         {[item.email, item.phone].filter(Boolean).join(" · ")}
+                        {item.wants_followup ? " · Wants follow-up" : ""}
                       </p>
                     ) : null}
+
+                    {item.rating_price ||
+                    item.rating_condition ||
+                    item.rating_location ||
+                    item.rating_layout ? (
+                      <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-0.5">
+                        <CategoryStars label="Price" value={item.rating_price} />
+                        <CategoryStars label="Condition" value={item.rating_condition} />
+                        <CategoryStars label="Location" value={item.rating_location} />
+                        <CategoryStars label="Layout" value={item.rating_layout} />
+                      </div>
+                    ) : null}
+
+                    {item.pre_approved ||
+                    item.working_with_agent ||
+                    item.purchase_timeframe ? (
+                      <p className="mt-2 text-xs text-ink-soft">
+                        {[
+                          item.pre_approved ? "Pre-approved" : null,
+                          item.working_with_agent ? "Has an agent" : null,
+                          item.purchase_timeframe
+                            ? TIMEFRAME_LABELS[item.purchase_timeframe]
+                            : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                    ) : null}
+
                     {item.comments ? (
                       <p className="mt-2 text-sm text-ink">{item.comments}</p>
                     ) : null}
