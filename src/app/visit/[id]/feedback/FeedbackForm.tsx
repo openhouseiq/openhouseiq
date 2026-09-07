@@ -21,31 +21,36 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const res = await fetch("/api/feedback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        website: String(formData.get("website") ?? ""),
-        turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
-        listingId,
-        isAnonymous,
-        name: isAnonymous ? null : String(formData.get("name") ?? ""),
-        email: isAnonymous ? null : String(formData.get("email") ?? ""),
-        phone: isAnonymous ? null : String(formData.get("phone") ?? "") || null,
-        rating: rating || null,
-        comments: String(formData.get("comments") ?? "") || null,
-      }),
-    });
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          website: String(formData.get("website") ?? ""),
+          turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
+          listingId,
+          isAnonymous,
+          name: isAnonymous ? null : String(formData.get("name") ?? ""),
+          email: isAnonymous ? null : String(formData.get("email") ?? ""),
+          phone: isAnonymous ? null : String(formData.get("phone") ?? "") || null,
+          rating: rating || null,
+          comments: String(formData.get("comments") ?? "") || null,
+        }),
+      });
 
-    const result = await res.json();
-    setLoading(false);
+      const result = await res.json();
 
-    if (!res.ok) {
-      setError(result.error ?? "Something went wrong.");
-      return;
+      if (!res.ok) {
+        setError(result.error ?? "Something went wrong.");
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setSubmitted(true);
   }
 
   if (submitted) {
