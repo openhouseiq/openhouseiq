@@ -240,6 +240,7 @@ export default async function ListingDetailPage({
           unreadFeedbackIds={unreadFeedbackIds}
           unreadOfferIds={unreadOfferIds}
           listingAddress={listing.address}
+          listing={listing}
         />
       </main>
     </div>

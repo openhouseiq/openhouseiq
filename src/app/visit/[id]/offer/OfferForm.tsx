@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { Turnstile } from "@/components/ui/Turnstile";
+import { SETTLEMENT_OPTIONS } from "@/components/listings/sellerPreferences";
 
 export function OfferForm({ listingId }: { listingId: string }) {
   const [loading, setLoading] = useState(false);
@@ -81,12 +82,29 @@ export function OfferForm({ listingId }: { listingId: string }) {
         </select>
       </div>
 
-      <Field
-        label="Preferred settlement term"
-        id="settlement_term"
-        type="text"
-        placeholder="e.g. 30 days"
-      />
+      <div>
+        <label
+          htmlFor="settlement_term"
+          className="mb-1.5 block text-sm font-medium text-ink"
+        >
+          Preferred settlement term
+        </label>
+        <select
+          id="settlement_term"
+          name="settlement_term"
+          required
+          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
+        >
+          <option value="" disabled selected>
+            Select one…
+          </option>
+          {SETTLEMENT_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <label className="flex items-center gap-2 text-sm text-ink">
         <input

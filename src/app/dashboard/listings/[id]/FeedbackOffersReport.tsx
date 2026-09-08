@@ -2,7 +2,19 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import type { Feedback, Offer } from "@/lib/types";
+import { scoreOffer, type OfferScore } from "@/lib/offerScoring";
+import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
+import type { Feedback, Offer, Listing } from "@/lib/types";
+
+type ScoringListing = Pick<
+  Listing,
+  | "price"
+  | "seller_pref_price"
+  | "seller_pref_settlement"
+  | "seller_pref_waive_inspection"
+  | "seller_pref_finance_approved"
+  | "seller_pref_cash_buyer"
+>;
 
 const FINANCING_LABELS: Record<string, string> = {
   cash: "Cash buyer",
@@ -48,6 +60,28 @@ function inRange(createdAt: string, from: string, to: string): boolean {
   return true;
 }
 
+function MatchBadge({ score }: { score: OfferScore }) {
+  if (score.unmetRequired.length > 0) {
+    return (
+      <span className="rounded-full bg-error/10 px-2 py-0.5 text-xs font-medium text-error">
+        Missing: {score.unmetRequired.join(", ")}
+      </span>
+    );
+  }
+  if (score.matchPercent === null) return null;
+  const style =
+    score.matchPercent >= 75
+      ? "bg-pine text-paper"
+      : score.matchPercent >= 40
+        ? "bg-brass text-paper"
+        : "bg-line text-ink-soft";
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${style}`}>
+      {score.matchPercent}% match
+    </span>
+  );
+}
+
 function csvCell(value: unknown): string {
   const str = value === null || value === undefined ? "" : String(value);
   return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
@@ -72,15 +106,25 @@ export function FeedbackOffersReport({
   unreadFeedbackIds,
   unreadOfferIds,
   listingAddress,
+  listing,
 }: {
   feedback: Feedback[];
   offers: Offer[];
   unreadFeedbackIds: string[];
   unreadOfferIds: string[];
   listingAddress: string;
+  listing: ScoringListing;
 }) {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+
+  const hasSellerPreferences = Boolean(
+    listing.seller_pref_price ||
+      listing.seller_pref_settlement ||
+      listing.seller_pref_waive_inspection ||
+      listing.seller_pref_finance_approved ||
+      listing.seller_pref_cash_buyer,
+  );
 
   const filteredFeedback = useMemo(
     () => feedback.filter((item) => inRange(item.created_at, fromDate, toDate)),
@@ -90,6 +134,29 @@ export function FeedbackOffersReport({
     () => offers.filter((item) => inRange(item.created_at, fromDate, toDate)),
     [offers, fromDate, toDate],
   );
+
+  const rankedOffers = useMemo(() => {
+    const withScores = filteredOffers.map((offer) => ({
+      offer,
+      score: scoreOffer(offer, listing),
+    }));
+
+    if (!hasSellerPreferences) {
+      return withScores;
+    }
+
+    return withScores.sort((a, b) => {
+      const aUnmet = a.score.unmetRequired.length > 0;
+      const bUnmet = b.score.unmetRequired.length > 0;
+      if (aUnmet !== bUnmet) return aUnmet ? 1 : -1;
+
+      const aPct = a.score.matchPercent ?? -1;
+      const bPct = b.score.matchPercent ?? -1;
+      if (aPct !== bPct) return bPct - aPct;
+
+      return Number(b.offer.offer_amount) - Number(a.offer.offer_amount);
+    });
+  }, [filteredOffers, listing, hasSellerPreferences]);
 
   function exportFeedback() {
     const header = [
@@ -144,9 +211,11 @@ export function FeedbackOffersReport({
       "Financing",
       "Settlement term",
       "Waive inspection",
+      "Match %",
+      "Missing seller requirements",
       "Notes",
     ];
-    const rows = filteredOffers.map((o) => [
+    const rows = rankedOffers.map(({ offer: o, score }) => [
       new Date(o.created_at).toLocaleString(),
       o.name,
       o.email,
@@ -155,8 +224,12 @@ export function FeedbackOffersReport({
       o.financing_type
         ? FINANCING_LABELS[o.financing_type] ?? o.financing_type
         : "",
-      o.settlement_term ?? "",
+      o.settlement_term
+        ? SETTLEMENT_LABELS[o.settlement_term] ?? o.settlement_term
+        : "",
       o.waive_inspection ? "Yes" : "No",
+      score.matchPercent ?? "",
+      score.unmetRequired.join(", "),
       o.notes ?? "",
     ]);
     downloadCsv(`${listingAddress} - offers${rangeSuffix()}.csv`, [header, ...rows]);
@@ -304,21 +377,26 @@ export function FeedbackOffersReport({
         <div>
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-serif text-xl font-medium text-ink">
-              Offers ({filteredOffers.length})
+              Offers ({rankedOffers.length})
             </h2>
             <Button
               variant="secondary"
               onClick={exportOffers}
-              disabled={filteredOffers.length === 0}
+              disabled={rankedOffers.length === 0}
             >
               Export CSV
             </Button>
           </div>
+          {hasSellerPreferences && rankedOffers.length > 1 ? (
+            <p className="mt-1 text-xs text-ink-soft">
+              Ranked by match to the seller&apos;s preferences.
+            </p>
+          ) : null}
           <div className="mt-3 space-y-3">
-            {filteredOffers.length === 0 ? (
+            {rankedOffers.length === 0 ? (
               <p className="text-sm text-ink-soft">No offers in this range.</p>
             ) : (
-              filteredOffers.map((offer) => (
+              rankedOffers.map(({ offer, score }) => (
                 <div
                   key={offer.id}
                   className="rounded-md border border-line bg-paper-card p-4"
@@ -339,12 +417,17 @@ export function FeedbackOffersReport({
                   <p className="mt-0.5 text-xs text-ink-soft">
                     {[offer.email, offer.phone].filter(Boolean).join(" · ")}
                   </p>
+                  {hasSellerPreferences ? (
+                    <div className="mt-2">
+                      <MatchBadge score={score} />
+                    </div>
+                  ) : null}
                   <p className="mt-2 text-xs text-ink-soft">
                     {[
                       FINANCING_LABELS[offer.financing_type ?? ""] ??
                         offer.financing_type,
                       offer.settlement_term
-                        ? `Settlement: ${offer.settlement_term}`
+                        ? `Settlement: ${SETTLEMENT_LABELS[offer.settlement_term] ?? offer.settlement_term}`
                         : null,
                       offer.waive_inspection
                         ? "Waiving building & pest inspection"
