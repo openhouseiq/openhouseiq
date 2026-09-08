@@ -38,6 +38,7 @@ export async function POST(request: Request) {
     client_reference_id: user.id,
     line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: { metadata: { supabase_user_id: user.id } },
+    managed_payments: { enabled: false },
     success_url: `${origin}/dashboard/settings?billing=success`,
     cancel_url: `${origin}/dashboard/settings?billing=cancelled`,
   });
