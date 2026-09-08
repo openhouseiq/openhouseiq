@@ -5,7 +5,7 @@ const FEATURES = [
   {
     title: "A QR code for every listing",
     description:
-      "Print it, prop it on the counter, and every visitor at your open house can scan it in seconds.",
+      "Generated automatically the moment you create a listing. Download it and add it to your open home flyer or signage.",
   },
   {
     title: "Instant feedback & offers",
