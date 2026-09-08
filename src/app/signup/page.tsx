@@ -53,7 +53,7 @@ export default function SignUpPage() {
     setLoading(false);
 
     if (data.session) {
-      router.push("/dashboard/settings");
+      router.push("/dashboard/welcome");
       router.refresh();
     } else {
       setCheckEmail(true);

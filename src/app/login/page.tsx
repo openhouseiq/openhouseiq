@@ -39,9 +39,9 @@ export default function LoginPage() {
     const lastSignInAt = data.user?.last_sign_in_at
       ? new Date(data.user.last_sign_in_at).getTime()
       : 0;
-    const isFirstLogin = lastSignInAt - createdAt < 10 * 60 * 1000;
+    const isFirstLogin = lastSignInAt - createdAt < 30 * 60 * 1000;
 
-    router.push(isFirstLogin ? "/dashboard/settings" : "/dashboard");
+    router.push(isFirstLogin ? "/dashboard/welcome" : "/dashboard");
     router.refresh();
   }
 
