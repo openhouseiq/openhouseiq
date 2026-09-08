@@ -96,6 +96,18 @@ export default function SignUpPage() {
           {error ? <p className="text-sm text-error">{error}</p> : null}
 
           <SubmitButton loading={loading}>Sign up</SubmitButton>
+
+          <p className="text-center text-xs text-ink-soft">
+            By signing up, you agree to our{" "}
+            <Link href="/terms" className="text-pine underline">
+              Terms
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="text-pine underline">
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </form>
       )}
     </AuthLayout>

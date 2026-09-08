@@ -40,7 +40,9 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/reset-password") ||
     request.nextUrl.pathname.startsWith("/api/feedback") ||
     request.nextUrl.pathname.startsWith("/api/offers") ||
-    request.nextUrl.pathname.startsWith("/api/stripe/webhook");
+    request.nextUrl.pathname.startsWith("/api/stripe/webhook") ||
+    request.nextUrl.pathname.startsWith("/terms") ||
+    request.nextUrl.pathname.startsWith("/privacy");
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();

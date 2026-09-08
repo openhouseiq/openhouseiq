@@ -74,8 +74,54 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="border-t border-line bg-paper-card px-6 py-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="font-serif text-3xl font-medium text-ink">
+            Simple pricing
+          </h2>
+          <p className="mt-3 text-ink-soft">
+            One plan, every feature. Start with a 14-day free trial — no card
+            required.
+          </p>
+          <div className="mx-auto mt-10 grid max-w-xl gap-6 sm:grid-cols-2">
+            <div className="rounded-md border border-line bg-paper p-8">
+              <p className="text-sm font-medium text-ink-soft">Monthly</p>
+              <p className="mt-2 font-serif text-4xl font-medium text-ink">
+                $29
+                <span className="text-base font-sans font-normal text-ink-soft">
+                  /month
+                </span>
+              </p>
+            </div>
+            <div className="rounded-md border-2 border-pine bg-paper p-8">
+              <p className="text-sm font-medium text-pine">Yearly · save 2 months</p>
+              <p className="mt-2 font-serif text-4xl font-medium text-ink">
+                $290
+                <span className="text-base font-sans font-normal text-ink-soft">
+                  /year
+                </span>
+              </p>
+            </div>
+          </div>
+          <div className="mt-8">
+            <Link href="/signup">
+              <Button variant="primary">Start your free trial</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <footer className="border-t border-line px-6 py-6 text-center text-xs text-ink-soft">
-        © 2026 OpenHouseIQ
+        <p>© 2026 OpenHouseIQ</p>
+        <p className="mt-2">
+          <Link href="/terms" className="underline hover:text-pine">
+            Terms
+          </Link>
+          <span className="mx-2">·</span>
+          <Link href="/privacy" className="underline hover:text-pine">
+            Privacy
+          </Link>
+        </p>
       </footer>
     </div>
   );
