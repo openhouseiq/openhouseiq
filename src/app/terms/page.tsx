@@ -137,8 +137,8 @@ export default function TermsPage() {
             <h2 className="font-serif text-lg font-medium text-ink">10. Contact</h2>
             <p className="mt-2">
               Questions about these Terms can be sent to{" "}
-              <a href="mailto:hello@openhouseiq.com.au" className="text-pine underline">
-                hello@openhouseiq.com.au
+              <a href="mailto:mick_orr@hotmail.com" className="text-pine underline">
+                mick_orr@hotmail.com
               </a>
               .
             </p>

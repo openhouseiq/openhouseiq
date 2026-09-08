@@ -136,8 +136,8 @@ export default function PrivacyPage() {
             <h2 className="font-serif text-lg font-medium text-ink">8. Contact</h2>
             <p className="mt-2">
               For privacy questions or requests, contact{" "}
-              <a href="mailto:hello@openhouseiq.com.au" className="text-pine underline">
-                hello@openhouseiq.com.au
+              <a href="mailto:mick_orr@hotmail.com" className="text-pine underline">
+                mick_orr@hotmail.com
               </a>
               .
             </p>
