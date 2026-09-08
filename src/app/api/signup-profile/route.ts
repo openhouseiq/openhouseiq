@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
-async function uploadAsset(
+async function uploadHeadshot(
   supabase: ReturnType<typeof createServiceClient>,
   userId: string,
-  kind: "logo" | "photo",
   file: File,
 ) {
-  const path = `${userId}/${kind}-${crypto.randomUUID()}-${file.name}`;
+  const path = `${userId}/photo-${crypto.randomUUID()}-${file.name}`;
   const { error } = await supabase.storage
     .from("agent-assets")
     .upload(path, file);
@@ -29,7 +28,6 @@ export async function POST(request: Request) {
 
   const fullName = String(formData.get("fullName") ?? "");
   const phone = String(formData.get("phone") ?? "");
-  const logo = formData.get("logo");
   const photo = formData.get("photo");
 
   const supabase = createServiceClient();
@@ -51,20 +49,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const [logoUrl, photoUrl] = await Promise.all([
-    logo instanceof File && logo.size > 0
-      ? uploadAsset(supabase, userId, "logo", logo)
-      : Promise.resolve(null),
+  const photoUrl =
     photo instanceof File && photo.size > 0
-      ? uploadAsset(supabase, userId, "photo", photo)
-      : Promise.resolve(null),
-  ]);
+      ? await uploadHeadshot(supabase, userId, photo)
+      : null;
 
   const { error } = await supabase.auth.admin.updateUserById(userId, {
     user_metadata: {
       full_name: fullName,
       phone,
-      ...(logoUrl ? { logo_url: logoUrl } : {}),
       ...(photoUrl ? { photo_url: photoUrl } : {}),
     },
   });

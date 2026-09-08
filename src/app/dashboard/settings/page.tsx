@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { ProfileForm } from "./ProfileForm";
-import { EmailForm } from "./EmailForm";
+import { AgentProfileForm } from "./AgentProfileForm";
 import { PasswordSection } from "./PasswordSection";
 import { BillingSection } from "./BillingSection";
 import type { Subscription } from "@/lib/types";
@@ -19,7 +18,6 @@ export default async function SettingsPage() {
 
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const phone = (user.user_metadata?.phone as string | undefined) ?? "";
-  const logoUrl = (user.user_metadata?.logo_url as string | undefined) ?? "";
   const photoUrl = (user.user_metadata?.photo_url as string | undefined) ?? "";
 
   const { data: subscription } = await supabase
@@ -47,26 +45,21 @@ export default async function SettingsPage() {
           </section>
 
           <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Profile</h2>
-            <ProfileForm
+            <h2 className="mb-4 font-serif text-lg font-medium text-ink">
+              Agent profile
+            </h2>
+            <AgentProfileForm
               userId={user.id}
               fullName={fullName}
               phone={phone}
-              logoUrl={logoUrl}
+              email={user.email ?? ""}
               photoUrl={photoUrl}
             />
           </section>
 
           <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">
-              Login details
-            </h2>
-            <div className="space-y-6">
-              <EmailForm currentEmail={user.email ?? ""} />
-              <div className="border-t border-line pt-6">
-                <PasswordSection />
-              </div>
-            </div>
+            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Password</h2>
+            <PasswordSection />
           </section>
         </div>
       </main>

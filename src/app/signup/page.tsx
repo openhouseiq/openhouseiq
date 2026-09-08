@@ -112,44 +112,20 @@ export default function SignUpPage() {
           />
 
           <div className="border-t border-line pt-4">
-            <p className="text-sm font-medium text-ink">Branding</p>
-            <p className="mt-1 text-xs text-ink-soft">
-              Optional — shown on your exported reports. You can add these
+            <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-ink">
+              Headshot
+            </label>
+            <p className="mb-1.5 text-xs text-ink-soft">
+              Optional — shown on your exported reports. You can add this
               later from Settings.
             </p>
-
-            <div className="mt-3 space-y-3">
-              <div>
-                <label
-                  htmlFor="logo"
-                  className="mb-1.5 block text-sm font-medium text-ink"
-                >
-                  Logo
-                </label>
-                <input
-                  id="logo"
-                  name="logo"
-                  type="file"
-                  accept="image/*"
-                  className={fileInputClasses}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="photo"
-                  className="mb-1.5 block text-sm font-medium text-ink"
-                >
-                  Photo
-                </label>
-                <input
-                  id="photo"
-                  name="photo"
-                  type="file"
-                  accept="image/*"
-                  className={fileInputClasses}
-                />
-              </div>
-            </div>
+            <input
+              id="photo"
+              name="photo"
+              type="file"
+              accept="image/*"
+              className={fileInputClasses}
+            />
           </div>
 
           {error ? <p className="text-sm text-error">{error}</p> : null}

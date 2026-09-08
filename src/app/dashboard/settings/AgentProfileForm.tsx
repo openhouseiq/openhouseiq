@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/Button";
 const fileInputClasses =
   "w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-pine file:px-3 file:py-2 file:text-sm file:font-medium file:text-paper";
 
-async function uploadAsset(userId: string, kind: "logo" | "photo", file: File) {
+async function uploadHeadshot(userId: string, file: File) {
   const supabase = createClient();
-  const path = `${userId}/${kind}-${crypto.randomUUID()}-${file.name}`;
+  const path = `${userId}/photo-${crypto.randomUUID()}-${file.name}`;
   const { error } = await supabase.storage.from("agent-assets").upload(path, file);
 
   if (error) {
@@ -20,56 +20,63 @@ async function uploadAsset(userId: string, kind: "logo" | "photo", file: File) {
   return supabase.storage.from("agent-assets").getPublicUrl(path).data.publicUrl;
 }
 
-export function ProfileForm({
+export function AgentProfileForm({
   userId,
   fullName,
   phone,
-  logoUrl,
+  email,
   photoUrl,
 }: {
   userId: string;
   fullName: string;
   phone: string;
-  logoUrl: string;
+  email: string;
   photoUrl: string;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [emailPending, setEmailPending] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setSaved(false);
+    setEmailPending(false);
     setLoading(true);
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const logoFile = formData.get("logo");
     const photoFile = formData.get("photo");
+    const newEmail = String(formData.get("email") ?? "");
 
     try {
-      const [newLogoUrl, newPhotoUrl] = await Promise.all([
-        logoFile instanceof File && logoFile.size > 0
-          ? uploadAsset(userId, "logo", logoFile)
-          : Promise.resolve(logoUrl),
+      const newPhotoUrl =
         photoFile instanceof File && photoFile.size > 0
-          ? uploadAsset(userId, "photo", photoFile)
-          : Promise.resolve(photoUrl),
-      ]);
+          ? await uploadHeadshot(userId, photoFile)
+          : photoUrl;
 
       const supabase = createClient();
-      const { error: updateError } = await supabase.auth.updateUser({
+      const { error: profileError } = await supabase.auth.updateUser({
         data: {
           full_name: String(formData.get("full_name") ?? ""),
           phone: String(formData.get("phone") ?? ""),
-          logo_url: newLogoUrl,
           photo_url: newPhotoUrl,
         },
       });
 
-      if (updateError) {
-        throw updateError;
+      if (profileError) {
+        throw profileError;
+      }
+
+      if (newEmail && newEmail !== email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: newEmail,
+        });
+        if (emailError) {
+          throw emailError;
+        }
+        setEmailPending(true);
       }
 
       setSaved(true);
@@ -84,31 +91,17 @@ export function ProfileForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <Field label="Full name" id="full_name" type="text" defaultValue={fullName} required />
       <Field label="Phone" id="phone" type="tel" defaultValue={phone} />
-
-      <div>
-        <label htmlFor="logo" className="mb-1.5 block text-sm font-medium text-ink">
-          Logo
-        </label>
-        {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={logoUrl}
-            alt="Current logo"
-            className="mb-2 h-12 w-auto rounded border border-line bg-white object-contain p-1"
-          />
-        ) : null}
-        <input id="logo" name="logo" type="file" accept="image/*" className={fileInputClasses} />
-      </div>
+      <Field label="Email" id="email" type="email" defaultValue={email} required />
 
       <div>
         <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-ink">
-          Photo
+          Headshot
         </label>
         {photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={photoUrl}
-            alt="Current photo"
+            alt="Current headshot"
             className="mb-2 h-16 w-16 rounded-full border border-line object-cover"
           />
         ) : null}
@@ -122,10 +115,16 @@ export function ProfileForm({
       </div>
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
-      {saved ? <p className="text-sm text-pine">Saved.</p> : null}
+      {emailPending ? (
+        <p className="text-sm text-pine">
+          Check your inbox (old and new address) to confirm your new email.
+        </p>
+      ) : saved ? (
+        <p className="text-sm text-pine">Saved.</p>
+      ) : null}
 
       <Button type="submit" variant="primary" disabled={loading}>
-        {loading ? "Saving…" : "Save profile"}
+        {loading ? "Saving…" : "Save"}
       </Button>
     </form>
   );
