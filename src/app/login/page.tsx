@@ -23,7 +23,7 @@ export default function LoginPage() {
     const password = String(formData.get("password") ?? "");
 
     const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -35,7 +35,13 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    const createdAt = data.user ? new Date(data.user.created_at).getTime() : 0;
+    const lastSignInAt = data.user?.last_sign_in_at
+      ? new Date(data.user.last_sign_in_at).getTime()
+      : 0;
+    const isFirstLogin = lastSignInAt - createdAt < 10 * 60 * 1000;
+
+    router.push(isFirstLogin ? "/dashboard/settings" : "/dashboard");
     router.refresh();
   }
 

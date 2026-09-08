@@ -19,6 +19,40 @@ const FEATURES = [
   },
 ];
 
+const STEPS = [
+  {
+    number: "1",
+    title: "Create a listing",
+    description: "Add the address, price, and details. Add photos if you have them.",
+  },
+  {
+    number: "2",
+    title: "Print your QR code",
+    description:
+      "Every listing gets its own QR code, ready to download and print for the open house.",
+  },
+  {
+    number: "3",
+    title: "Visitors scan and respond",
+    description:
+      "No app to download, no account to create. Feedback or an offer in under a minute.",
+  },
+  {
+    number: "4",
+    title: "Follow up with confidence",
+    description:
+      "See every response in your dashboard as it comes in, and export a report anytime.",
+  },
+];
+
+const INCLUDED = [
+  "Unlimited listings and QR codes",
+  "Structured visitor feedback & offers",
+  "CSV export reports by date range",
+  "CAPTCHA-protected public forms",
+  "14-day free trial, no card required",
+];
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-paper">
@@ -75,6 +109,39 @@ export default function Home() {
       </section>
 
       <section className="border-t border-line bg-paper-card px-6 py-20">
+        <div className="mx-auto max-w-4xl">
+          <div className="text-center">
+            <h2 className="font-serif text-3xl font-medium text-ink">
+              How it works
+            </h2>
+            <p className="mt-3 text-ink-soft">
+              From new listing to your first lead, in four steps.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map((step) => (
+              <div key={step.number}>
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-ink font-serif text-sm font-medium text-paper">
+                  {step.number}
+                </div>
+                <h3 className="mt-4 font-serif text-lg font-medium text-ink">
+                  {step.title}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-12 text-center">
+            <Link href="/signup">
+              <Button variant="primary">Get started free</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-line px-6 py-20">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="font-serif text-3xl font-medium text-ink">
             Simple pricing
@@ -84,7 +151,7 @@ export default function Home() {
             required.
           </p>
           <div className="mx-auto mt-10 grid max-w-xl gap-6 sm:grid-cols-2">
-            <div className="rounded-md border border-line bg-paper p-8">
+            <div className="rounded-md border border-line bg-paper-card p-8">
               <p className="text-sm font-medium text-ink-soft">Monthly</p>
               <p className="mt-2 font-serif text-4xl font-medium text-ink">
                 $29
@@ -93,7 +160,7 @@ export default function Home() {
                 </span>
               </p>
             </div>
-            <div className="rounded-md border-2 border-pine bg-paper p-8">
+            <div className="rounded-md border-2 border-pine bg-paper-card p-8">
               <p className="text-sm font-medium text-pine">Yearly · save 2 months</p>
               <p className="mt-2 font-serif text-4xl font-medium text-ink">
                 $290
@@ -103,7 +170,17 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="mt-8">
+
+          <ul className="mx-auto mt-10 max-w-md space-y-2 text-left">
+            {INCLUDED.map((item) => (
+              <li key={item} className="flex items-start gap-2 text-sm text-ink">
+                <span className="mt-0.5 text-pine">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-10">
             <Link href="/signup">
               <Button variant="primary">Start your free trial</Button>
             </Link>
