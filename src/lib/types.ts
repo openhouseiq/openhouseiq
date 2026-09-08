@@ -1,3 +1,20 @@
+export type PriceImportance =
+  | "not_a_priority"
+  | "somewhat_important"
+  | "important"
+  | "very_important"
+  | "top_priority";
+
+export type SettlementPreference =
+  | "asap"
+  | "30_days"
+  | "45_days"
+  | "60_days"
+  | "90_plus_days"
+  | "flexible";
+
+export type PreferenceLevel = "no_preference" | "preferred" | "required";
+
 export type Listing = {
   id: string;
   agent_id: string;
@@ -10,6 +27,11 @@ export type Listing = {
   sqft: number | null;
   agent_name: string | null;
   agent_email: string | null;
+  seller_pref_price: PriceImportance | null;
+  seller_pref_settlement: SettlementPreference | null;
+  seller_pref_waive_inspection: PreferenceLevel | null;
+  seller_pref_finance_approved: PreferenceLevel | null;
+  seller_pref_cash_buyer: PreferenceLevel | null;
   created_at: string;
   updated_at: string;
 };

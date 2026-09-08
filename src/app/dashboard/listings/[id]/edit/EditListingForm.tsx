@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
 import type { Listing } from "@/lib/types";
 
 export function EditListingForm({ listing }: { listing: Listing }) {
@@ -27,6 +28,15 @@ export function EditListingForm({ listing }: { listing: Listing }) {
     const carSpaces = formData.get("carSpaces") ? Number(formData.get("carSpaces")) : null;
     const sqft = formData.get("sqft") ? Number(formData.get("sqft")) : null;
     const description = String(formData.get("description") ?? "");
+    const sellerPrefPrice = String(formData.get("sellerPrefPrice") ?? "") || null;
+    const sellerPrefSettlement =
+      String(formData.get("sellerPrefSettlement") ?? "") || null;
+    const sellerPrefWaiveInspection =
+      String(formData.get("sellerPrefWaiveInspection") ?? "") || null;
+    const sellerPrefFinanceApproved =
+      String(formData.get("sellerPrefFinanceApproved") ?? "") || null;
+    const sellerPrefCashBuyer =
+      String(formData.get("sellerPrefCashBuyer") ?? "") || null;
 
     const { error: updateError } = await supabase
       .from("listings")
@@ -38,6 +48,11 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         car_spaces: carSpaces,
         sqft,
         description,
+        seller_pref_price: sellerPrefPrice,
+        seller_pref_settlement: sellerPrefSettlement,
+        seller_pref_waive_inspection: sellerPrefWaiveInspection,
+        seller_pref_finance_approved: sellerPrefFinanceApproved,
+        seller_pref_cash_buyer: sellerPrefCashBuyer,
         updated_at: new Date().toISOString(),
       })
       .eq("id", listing.id);
@@ -122,6 +137,16 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         id="description"
         rows={4}
         defaultValue={listing.description ?? undefined}
+      />
+
+      <SellerPreferenceFields
+        defaults={{
+          sellerPrefPrice: listing.seller_pref_price,
+          sellerPrefSettlement: listing.seller_pref_settlement,
+          sellerPrefWaiveInspection: listing.seller_pref_waive_inspection,
+          sellerPrefFinanceApproved: listing.seller_pref_finance_approved,
+          sellerPrefCashBuyer: listing.seller_pref_cash_buyer,
+        }}
       />
 
       <div>

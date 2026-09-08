@@ -7,6 +7,11 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
 import { DeleteListingButton } from "./DeleteListingButton";
 import { FeedbackOffersReport } from "./FeedbackOffersReport";
+import {
+  PRICE_LABELS,
+  SETTLEMENT_LABELS,
+  LEVEL_LABELS,
+} from "@/components/listings/sellerPreferences";
 import type { Listing, ListingPhoto, Feedback, Offer } from "@/lib/types";
 
 export default async function ListingDetailPage({
@@ -171,6 +176,63 @@ export default async function ListingDetailPage({
             </div>
           </div>
         </div>
+
+        {listing.seller_pref_price ||
+        listing.seller_pref_settlement ||
+        listing.seller_pref_waive_inspection ||
+        listing.seller_pref_finance_approved ||
+        listing.seller_pref_cash_buyer ? (
+          <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
+            <h2 className="font-serif text-xl font-medium text-ink">
+              Seller preferences
+            </h2>
+            <p className="mt-1 text-sm text-ink-soft">
+              What the seller cares about — use this to judge offers below.
+            </p>
+            <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+              {listing.seller_pref_price ? (
+                <div>
+                  <dt className="text-xs text-ink-soft">Price</dt>
+                  <dd className="text-sm text-ink">
+                    {PRICE_LABELS[listing.seller_pref_price]}
+                  </dd>
+                </div>
+              ) : null}
+              {listing.seller_pref_settlement ? (
+                <div>
+                  <dt className="text-xs text-ink-soft">Settlement period</dt>
+                  <dd className="text-sm text-ink">
+                    {SETTLEMENT_LABELS[listing.seller_pref_settlement]}
+                  </dd>
+                </div>
+              ) : null}
+              {listing.seller_pref_waive_inspection ? (
+                <div>
+                  <dt className="text-xs text-ink-soft">Waive inspection</dt>
+                  <dd className="text-sm text-ink">
+                    {LEVEL_LABELS[listing.seller_pref_waive_inspection]}
+                  </dd>
+                </div>
+              ) : null}
+              {listing.seller_pref_finance_approved ? (
+                <div>
+                  <dt className="text-xs text-ink-soft">Finance approved</dt>
+                  <dd className="text-sm text-ink">
+                    {LEVEL_LABELS[listing.seller_pref_finance_approved]}
+                  </dd>
+                </div>
+              ) : null}
+              {listing.seller_pref_cash_buyer ? (
+                <div>
+                  <dt className="text-xs text-ink-soft">Cash buyer</dt>
+                  <dd className="text-sm text-ink">
+                    {LEVEL_LABELS[listing.seller_pref_cash_buyer]}
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
+          </div>
+        ) : null}
 
         <FeedbackOffersReport
           feedback={feedback ?? []}

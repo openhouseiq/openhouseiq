@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
 
 export function NewListingForm() {
   const router = useRouter();
@@ -37,6 +38,15 @@ export function NewListingForm() {
     const carSpaces = formData.get("carSpaces") ? Number(formData.get("carSpaces")) : null;
     const sqft = formData.get("sqft") ? Number(formData.get("sqft")) : null;
     const description = String(formData.get("description") ?? "");
+    const sellerPrefPrice = String(formData.get("sellerPrefPrice") ?? "") || null;
+    const sellerPrefSettlement =
+      String(formData.get("sellerPrefSettlement") ?? "") || null;
+    const sellerPrefWaiveInspection =
+      String(formData.get("sellerPrefWaiveInspection") ?? "") || null;
+    const sellerPrefFinanceApproved =
+      String(formData.get("sellerPrefFinanceApproved") ?? "") || null;
+    const sellerPrefCashBuyer =
+      String(formData.get("sellerPrefCashBuyer") ?? "") || null;
 
     const agentName = (user.user_metadata?.full_name as string | undefined) ?? "";
 
@@ -53,6 +63,11 @@ export function NewListingForm() {
         description,
         agent_name: agentName,
         agent_email: user.email,
+        seller_pref_price: sellerPrefPrice,
+        seller_pref_settlement: sellerPrefSettlement,
+        seller_pref_waive_inspection: sellerPrefWaiveInspection,
+        seller_pref_finance_approved: sellerPrefFinanceApproved,
+        seller_pref_cash_buyer: sellerPrefCashBuyer,
       })
       .select()
       .single();
@@ -97,6 +112,8 @@ export function NewListingForm() {
       </div>
 
       <TextAreaField label="Description" id="description" rows={4} />
+
+      <SellerPreferenceFields />
 
       <div>
         <label htmlFor="photos" className="mb-1.5 block text-sm font-medium text-ink">
