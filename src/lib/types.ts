@@ -56,6 +56,28 @@ export type Feedback = {
   created_at: string;
 };
 
+export type SubscriptionStatus =
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "incomplete"
+  | "incomplete_expired"
+  | "unpaid";
+
+export type Subscription = {
+  id: string;
+  user_id: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  status: SubscriptionStatus;
+  price_id: string | null;
+  trial_ends_at: string | null;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Offer = {
   id: string;
   listing_id: string;

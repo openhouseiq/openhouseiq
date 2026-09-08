@@ -4,6 +4,8 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { ProfileForm } from "./ProfileForm";
 import { EmailForm } from "./EmailForm";
 import { PasswordForm } from "./PasswordForm";
+import { BillingSection } from "./BillingSection";
+import type { Subscription } from "@/lib/types";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -18,6 +20,13 @@ export default async function SettingsPage() {
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const phone = (user.user_metadata?.phone as string | undefined) ?? "";
 
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("*")
+    .eq("user_id", user.id)
+    .returns<Subscription[]>()
+    .maybeSingle();
+
   return (
     <div className="min-h-screen bg-paper">
       <DashboardHeader
@@ -30,6 +39,11 @@ export default async function SettingsPage() {
         <h1 className="font-serif text-2xl font-medium text-ink">Settings</h1>
 
         <section className="mt-8">
+          <h2 className="mb-3 text-sm font-medium text-ink-soft">Billing</h2>
+          <BillingSection subscription={subscription} />
+        </section>
+
+        <section className="mt-10 border-t border-line pt-8">
           <h2 className="mb-3 text-sm font-medium text-ink-soft">Profile</h2>
           <ProfileForm fullName={fullName} phone={phone} />
         </section>
