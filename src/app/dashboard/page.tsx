@@ -86,6 +86,7 @@ export default async function DashboardPage() {
                     ${Number(listing.price).toLocaleString()}
                     {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
                     {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
+                    {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
                     {listing.sqft ? ` · ${listing.sqft.toLocaleString()} sqft` : ""}
                   </p>
                 </Link>

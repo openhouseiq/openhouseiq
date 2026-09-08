@@ -6,6 +6,7 @@ export type Listing = {
   description: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
+  car_spaces: number | null;
   sqft: number | null;
   agent_name: string | null;
   agent_email: string | null;

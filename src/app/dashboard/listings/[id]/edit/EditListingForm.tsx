@@ -24,6 +24,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
     const price = Number(formData.get("price"));
     const bedrooms = formData.get("bedrooms") ? Number(formData.get("bedrooms")) : null;
     const bathrooms = formData.get("bathrooms") ? Number(formData.get("bathrooms")) : null;
+    const carSpaces = formData.get("carSpaces") ? Number(formData.get("carSpaces")) : null;
     const sqft = formData.get("sqft") ? Number(formData.get("sqft")) : null;
     const description = String(formData.get("description") ?? "");
 
@@ -34,6 +35,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         price,
         bedrooms,
         bathrooms,
+        car_spaces: carSpaces,
         sqft,
         description,
         updated_at: new Date().toISOString(),
@@ -80,7 +82,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         required
       />
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Field
           label="Bedrooms"
           id="bedrooms"
@@ -96,6 +98,14 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           min={0}
           step="0.5"
           defaultValue={listing.bathrooms ?? undefined}
+        />
+        <Field
+          label="Car spaces"
+          id="carSpaces"
+          type="number"
+          min={0}
+          step="1"
+          defaultValue={listing.car_spaces ?? undefined}
         />
         <Field
           label="Sqft"

@@ -15,3 +15,4 @@ one is idempotent-ish (safe to re-run individual statements won't be, since
 | `0007_captcha_lockdown.sql` | Removes the public insert policies on `feedback`/`offers` — submissions now only go through the CAPTCHA-verified `/api/feedback` and `/api/offers` routes, which use the service role key |
 | `0008_feedback_metrics.sql` | Adds structured feedback fields (interest level, category ratings, buyer readiness, follow-up preference) so agents get actionable data, not just a star rating and free text |
 | `0009_subscriptions.sql` | Adds the `subscriptions` table (synced from Stripe via webhook), auto-starts a 14-day trial for every new agent, and restricts new listing creation to agents with an active trial or subscription |
+| `0010_car_spaces.sql` | Adds `car_spaces` to `listings` |

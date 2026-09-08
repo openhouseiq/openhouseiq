@@ -112,6 +112,7 @@ export default async function ListingDetailPage({
               ${Number(listing.price).toLocaleString()}
               {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
               {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
+              {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
               {listing.sqft ? ` · ${listing.sqft.toLocaleString()} sqft` : ""}
             </p>
           </div>
@@ -158,9 +159,16 @@ export default async function ListingDetailPage({
               alt="QR code linking to this listing's visitor page"
               className="h-[220px] w-[220px] shrink-0 rounded-md border border-line"
             />
-            <p className="break-all text-center text-sm text-ink-soft sm:text-left">
-              {visitUrl}
-            </p>
+            <div className="text-center sm:text-left">
+              <p className="break-all text-sm text-ink-soft">{visitUrl}</p>
+              <a
+                href={qrDataUrl}
+                download={`${listing.address.replace(/[^a-z0-9]+/gi, "-")}-qr-code.png`}
+                className="mt-3 inline-block rounded-md border border-line bg-white px-4 py-2.5 text-sm font-medium text-ink transition-opacity hover:opacity-90"
+              >
+                Download QR code
+              </a>
+            </div>
           </div>
         </div>
 
