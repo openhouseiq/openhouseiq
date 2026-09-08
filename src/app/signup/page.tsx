@@ -8,6 +8,9 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 
+const fileInputClasses =
+  "w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-pine file:px-3 file:py-2 file:text-sm file:font-medium file:text-paper";
+
 export default function SignUpPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -21,6 +24,7 @@ export default function SignUpPage() {
 
     const formData = new FormData(e.currentTarget);
     const fullName = String(formData.get("fullName") ?? "");
+    const phone = String(formData.get("phone") ?? "");
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
 
@@ -29,16 +33,24 @@ export default function SignUpPage() {
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: { full_name: fullName, phone },
       },
     });
 
-    setLoading(false);
-
     if (signUpError) {
+      setLoading(false);
       setError(signUpError.message);
       return;
     }
+
+    if (data.user) {
+      formData.set("userId", data.user.id);
+      await fetch("/api/signup-profile", { method: "POST", body: formData }).catch(
+        () => {},
+      );
+    }
+
+    setLoading(false);
 
     if (data.session) {
       router.push("/dashboard/settings");
@@ -78,6 +90,12 @@ export default function SignUpPage() {
             required
           />
           <FormField
+            label="Phone number"
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+          />
+          <FormField
             label="Email"
             id="email"
             type="email"
@@ -92,6 +110,47 @@ export default function SignUpPage() {
             minLength={6}
             required
           />
+
+          <div className="border-t border-line pt-4">
+            <p className="text-sm font-medium text-ink">Branding</p>
+            <p className="mt-1 text-xs text-ink-soft">
+              Optional — shown on your exported reports. You can add these
+              later from Settings.
+            </p>
+
+            <div className="mt-3 space-y-3">
+              <div>
+                <label
+                  htmlFor="logo"
+                  className="mb-1.5 block text-sm font-medium text-ink"
+                >
+                  Logo
+                </label>
+                <input
+                  id="logo"
+                  name="logo"
+                  type="file"
+                  accept="image/*"
+                  className={fileInputClasses}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="photo"
+                  className="mb-1.5 block text-sm font-medium text-ink"
+                >
+                  Photo
+                </label>
+                <input
+                  id="photo"
+                  name="photo"
+                  type="file"
+                  accept="image/*"
+                  className={fileInputClasses}
+                />
+              </div>
+            </div>
+          </div>
 
           {error ? <p className="text-sm text-error">{error}</p> : null}
 

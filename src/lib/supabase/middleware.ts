@@ -41,6 +41,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/api/feedback") ||
     request.nextUrl.pathname.startsWith("/api/offers") ||
     request.nextUrl.pathname.startsWith("/api/stripe/webhook") ||
+    request.nextUrl.pathname.startsWith("/api/signup-profile") ||
     request.nextUrl.pathname.startsWith("/terms") ||
     request.nextUrl.pathname.startsWith("/privacy");
 
