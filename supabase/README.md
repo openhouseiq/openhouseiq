@@ -19,3 +19,5 @@ one is idempotent-ish (safe to re-run individual statements won't be, since
 | `0011_agent_assets.sql` | Creates the `agent-assets` storage bucket for agent logo/photo (attached to exported reports) |
 | `0012_seller_preferences.sql` | Adds seller preference fields to `listings` (price importance, settlement timing, waive inspection, finance approved, cash buyer) so offers can be judged against what the seller actually wants |
 | `0013_settlement_constraint.sql` | Normalizes existing `offers.settlement_term` free text to the fixed settlement values and locks the column to that set, so offers can be compared directly against seller preferences |
+| `0014_rate_limits.sql` | Backing table for basic rate limiting on public API routes (feedback, offers, signup-profile) |
+| `0015_data_deletion.sql` | Lets agents delete individual feedback/offer entries (visitor data-deletion requests) — previously blocked entirely by RLS |

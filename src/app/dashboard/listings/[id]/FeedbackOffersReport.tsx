@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { createClient } from "@/lib/supabase/client";
 import { scoreOffer, type OfferScore } from "@/lib/offerScoring";
 import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
 import type { Feedback, Offer, Listing } from "@/lib/types";
@@ -117,6 +118,31 @@ export function FeedbackOffersReport({
 }) {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [feedbackList, setFeedbackList] = useState(feedback);
+  const [offersList, setOffersList] = useState(offers);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  async function deleteFeedback(id: string) {
+    if (!window.confirm("Delete this feedback entry? This can't be undone.")) return;
+    setDeletingId(id);
+    const supabase = createClient();
+    const { error } = await supabase.from("feedback").delete().eq("id", id);
+    setDeletingId(null);
+    if (!error) {
+      setFeedbackList((prev) => prev.filter((item) => item.id !== id));
+    }
+  }
+
+  async function deleteOffer(id: string) {
+    if (!window.confirm("Delete this offer? This can't be undone.")) return;
+    setDeletingId(id);
+    const supabase = createClient();
+    const { error } = await supabase.from("offers").delete().eq("id", id);
+    setDeletingId(null);
+    if (!error) {
+      setOffersList((prev) => prev.filter((item) => item.id !== id));
+    }
+  }
 
   const hasSellerPreferences = Boolean(
     listing.seller_pref_price ||
@@ -127,12 +153,12 @@ export function FeedbackOffersReport({
   );
 
   const filteredFeedback = useMemo(
-    () => feedback.filter((item) => inRange(item.created_at, fromDate, toDate)),
-    [feedback, fromDate, toDate],
+    () => feedbackList.filter((item) => inRange(item.created_at, fromDate, toDate)),
+    [feedbackList, fromDate, toDate],
   );
   const filteredOffers = useMemo(
-    () => offers.filter((item) => inRange(item.created_at, fromDate, toDate)),
-    [offers, fromDate, toDate],
+    () => offersList.filter((item) => inRange(item.created_at, fromDate, toDate)),
+    [offersList, fromDate, toDate],
   );
 
   const rankedOffers = useMemo(() => {
@@ -368,6 +394,15 @@ export function FeedbackOffersReport({
                   {item.comments ? (
                     <p className="mt-2 text-sm text-ink">{item.comments}</p>
                   ) : null}
+
+                  <button
+                    type="button"
+                    onClick={() => deleteFeedback(item.id)}
+                    disabled={deletingId === item.id}
+                    className="mt-2 text-xs text-error underline disabled:opacity-60"
+                  >
+                    {deletingId === item.id ? "Deleting…" : "Delete"}
+                  </button>
                 </div>
               ))
             )}
@@ -439,6 +474,15 @@ export function FeedbackOffersReport({
                   {offer.notes ? (
                     <p className="mt-2 text-sm text-ink">{offer.notes}</p>
                   ) : null}
+
+                  <button
+                    type="button"
+                    onClick={() => deleteOffer(offer.id)}
+                    disabled={deletingId === offer.id}
+                    className="mt-2 text-xs text-error underline disabled:opacity-60"
+                  >
+                    {deletingId === offer.id ? "Deleting…" : "Delete"}
+                  </button>
                 </div>
               ))
             )}

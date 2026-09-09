@@ -14,7 +14,7 @@ export default function TermsPage() {
 
       <main className="mx-auto max-w-3xl px-6 pb-20">
         <h1 className="font-serif text-3xl font-medium text-ink">Terms of Service</h1>
-        <p className="mt-2 text-sm text-ink-soft">Last updated 8 September 2026</p>
+        <p className="mt-2 text-sm text-ink-soft">Last updated 9 September 2026</p>
 
         <div className="mt-8 space-y-6 text-sm leading-relaxed text-ink">
           <section>
@@ -83,6 +83,14 @@ export default function TermsPage() {
               you use that information, including complying with any
               applicable privacy or real estate regulations in your
               jurisdiction.
+            </p>
+            <p className="mt-2">
+              Visitors provide their contact details to enquire about that
+              specific property. You agree to only use those details for
+              purposes reasonably related to that enquiry, and not for
+              unrelated marketing or to add visitors to a mailing list
+              without their separate consent, consistent with the Spam Act
+              2003 (Cth) and equivalent laws in your jurisdiction.
             </p>
           </section>
 

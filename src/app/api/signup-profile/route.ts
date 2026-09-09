@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 async function uploadHeadshot(
   supabase: ReturnType<typeof createServiceClient>,
@@ -19,6 +20,14 @@ async function uploadHeadshot(
 }
 
 export async function POST(request: Request) {
+  const allowed = await checkRateLimit("signup-profile", clientIp(request));
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again shortly." },
+      { status: 429 },
+    );
+  }
+
   const formData = await request.formData();
   const userId = String(formData.get("userId") ?? "");
 

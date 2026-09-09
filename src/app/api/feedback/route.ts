@@ -1,8 +1,17 @@
 import { NextResponse } from "next/server";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { createServiceClient } from "@/lib/supabase/service";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
+  const allowed = await checkRateLimit("feedback", clientIp(request));
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many submissions. Please try again shortly." },
+      { status: 429 },
+    );
+  }
+
   const body = await request.json();
 
   const verified = await verifyTurnstileToken(String(body.turnstileToken ?? ""));

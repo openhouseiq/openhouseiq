@@ -198,6 +198,10 @@ export default function Home() {
           <Link href="/privacy" className="underline hover:text-pine">
             Privacy
           </Link>
+          <span className="mx-2">·</span>
+          <Link href="/security" className="underline hover:text-pine">
+            Security
+          </Link>
         </p>
       </footer>
     </div>

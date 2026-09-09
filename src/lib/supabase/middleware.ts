@@ -43,7 +43,8 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/api/stripe/webhook") ||
     request.nextUrl.pathname.startsWith("/api/signup-profile") ||
     request.nextUrl.pathname.startsWith("/terms") ||
-    request.nextUrl.pathname.startsWith("/privacy");
+    request.nextUrl.pathname.startsWith("/privacy") ||
+    request.nextUrl.pathname.startsWith("/security");
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
