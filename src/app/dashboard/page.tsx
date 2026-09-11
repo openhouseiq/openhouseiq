@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
-import { DeleteListingButton } from "./listings/[id]/DeleteListingButton";
+import { ListingsList, type ListingWithCounts } from "./ListingsList";
 import type { Listing } from "@/lib/types";
 
 function accountAgeDays(createdAt: string): number {
@@ -83,6 +83,13 @@ export default async function DashboardPage() {
     }
   }
 
+  const listingsWithCounts: ListingWithCounts[] = (listings ?? []).map((listing) => ({
+    ...listing,
+    feedbackCount: feedbackCounts.get(listing.id) ?? 0,
+    offerCount: offerCounts.get(listing.id) ?? 0,
+    unreadCount: unreadCounts.get(listing.id) ?? 0,
+  }));
+
   return (
     <div className="min-h-screen bg-paper">
       <DashboardHeader agentLabel={fullName || user.email || ""} />
@@ -109,47 +116,7 @@ export default async function DashboardPage() {
           </div>
         ) : null}
 
-        {!listings || listings.length === 0 ? (
-          <div className="mt-8 rounded-md border border-line bg-paper-card px-6 py-16 text-center">
-            <p className="text-sm text-ink-soft">No listings yet</p>
-          </div>
-        ) : (
-          <ul className="mt-8 space-y-3">
-            {listings.map((listing) => (
-              <li
-                key={listing.id}
-                className="flex items-center justify-between rounded-md border border-line bg-paper-card px-6 py-4 hover:border-pine"
-              >
-                <Link href={`/dashboard/listings/${listing.id}`} className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-ink">{listing.address}</p>
-                    {unreadCounts.get(listing.id) ? (
-                      <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-paper">
-                        {unreadCounts.get(listing.id)} new
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="text-sm text-ink-soft">
-                    ${Number(listing.price).toLocaleString()}
-                    {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
-                    {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
-                    {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
-                    {listing.sqft ? ` · ${listing.sqft.toLocaleString()} sqft` : ""}
-                  </p>
-                  <div className="mt-1.5 flex items-center gap-2">
-                    <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
-                      {feedbackCounts.get(listing.id) ?? 0} feedback
-                    </span>
-                    <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
-                      {offerCounts.get(listing.id) ?? 0} offers
-                    </span>
-                  </div>
-                </Link>
-                <DeleteListingButton listingId={listing.id} label="Delete" />
-              </li>
-            ))}
-          </ul>
-        )}
+        <ListingsList listings={listingsWithCounts} />
       </main>
     </div>
   );
