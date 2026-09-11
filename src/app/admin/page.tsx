@@ -7,14 +7,16 @@ import { MonthlyStatementExportButton } from "./MonthlyStatementExportButton";
 import { ExtendTrialButton } from "./ExtendTrialButton";
 import type { ProductFeedback } from "@/lib/types";
 
-export type MonthlyStatement = {
-  monthLabel: string;
-  monthKey: string;
+export type PeriodSummary = {
+  label: string;
   newSignups: number;
   newSubscriptions: number;
   cancellations: number;
   revenue: number;
 };
+
+export type MonthlyStatement = PeriodSummary & { monthKey: string };
+export type FinancialYearSummary = PeriodSummary & { fyLabel: string };
 
 function monthBounds(monthKey: string) {
   const [year, month] = monthKey.split("-").map(Number);
@@ -29,11 +31,21 @@ function shiftMonth(monthKey: string, delta: number): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
-async function getMonthlyStatement(
-  monthKey: string,
+/** Australian financial year: 1 July – 30 June. */
+function financialYearBounds(now: Date) {
+  const year = now.getUTCFullYear();
+  const startYear = now.getUTCMonth() >= 6 ? year : year - 1; // month 6 = July
+  const start = new Date(Date.UTC(startYear, 6, 1));
+  const end = now;
+  const fyLabel = `FY${startYear}–${String(startYear + 1).slice(2)}`;
+  return { start, end, fyLabel };
+}
+
+async function getPeriodSummary(
+  start: Date,
+  end: Date,
   users: { created_at: string }[],
-): Promise<MonthlyStatement> {
-  const { start, end } = monthBounds(monthKey);
+): Promise<Omit<PeriodSummary, "label">> {
   const gte = Math.floor(start.getTime() / 1000);
   const lt = Math.floor(end.getTime() / 1000);
 
@@ -62,13 +74,36 @@ async function getMonthlyStatement(
     // Stripe unreachable or misconfigured — show zeros rather than crash the page.
   }
 
-  const monthLabel = start.toLocaleDateString("en-AU", {
+  return { newSignups, newSubscriptions, cancellations, revenue };
+}
+
+async function getMonthlyStatement(
+  monthKey: string,
+  users: { created_at: string }[],
+): Promise<MonthlyStatement> {
+  const { start, end } = monthBounds(monthKey);
+  const summary = await getPeriodSummary(start, end, users);
+  const label = start.toLocaleDateString("en-AU", {
     month: "long",
     year: "numeric",
     timeZone: "UTC",
   });
+  return { label, monthKey, ...summary };
+}
 
-  return { monthLabel, monthKey, newSignups, newSubscriptions, cancellations, revenue };
+async function getFinancialYearSummary(
+  users: { created_at: string }[],
+): Promise<FinancialYearSummary> {
+  const { start, end, fyLabel } = financialYearBounds(new Date());
+  const summary = await getPeriodSummary(start, end, users);
+  const dateFormat: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  };
+  const label = `${fyLabel} to date (${start.toLocaleDateString("en-AU", dateFormat)} – ${end.toLocaleDateString("en-AU", dateFormat)})`;
+  return { label, fyLabel, ...summary };
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -164,7 +199,10 @@ export default async function AdminPage({
   const subscriptionRows = subs ?? [];
 
   const monthKey = month && /^\d{4}-\d{2}$/.test(month) ? month : currentMonthKey();
-  const statement = await getMonthlyStatement(monthKey, users);
+  const [statement, fySummary] = await Promise.all([
+    getMonthlyStatement(monthKey, users),
+    getFinancialYearSummary(users),
+  ]);
   const prevMonthKey = shiftMonth(monthKey, -1);
   const nextMonthKey = shiftMonth(monthKey, 1);
   const isCurrentMonth = monthKey === currentMonthKey();
@@ -253,13 +291,17 @@ export default async function AdminPage({
       <main className="mx-auto max-w-6xl px-6 py-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="font-serif text-2xl font-medium text-ink">Admin dashboard</h1>
-          <MonthlyStatementExportButton statement={statement} rows={agentRows} />
+          <MonthlyStatementExportButton
+            statement={statement}
+            fySummary={fySummary}
+            rows={agentRows}
+          />
         </div>
 
         <section className="mt-8 rounded-md border border-line bg-paper-card p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-serif text-lg font-medium text-ink">
-              Monthly statement — {statement.monthLabel}
+              Monthly statement — {statement.label}
             </h2>
             <div className="flex items-center gap-3 text-sm">
               <Link
@@ -305,6 +347,39 @@ export default async function AdminPage({
               <p className="text-xs text-ink-soft">Revenue collected</p>
               <p className="mt-1 font-serif text-2xl font-medium text-ink">
                 ${statement.revenue.toFixed(0)}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-6 rounded-md border border-line bg-paper-card p-6">
+          <h2 className="font-serif text-lg font-medium text-ink">
+            Australian financial year to date — {fySummary.label}
+          </h2>
+
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div>
+              <p className="text-xs text-ink-soft">New signups</p>
+              <p className="mt-1 font-serif text-2xl font-medium text-ink">
+                {fySummary.newSignups}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-ink-soft">New subscriptions</p>
+              <p className="mt-1 font-serif text-2xl font-medium text-ink">
+                {fySummary.newSubscriptions}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-ink-soft">Cancellations</p>
+              <p className="mt-1 font-serif text-2xl font-medium text-ink">
+                {fySummary.cancellations}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-ink-soft">Revenue collected</p>
+              <p className="mt-1 font-serif text-2xl font-medium text-ink">
+                ${fySummary.revenue.toFixed(0)}
               </p>
             </div>
           </div>

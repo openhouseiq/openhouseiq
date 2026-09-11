@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import type { AgentRow, MonthlyStatement } from "./page";
+import type { AgentRow, MonthlyStatement, FinancialYearSummary } from "./page";
 
 function csvCell(value: unknown): string {
   const str = value === null || value === undefined ? "" : String(value);
@@ -26,20 +26,30 @@ function downloadCsv(filename: string, content: string) {
 
 export function MonthlyStatementExportButton({
   statement,
+  fySummary,
   rows,
 }: {
   statement: MonthlyStatement;
+  fySummary: FinancialYearSummary;
   rows: AgentRow[];
 }) {
   function handleExport() {
     const summarySection = toCsv([
       ["OpenHouseIQ Monthly Statement"],
-      ["Period", statement.monthLabel],
+      ["Period", statement.label],
       [],
       ["New signups", statement.newSignups],
       ["New subscriptions", statement.newSubscriptions],
       ["Cancellations", statement.cancellations],
       ["Revenue collected", `$${statement.revenue.toFixed(2)}`],
+      [],
+      ["Australian Financial Year to Date"],
+      ["Period", fySummary.label],
+      [],
+      ["New signups", fySummary.newSignups],
+      ["New subscriptions", fySummary.newSubscriptions],
+      ["Cancellations", fySummary.cancellations],
+      ["Revenue collected", `$${fySummary.revenue.toFixed(2)}`],
       [],
       ["Agents (current snapshot)"],
     ]);
