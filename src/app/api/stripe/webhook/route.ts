@@ -35,6 +35,9 @@ export async function POST(request: Request) {
             stripe_subscription_id: subscription.id,
             status: subscription.status,
             price_id: subscription.items.data[0]?.price.id ?? null,
+            trial_ends_at: subscription.trial_end
+              ? new Date(subscription.trial_end * 1000).toISOString()
+              : null,
             current_period_end: new Date(
               subscription.items.data[0].current_period_end * 1000,
             ).toISOString(),
@@ -54,6 +57,9 @@ export async function POST(request: Request) {
         stripe_subscription_id: subscription.id,
         status: subscription.status,
         price_id: subscription.items.data[0]?.price.id ?? null,
+        trial_ends_at: subscription.trial_end
+          ? new Date(subscription.trial_end * 1000).toISOString()
+          : null,
         current_period_end: new Date(
           subscription.items.data[0].current_period_end * 1000,
         ).toISOString(),

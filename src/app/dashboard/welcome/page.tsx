@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
 import { BillingSection } from "../settings/BillingSection";
+import { StartTrialSection } from "./StartTrialSection";
 import type { Subscription } from "@/lib/types";
 
 export default async function WelcomePage() {
@@ -26,6 +27,8 @@ export default async function WelcomePage() {
     .returns<Subscription[]>()
     .maybeSingle();
 
+  const needsCard = subscription?.status === "incomplete";
+
   return (
     <div className="min-h-screen bg-paper">
       <DashboardHeader agentLabel={fullName || user.email || ""} />
@@ -34,20 +37,35 @@ export default async function WelcomePage() {
         <h1 className="font-serif text-2xl font-medium text-ink">
           Welcome, {firstName}
         </h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          Your account is ready. Here&apos;s your trial status — you can
-          subscribe now or any time before it ends.
-        </p>
 
-        <section className="mt-8 rounded-md border border-line bg-paper-card p-6">
-          <BillingSection subscription={subscription} />
-        </section>
-
-        <div className="mt-8">
-          <Link href="/dashboard">
-            <Button variant="secondary">Continue to dashboard</Button>
-          </Link>
-        </div>
+        {needsCard ? (
+          <>
+            <p className="mt-2 text-sm text-ink-soft">
+              Start your 14-day free trial. We&apos;ll ask for a card to set
+              up billing, but you won&apos;t be charged until your trial
+              ends — cancel any time before then and you won&apos;t pay
+              anything.
+            </p>
+            <section className="mt-8 rounded-md border border-line bg-paper-card p-6">
+              <StartTrialSection />
+            </section>
+          </>
+        ) : (
+          <>
+            <p className="mt-2 text-sm text-ink-soft">
+              Your account is ready. Here&apos;s your trial status — you can
+              subscribe now or any time before it ends.
+            </p>
+            <section className="mt-8 rounded-md border border-line bg-paper-card p-6">
+              <BillingSection subscription={subscription} />
+            </section>
+            <div className="mt-8">
+              <Link href="/dashboard">
+                <Button variant="secondary">Continue to dashboard</Button>
+              </Link>
+            </div>
+          </>
+        )}
       </main>
     </div>
   );

@@ -20,6 +20,16 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("status")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (subscription?.status === "incomplete") {
+    redirect("/dashboard/welcome");
+  }
+
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const firstName = fullName.split(" ")[0] || user.email || "there";
 
