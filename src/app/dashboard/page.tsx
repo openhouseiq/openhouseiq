@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/Button";
 import { DeleteListingButton } from "./listings/[id]/DeleteListingButton";
 import type { Listing } from "@/lib/types";
 
+function accountAgeDays(createdAt: string): number {
+  return (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -18,6 +22,16 @@ export default async function DashboardPage() {
 
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const firstName = fullName.split(" ")[0] || user.email || "there";
+
+  let showFeedbackPrompt = false;
+  if (accountAgeDays(user.created_at) >= 30) {
+    const { data: existingFeedback } = await supabase
+      .from("product_feedback")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    showFeedbackPrompt = !existingFeedback;
+  }
 
   const { data: listings } = await supabase
     .from("listings")
@@ -61,6 +75,18 @@ export default async function DashboardPage() {
             <Button variant="primary">+ New listing</Button>
           </Link>
         </div>
+
+        {showFeedbackPrompt ? (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-md border border-brass bg-brass/10 px-6 py-4">
+            <p className="text-sm text-ink">
+              You&apos;ve been using OpenHouseIQ for a month — we&apos;d love
+              your feedback.
+            </p>
+            <Link href="/dashboard/product-feedback">
+              <Button variant="secondary">Give feedback</Button>
+            </Link>
+          </div>
+        ) : null}
 
         {!listings || listings.length === 0 ? (
           <div className="mt-8 rounded-md border border-line bg-paper-card px-6 py-16 text-center">

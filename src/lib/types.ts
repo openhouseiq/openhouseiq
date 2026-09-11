@@ -115,3 +115,14 @@ export type Offer = {
   read_at: string | null;
   created_at: string;
 };
+
+export type ProductFeedback = {
+  id: string;
+  user_id: string;
+  overall_rating: number;
+  liked_most: string | null;
+  biggest_frustration: string | null;
+  would_recommend: boolean | null;
+  additional_comments: string | null;
+  created_at: string;
+};
