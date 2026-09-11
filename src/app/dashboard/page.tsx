@@ -52,23 +52,34 @@ export default async function DashboardPage() {
 
   const listingIds = (listings ?? []).map((listing) => listing.id);
   const unreadCounts = new Map<string, number>();
+  const feedbackCounts = new Map<string, number>();
+  const offerCounts = new Map<string, number>();
 
   if (listingIds.length > 0) {
-    const [{ data: unreadFeedback }, { data: unreadOffers }] = await Promise.all([
-      supabase
-        .from("feedback")
-        .select("listing_id")
-        .in("listing_id", listingIds)
-        .is("read_at", null),
-      supabase
-        .from("offers")
-        .select("listing_id")
-        .in("listing_id", listingIds)
-        .is("read_at", null),
-    ]);
+    const [{ data: unreadFeedback }, { data: unreadOffers }, { data: allFeedback }, { data: allOffers }] =
+      await Promise.all([
+        supabase
+          .from("feedback")
+          .select("listing_id")
+          .in("listing_id", listingIds)
+          .is("read_at", null),
+        supabase
+          .from("offers")
+          .select("listing_id")
+          .in("listing_id", listingIds)
+          .is("read_at", null),
+        supabase.from("feedback").select("listing_id").in("listing_id", listingIds),
+        supabase.from("offers").select("listing_id").in("listing_id", listingIds),
+      ]);
 
     for (const row of [...(unreadFeedback ?? []), ...(unreadOffers ?? [])]) {
       unreadCounts.set(row.listing_id, (unreadCounts.get(row.listing_id) ?? 0) + 1);
+    }
+    for (const row of allFeedback ?? []) {
+      feedbackCounts.set(row.listing_id, (feedbackCounts.get(row.listing_id) ?? 0) + 1);
+    }
+    for (const row of allOffers ?? []) {
+      offerCounts.set(row.listing_id, (offerCounts.get(row.listing_id) ?? 0) + 1);
     }
   }
 
@@ -125,6 +136,14 @@ export default async function DashboardPage() {
                     {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
                     {listing.sqft ? ` · ${listing.sqft.toLocaleString()} sqft` : ""}
                   </p>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
+                      {feedbackCounts.get(listing.id) ?? 0} feedback
+                    </span>
+                    <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
+                      {offerCounts.get(listing.id) ?? 0} offers
+                    </span>
+                  </div>
                 </Link>
                 <DeleteListingButton listingId={listing.id} label="Delete" />
               </li>
