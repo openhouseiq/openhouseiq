@@ -20,9 +20,10 @@ export function DashboardHeader({
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/settings"
-            className="text-sm text-ink-soft hover:text-pine"
+            className="flex flex-col items-end text-sm text-ink-soft hover:text-pine"
           >
-            {agentLabel}
+            <span>{agentLabel}</span>
+            <span className="text-xs">Edit profile</span>
           </Link>
           <LogoutButton />
         </div>
