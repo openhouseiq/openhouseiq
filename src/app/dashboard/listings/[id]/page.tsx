@@ -12,7 +12,7 @@ import {
   SETTLEMENT_LABELS,
   LEVEL_LABELS,
 } from "@/components/listings/sellerPreferences";
-import type { Listing, ListingPhoto, Feedback, Offer } from "@/lib/types";
+import type { Listing, Feedback, Offer } from "@/lib/types";
 
 export default async function ListingDetailPage({
   params,
@@ -40,13 +40,7 @@ export default async function ListingDetailPage({
     notFound();
   }
 
-  const [{ data: photos }, { data: feedback }, { data: offers }] = await Promise.all([
-    supabase
-      .from("listing_photos")
-      .select("*")
-      .eq("listing_id", id)
-      .order("position")
-      .returns<ListingPhoto[]>(),
+  const [{ data: feedback }, { data: offers }] = await Promise.all([
     supabase
       .from("feedback")
       .select("*")
@@ -80,12 +74,6 @@ export default async function ListingDetailPage({
       .update({ read_at: new Date().toISOString() })
       .in("id", unreadOfferIds);
   }
-
-  const photoUrls = (photos ?? []).map(
-    (photo) =>
-      supabase.storage.from("listing-photos").getPublicUrl(photo.storage_path).data
-        .publicUrl,
-  );
 
   const headersList = await headers();
   const host = headersList.get("host");
@@ -133,20 +121,6 @@ export default async function ListingDetailPage({
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-ink">
             {listing.description}
           </p>
-        ) : null}
-
-        {photoUrls.length > 0 ? (
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {photoUrls.map((url) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={url}
-                src={url}
-                alt={listing.address}
-                className="aspect-square w-full rounded-md border border-line object-cover"
-              />
-            ))}
-          </div>
         ) : null}
 
         <div className="mt-10 rounded-md border border-line bg-paper-card p-6">

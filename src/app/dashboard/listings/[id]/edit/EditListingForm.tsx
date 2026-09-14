@@ -12,7 +12,6 @@ export function EditListingForm({ listing }: { listing: Listing }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [photos, setPhotos] = useState<FileList | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -63,30 +62,20 @@ export function EditListingForm({ listing }: { listing: Listing }) {
       return;
     }
 
-    if (photos && photos.length > 0) {
-      for (let i = 0; i < photos.length; i++) {
-        const file = photos[i];
-        const path = `${listing.agent_id}/${listing.id}/${crypto.randomUUID()}-${file.name}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("listing-photos")
-          .upload(path, file);
-
-        if (!uploadError) {
-          await supabase
-            .from("listing_photos")
-            .insert({ listing_id: listing.id, storage_path: path, position: i });
-        }
-      }
-    }
-
     router.push(`/dashboard/listings/${listing.id}`);
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-      <Field label="Address" id="address" type="text" defaultValue={listing.address} required />
+      <Field
+        label="Full address"
+        id="address"
+        type="text"
+        placeholder="123 Main St, Bellview NSW 2153"
+        defaultValue={listing.address}
+        required
+      />
       <Field
         label="Price"
         id="price"
@@ -148,20 +137,6 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           sellerPrefCashBuyer: listing.seller_pref_cash_buyer,
         }}
       />
-
-      <div>
-        <label htmlFor="photos" className="mb-1.5 block text-sm font-medium text-ink">
-          Add more photos
-        </label>
-        <input
-          id="photos"
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={(e) => setPhotos(e.target.files)}
-          className="w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-pine file:px-3 file:py-2 file:text-sm file:font-medium file:text-paper"
-        />
-      </div>
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
 

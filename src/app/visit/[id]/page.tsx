@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getListingPhotoUrls } from "@/lib/listing-photos";
+import { getAgentPhotoUrl } from "@/lib/agent-photo";
 import { VisitLayout } from "@/components/visit/VisitLayout";
 import { Button } from "@/components/ui/Button";
 import type { Listing } from "@/lib/types";
@@ -25,19 +25,29 @@ export default async function VisitLandingPage({
     notFound();
   }
 
-  const photoUrls = await getListingPhotoUrls(supabase, listing.id);
+  const agentPhotoUrl = await getAgentPhotoUrl(listing.agent_id);
 
   return (
-    <VisitLayout photoUrls={photoUrls}>
+    <VisitLayout>
       <p className="text-center text-sm text-ink-soft">Welcome to</p>
       <h2 className="mt-1 text-center font-serif text-2xl font-medium text-ink">
         {listing.address}
       </h2>
       {listing.agent_name ? (
-        <p className="mt-2 text-center text-xs text-ink-soft">
-          Hosted by {listing.agent_name}
-          {listing.agent_email ? ` · ${listing.agent_email}` : ""}
-        </p>
+        <div className="mt-2 flex flex-col items-center">
+          {agentPhotoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={agentPhotoUrl}
+              alt={listing.agent_name}
+              className="mb-2 h-16 w-16 rounded-full border border-line object-cover"
+            />
+          ) : null}
+          <p className="text-center text-xs text-ink-soft">
+            Hosted by {listing.agent_name}
+            {listing.agent_email ? ` · ${listing.agent_email}` : ""}
+          </p>
+        </div>
       ) : null}
 
       <div className="mt-8 space-y-3">

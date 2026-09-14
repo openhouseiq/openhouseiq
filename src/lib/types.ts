@@ -36,14 +36,6 @@ export type Listing = {
   updated_at: string;
 };
 
-export type ListingPhoto = {
-  id: string;
-  listing_id: string;
-  storage_path: string;
-  position: number;
-  created_at: string;
-};
-
 export type InterestLevel =
   | "not_interested"
   | "considering"
