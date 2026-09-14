@@ -15,6 +15,7 @@ export function BillingSection({ subscription }: { subscription: Subscription | 
 
   const isTrialing = subscription?.status === "trialing";
   const isActive = subscription?.status === "active";
+  const hasStripeSubscription = isActive || isTrialing;
   const hasAccess =
     isActive || (isTrialing && subscription?.trial_ends_at && daysLeft(subscription.trial_ends_at) > 0);
 
@@ -75,7 +76,10 @@ export function BillingSection({ subscription }: { subscription: Subscription | 
               {daysLeft(subscription.trial_ends_at)} day
               {daysLeft(subscription.trial_ends_at) === 1 ? "" : "s"} left
             </span>
-            . Subscribe any time to keep creating listings after it ends.
+            .{" "}
+            {subscription?.stripe_subscription_id
+              ? "Your subscription will automatically continue after it ends."
+              : "Subscribe any time to keep creating listings after it ends."}
           </p>
         ) : (
           <p className="text-sm text-error">
@@ -90,7 +94,7 @@ export function BillingSection({ subscription }: { subscription: Subscription | 
         </p>
       )}
 
-      {!isActive ? (
+      {!hasStripeSubscription ? (
         <div className="flex flex-wrap items-center gap-3">
           <Button
             variant="primary"

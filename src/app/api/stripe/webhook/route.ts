@@ -66,13 +66,22 @@ export async function POST(request: Request) {
         updated_at: new Date().toISOString(),
       };
 
+      // Only apply this event if the row is still tracking this specific
+      // subscription — an update/cancellation on a superseded subscription
+      // (e.g. an old plan replaced by a newer checkout) must never clobber
+      // the row's current one.
       if (userId) {
-        await supabase.from("subscriptions").update(update).eq("user_id", userId);
+        await supabase
+          .from("subscriptions")
+          .update(update)
+          .eq("user_id", userId)
+          .eq("stripe_subscription_id", subscription.id);
       } else {
         await supabase
           .from("subscriptions")
           .update(update)
-          .eq("stripe_customer_id", subscription.customer as string);
+          .eq("stripe_customer_id", subscription.customer as string)
+          .eq("stripe_subscription_id", subscription.id);
       }
       break;
     }

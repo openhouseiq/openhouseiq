@@ -27,9 +27,16 @@ export async function POST(request: Request) {
   const service = createServiceClient();
   const { data: subscription } = await service
     .from("subscriptions")
-    .select("stripe_customer_id")
+    .select("stripe_customer_id, status")
     .eq("user_id", user.id)
     .maybeSingle();
+
+  if (subscription?.status === "active" || subscription?.status === "trialing") {
+    return NextResponse.json(
+      { error: "You already have a subscription. Manage it from the billing portal instead." },
+      { status: 400 },
+    );
+  }
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
