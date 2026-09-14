@@ -16,15 +16,18 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "OpenHouseIQ",
   description: "Sign up and log in to OpenHouseIQ",
-  icons: {
-    icon: "/icons/icon-512.png",
-    apple: "/icons/apple-touch-icon.png",
-  },
   appleWebApp: {
     title: "OpenHouseIQ",
     statusBarStyle: "black-translucent",
+  },
+  openGraph: {
+    title: "OpenHouseIQ",
+    description: "Open house feedback, offers, and listings for real estate agents.",
+    siteName: "OpenHouseIQ",
+    type: "website",
   },
 };
 
