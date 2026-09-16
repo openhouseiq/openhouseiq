@@ -27,11 +27,15 @@ export async function POST(request: Request) {
   const service = createServiceClient();
   const { data: subscription } = await service
     .from("subscriptions")
-    .select("stripe_customer_id, status")
+    .select("stripe_customer_id, stripe_subscription_id, status")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (subscription?.status === "active" || subscription?.status === "trialing") {
+  const hasStripeSubscription =
+    Boolean(subscription?.stripe_subscription_id) &&
+    (subscription?.status === "active" || subscription?.status === "trialing");
+
+  if (hasStripeSubscription) {
     return NextResponse.json(
       { error: "You already have a subscription. Manage it from the billing portal instead." },
       { status: 400 },

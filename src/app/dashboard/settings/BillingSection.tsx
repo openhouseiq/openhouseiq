@@ -15,7 +15,8 @@ export function BillingSection({ subscription }: { subscription: Subscription | 
 
   const isTrialing = subscription?.status === "trialing";
   const isActive = subscription?.status === "active";
-  const hasStripeSubscription = isActive || isTrialing;
+  const hasStripeSubscription =
+    Boolean(subscription?.stripe_subscription_id) && (isActive || isTrialing);
   const hasAccess =
     isActive || (isTrialing && subscription?.trial_ends_at && daysLeft(subscription.trial_ends_at) > 0);
 
