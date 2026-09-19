@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Field, TextAreaField } from "@/components/ui/Field";
+import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
 
@@ -36,7 +36,6 @@ export function NewListingForm() {
     const bathrooms = formData.get("bathrooms") ? Number(formData.get("bathrooms")) : null;
     const carSpaces = formData.get("carSpaces") ? Number(formData.get("carSpaces")) : null;
     const sqft = formData.get("sqft") ? Number(formData.get("sqft")) : null;
-    const description = String(formData.get("description") ?? "");
     const sellerPrefPrice = String(formData.get("sellerPrefPrice") ?? "") || null;
     const sellerPrefSettlement =
       String(formData.get("sellerPrefSettlement") ?? "") || null;
@@ -59,7 +58,6 @@ export function NewListingForm() {
         bathrooms,
         car_spaces: carSpaces,
         sqft,
-        description,
         agent_name: agentName,
         agent_email: user.email,
         seller_pref_price: sellerPrefPrice,
@@ -98,8 +96,6 @@ export function NewListingForm() {
         <Field label="Car spaces" id="carSpaces" type="number" min={0} step="1" />
         <Field label="Sqft" id="sqft" type="number" min={0} step="1" />
       </div>
-
-      <TextAreaField label="Description" id="description" rows={4} />
 
       <SellerPreferenceFields />
 
