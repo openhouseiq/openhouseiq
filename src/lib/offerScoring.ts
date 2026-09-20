@@ -43,8 +43,8 @@ export function scoreOffer(
   if (priceWeight > 0 && listing.price > 0) {
     maxScore += priceWeight;
     const ratio = Number(offer.offer_amount) / Number(listing.price);
-    // 80% of asking -> 0, 120% of asking -> 1, clamped in between.
-    const priceScore = Math.max(0, Math.min(1, (ratio - 0.8) / 0.4));
+    // 80% of asking -> 0, full asking price (or more) -> 1, clamped in between.
+    const priceScore = Math.max(0, Math.min(1, (ratio - 0.8) / 0.2));
     score += priceWeight * priceScore;
   }
 
