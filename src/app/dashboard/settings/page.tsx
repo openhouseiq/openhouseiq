@@ -5,6 +5,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { AgentProfileForm } from "./AgentProfileForm";
 import { PasswordSection } from "./PasswordSection";
 import { BillingSection } from "./BillingSection";
+import { ContactSection } from "./ContactSection";
 import { DeleteAccountSection } from "./DeleteAccountSection";
 import type { Subscription } from "@/lib/types";
 
@@ -60,6 +61,11 @@ export default async function SettingsPage() {
           <section className="rounded-md border border-line bg-paper-card p-6">
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">Password</h2>
             <PasswordSection />
+          </section>
+
+          <section className="rounded-md border border-line bg-paper-card p-6">
+            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Contact us</h2>
+            <ContactSection userId={user.id} />
           </section>
 
           <section className="rounded-md border border-error/30 bg-paper-card p-6">

@@ -118,3 +118,11 @@ export type ProductFeedback = {
   additional_comments: string | null;
   created_at: string;
 };
+
+export type ContactMessage = {
+  id: string;
+  user_id: string;
+  message: string;
+  read_at: string | null;
+  created_at: string;
+};

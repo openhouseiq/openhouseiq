@@ -5,7 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe";
 import { MonthlyStatementExportButton } from "./MonthlyStatementExportButton";
 import { ExtendTrialButton } from "./ExtendTrialButton";
-import type { ProductFeedback } from "@/lib/types";
+import type { ProductFeedback, ContactMessage } from "@/lib/types";
 
 export type PeriodSummary = {
   label: string;
@@ -178,6 +178,7 @@ export default async function AdminPage({
     { data: feedbackRows },
     { data: offerRows },
     { data: productFeedbackRows },
+    { data: contactMessageRows },
   ] = await Promise.all([
     service.auth.admin.listUsers({ perPage: 1000 }),
     service.from("subscriptions").select("*"),
@@ -189,6 +190,11 @@ export default async function AdminPage({
       .select("*")
       .order("created_at", { ascending: false })
       .returns<ProductFeedback[]>(),
+    service
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .returns<ContactMessage[]>(),
   ]);
 
   const users = usersData?.users ?? [];
@@ -273,6 +279,7 @@ export default async function AdminPage({
     { label: "Total feedback", value: (feedbackRows ?? []).length },
     { label: "Total offers", value: (offerRows ?? []).length },
     { label: "Pilot feedback received", value: (productFeedbackRows ?? []).length },
+    { label: "Support messages", value: (contactMessageRows ?? []).length },
   ];
 
   return (
@@ -462,6 +469,38 @@ export default async function AdminPage({
             </tbody>
           </table>
         </div>
+
+        {contactMessageRows && contactMessageRows.length > 0 ? (
+          <div className="mt-10">
+            <h2 className="font-serif text-xl font-medium text-ink">
+              Support messages
+            </h2>
+            <div className="mt-4 space-y-4">
+              {contactMessageRows.map((m) => {
+                const agent = agentRows.find((a) => a.id === m.user_id);
+                return (
+                  <div
+                    key={m.id}
+                    className="rounded-md border border-line bg-paper-card p-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-ink">
+                        {agent?.fullName || agent?.email || m.user_id}
+                      </p>
+                      <p className="text-xs text-ink-soft">
+                        {new Date(m.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    {agent?.email ? (
+                      <p className="text-xs text-ink-soft">{agent.email}</p>
+                    ) : null}
+                    <p className="mt-2 text-sm text-ink">{m.message}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
 
         {productFeedbackRows && productFeedbackRows.length > 0 ? (
           <div className="mt-10">
