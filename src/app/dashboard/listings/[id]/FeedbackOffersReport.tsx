@@ -54,13 +54,6 @@ function CategoryStars({ label, value }: { label: string; value: number | null }
   );
 }
 
-function inRange(createdAt: string, from: string, to: string): boolean {
-  const day = createdAt.slice(0, 10);
-  if (from && day < from) return false;
-  if (to && day > to) return false;
-  return true;
-}
-
 function MatchBadge({ score }: { score: OfferScore }) {
   if (score.unmetRequired.length > 0) {
     return (
@@ -116,8 +109,6 @@ export function FeedbackOffersReport({
   listingAddress: string;
   listing: ScoringListing;
 }) {
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
   const [feedbackList, setFeedbackList] = useState(feedback);
   const [offersList, setOffersList] = useState(offers);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -152,17 +143,8 @@ export function FeedbackOffersReport({
       listing.seller_pref_cash_buyer,
   );
 
-  const filteredFeedback = useMemo(
-    () => feedbackList.filter((item) => inRange(item.created_at, fromDate, toDate)),
-    [feedbackList, fromDate, toDate],
-  );
-  const filteredOffers = useMemo(
-    () => offersList.filter((item) => inRange(item.created_at, fromDate, toDate)),
-    [offersList, fromDate, toDate],
-  );
-
   const rankedOffers = useMemo(() => {
-    const withScores = filteredOffers.map((offer) => ({
+    const withScores = offersList.map((offer) => ({
       offer,
       score: scoreOffer(offer, listing),
     }));
@@ -182,7 +164,7 @@ export function FeedbackOffersReport({
 
       return Number(b.offer.offer_amount) - Number(a.offer.offer_amount);
     });
-  }, [filteredOffers, listing, hasSellerPreferences]);
+  }, [offersList, listing, hasSellerPreferences]);
 
   function exportFeedback() {
     const header = [
@@ -202,7 +184,7 @@ export function FeedbackOffersReport({
       "Wants follow-up",
       "Comments",
     ];
-    const rows = filteredFeedback.map((f) => [
+    const rows = feedbackList.map((f) => [
       new Date(f.created_at).toLocaleString(),
       f.is_anonymous ? "" : f.name ?? "",
       f.is_anonymous ? "" : f.email ?? "",
@@ -221,10 +203,7 @@ export function FeedbackOffersReport({
       f.wants_followup ? "Yes" : "No",
       f.comments ?? "",
     ]);
-    downloadCsv(
-      `${listingAddress} - feedback${rangeSuffix()}.csv`,
-      [header, ...rows],
-    );
+    downloadCsv(`${listingAddress} - feedback.csv`, [header, ...rows]);
   }
 
   function exportOffers() {
@@ -258,74 +237,30 @@ export function FeedbackOffersReport({
       score.unmetRequired.join(", "),
       o.notes ?? "",
     ]);
-    downloadCsv(`${listingAddress} - offers${rangeSuffix()}.csv`, [header, ...rows]);
-  }
-
-  function rangeSuffix() {
-    if (!fromDate && !toDate) return "";
-    return ` (${fromDate || "start"} to ${toDate || "now"})`;
+    downloadCsv(`${listingAddress} - offers.csv`, [header, ...rows]);
   }
 
   return (
     <>
-      <div className="mt-10 flex flex-wrap items-end gap-3 rounded-md border border-line bg-paper-card p-4">
-        <div>
-          <label htmlFor="from-date" className="mb-1 block text-xs font-medium text-ink-soft">
-            From
-          </label>
-          <input
-            id="from-date"
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className="rounded-md border border-line px-2 py-1.5 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
-          />
-        </div>
-        <div>
-          <label htmlFor="to-date" className="mb-1 block text-xs font-medium text-ink-soft">
-            To
-          </label>
-          <input
-            id="to-date"
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className="rounded-md border border-line px-2 py-1.5 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
-          />
-        </div>
-        {fromDate || toDate ? (
-          <button
-            type="button"
-            onClick={() => {
-              setFromDate("");
-              setToDate("");
-            }}
-            className="text-sm text-pine underline"
-          >
-            Clear dates
-          </button>
-        ) : null}
-      </div>
-
-      <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-serif text-xl font-medium text-ink">
-              Feedback ({filteredFeedback.length})
+              Feedback ({feedbackList.length})
             </h2>
             <Button
               variant="secondary"
               onClick={exportFeedback}
-              disabled={filteredFeedback.length === 0}
+              disabled={feedbackList.length === 0}
             >
               Export CSV
             </Button>
           </div>
           <div className="mt-3 space-y-3">
-            {filteredFeedback.length === 0 ? (
-              <p className="text-sm text-ink-soft">No feedback in this range.</p>
+            {feedbackList.length === 0 ? (
+              <p className="text-sm text-ink-soft">No feedback yet.</p>
             ) : (
-              filteredFeedback.map((item) => (
+              feedbackList.map((item) => (
                 <div
                   key={item.id}
                   className="rounded-md border border-line bg-paper-card p-4"
@@ -429,7 +364,7 @@ export function FeedbackOffersReport({
           ) : null}
           <div className="mt-3 space-y-3">
             {rankedOffers.length === 0 ? (
-              <p className="text-sm text-ink-soft">No offers in this range.</p>
+              <p className="text-sm text-ink-soft">No offers yet.</p>
             ) : (
               rankedOffers.map(({ offer, score }) => (
                 <div

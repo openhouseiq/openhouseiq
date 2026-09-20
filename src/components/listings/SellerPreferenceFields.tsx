@@ -52,7 +52,10 @@ export function SellerPreferenceFields({
   };
 }) {
   return (
-    <div className="space-y-4 rounded-md border border-line p-4">
+    <div
+      id="seller-preferences"
+      className="scroll-mt-6 space-y-4 rounded-md border border-line p-4"
+    >
       <div>
         <p className="text-sm font-medium text-ink">Seller preferences</p>
         <p className="mt-1 text-xs text-ink-soft">

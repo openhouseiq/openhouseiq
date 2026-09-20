@@ -150,18 +150,29 @@ export default async function ListingDetailPage({
           </div>
         </div>
 
-        {listing.seller_pref_price ||
-        listing.seller_pref_settlement ||
-        listing.seller_pref_waive_inspection ||
-        listing.seller_pref_finance_approved ||
-        listing.seller_pref_cash_buyer ? (
-          <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
-            <h2 className="font-serif text-xl font-medium text-ink">
-              Seller preferences
-            </h2>
-            <p className="mt-1 text-sm text-ink-soft">
-              What the seller cares about — use this to judge offers below.
-            </p>
+        <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="font-serif text-xl font-medium text-ink">
+                Seller preferences
+              </h2>
+              <p className="mt-1 text-sm text-ink-soft">
+                What the seller cares about — use this to judge offers below.
+              </p>
+            </div>
+            <Link
+              href={`/dashboard/listings/${listing.id}/edit#seller-preferences`}
+              className="shrink-0 text-sm text-pine underline"
+            >
+              Edit preferences
+            </Link>
+          </div>
+
+          {listing.seller_pref_price ||
+          listing.seller_pref_settlement ||
+          listing.seller_pref_waive_inspection ||
+          listing.seller_pref_finance_approved ||
+          listing.seller_pref_cash_buyer ? (
             <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
               {listing.seller_pref_price ? (
                 <div>
@@ -204,8 +215,12 @@ export default async function ListingDetailPage({
                 </div>
               ) : null}
             </dl>
-          </div>
-        ) : null}
+          ) : (
+            <p className="mt-4 text-sm text-ink-soft">
+              No preferences set yet.
+            </p>
+          )}
+        </div>
 
         <FeedbackOffersReport
           feedback={feedback ?? []}
