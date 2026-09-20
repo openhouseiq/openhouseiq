@@ -63,7 +63,10 @@ export default async function SettingsPage() {
             <PasswordSection />
           </section>
 
-          <section className="rounded-md border border-line bg-paper-card p-6">
+          <section
+            id="contact"
+            className="scroll-mt-6 rounded-md border border-line bg-paper-card p-6"
+          >
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">Contact us</h2>
             <ContactSection userId={user.id} />
           </section>

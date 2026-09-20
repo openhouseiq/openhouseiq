@@ -25,6 +25,12 @@ export function DashboardHeader({
             <span>{agentLabel}</span>
             <span className="text-xs">Edit profile</span>
           </Link>
+          <Link
+            href="/dashboard/settings#contact"
+            className="text-sm text-ink-soft hover:text-pine"
+          >
+            Contact us
+          </Link>
           <LogoutButton />
         </div>
       </div>
