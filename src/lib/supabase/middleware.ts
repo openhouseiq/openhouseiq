@@ -1,8 +1,11 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.delete("x-user");
+
+  let pendingCookies: { name: string; value: string; options: CookieOptions }[] = [];
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,10 +19,7 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
+          pendingCookies = cookiesToSet;
         },
       },
     },
@@ -28,6 +28,28 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Middleware has already cryptographically verified this JWT — forward the
+  // result to pages/route handlers via a header so they don't have to pay
+  // for a second round-trip to re-verify the same token.
+  if (user) {
+    requestHeaders.set(
+      "x-user",
+      JSON.stringify({
+        id: user.id,
+        email: user.email,
+        created_at: user.created_at,
+        user_metadata: user.user_metadata ?? {},
+      }),
+    );
+  }
+
+  const supabaseResponse = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+  pendingCookies.forEach(({ name, value, options }) =>
+    supabaseResponse.cookies.set(name, value, options),
+  );
 
   const isAuthRoute =
     request.nextUrl.pathname === "/" ||

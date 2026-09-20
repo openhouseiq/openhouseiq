@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
 
 function isAdmin(email: string | null | undefined): boolean {
@@ -11,10 +11,7 @@ function isAdmin(email: string | null | undefined): boolean {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user || !isAdmin(user.email)) {
     return NextResponse.json({ error: "Not authorized." }, { status: 403 });
