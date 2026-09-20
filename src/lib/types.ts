@@ -15,9 +15,27 @@ export type SettlementPreference =
 
 export type PreferenceLevel = "no_preference" | "preferred" | "required";
 
+export type ListingType = "sale" | "rental";
+
+export type PetsPreference = "no_preference" | "not_allowed" | "allowed";
+
+export type SmokingPreference = "no_preference" | "not_allowed" | "allowed";
+
+export type LeaseTerm = "month_to_month" | "6_months" | "12_months" | "24_months";
+
+export type LeaseTermPreference = LeaseTerm | "flexible";
+
+export type IncomeRange =
+  | "under_50k"
+  | "50k_75k"
+  | "75k_100k"
+  | "100k_150k"
+  | "150k_plus";
+
 export type Listing = {
   id: string;
   agent_id: string;
+  listing_type: ListingType;
   address: string;
   price: number;
   description: string | null;
@@ -32,6 +50,10 @@ export type Listing = {
   seller_pref_waive_inspection: PreferenceLevel | null;
   seller_pref_finance_approved: PreferenceLevel | null;
   seller_pref_cash_buyer: PreferenceLevel | null;
+  landlord_pref_pets: PetsPreference | null;
+  landlord_pref_min_lease_term: LeaseTermPreference | null;
+  landlord_pref_smoking: SmokingPreference | null;
+  landlord_pref_employment_verification: PreferenceLevel | null;
   created_at: string;
   updated_at: string;
 };
@@ -103,6 +125,30 @@ export type Offer = {
   financing_type: string | null;
   settlement_term: string | null;
   waive_inspection: boolean;
+  notes: string | null;
+  read_at: string | null;
+  created_at: string;
+};
+
+export type Applicant = {
+  id: string;
+  listing_id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  employer: string | null;
+  occupation: string | null;
+  income_range: IncomeRange | null;
+  can_provide_proof_of_income: boolean;
+  desired_move_in_date: string | null;
+  desired_lease_term: LeaseTerm | null;
+  has_pets: boolean;
+  pet_details: string | null;
+  number_of_occupants: number | null;
+  is_smoker: boolean;
+  reference_name: string | null;
+  reference_phone: string | null;
+  reference_relationship: string | null;
   notes: string | null;
   read_at: string | null;
   created_at: string;

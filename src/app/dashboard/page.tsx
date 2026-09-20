@@ -47,25 +47,42 @@ export default async function DashboardPage() {
   const unreadCounts = new Map<string, number>();
   const feedbackCounts = new Map<string, number>();
   const offerCounts = new Map<string, number>();
+  const applicantCounts = new Map<string, number>();
 
   if (listingIds.length > 0) {
-    const [{ data: unreadFeedback }, { data: unreadOffers }, { data: allFeedback }, { data: allOffers }] =
-      await Promise.all([
-        supabase
-          .from("feedback")
-          .select("listing_id")
-          .in("listing_id", listingIds)
-          .is("read_at", null),
-        supabase
-          .from("offers")
-          .select("listing_id")
-          .in("listing_id", listingIds)
-          .is("read_at", null),
-        supabase.from("feedback").select("listing_id").in("listing_id", listingIds),
-        supabase.from("offers").select("listing_id").in("listing_id", listingIds),
-      ]);
+    const [
+      { data: unreadFeedback },
+      { data: unreadOffers },
+      { data: unreadApplicants },
+      { data: allFeedback },
+      { data: allOffers },
+      { data: allApplicants },
+    ] = await Promise.all([
+      supabase
+        .from("feedback")
+        .select("listing_id")
+        .in("listing_id", listingIds)
+        .is("read_at", null),
+      supabase
+        .from("offers")
+        .select("listing_id")
+        .in("listing_id", listingIds)
+        .is("read_at", null),
+      supabase
+        .from("applicants")
+        .select("listing_id")
+        .in("listing_id", listingIds)
+        .is("read_at", null),
+      supabase.from("feedback").select("listing_id").in("listing_id", listingIds),
+      supabase.from("offers").select("listing_id").in("listing_id", listingIds),
+      supabase.from("applicants").select("listing_id").in("listing_id", listingIds),
+    ]);
 
-    for (const row of [...(unreadFeedback ?? []), ...(unreadOffers ?? [])]) {
+    for (const row of [
+      ...(unreadFeedback ?? []),
+      ...(unreadOffers ?? []),
+      ...(unreadApplicants ?? []),
+    ]) {
       unreadCounts.set(row.listing_id, (unreadCounts.get(row.listing_id) ?? 0) + 1);
     }
     for (const row of allFeedback ?? []) {
@@ -74,12 +91,16 @@ export default async function DashboardPage() {
     for (const row of allOffers ?? []) {
       offerCounts.set(row.listing_id, (offerCounts.get(row.listing_id) ?? 0) + 1);
     }
+    for (const row of allApplicants ?? []) {
+      applicantCounts.set(row.listing_id, (applicantCounts.get(row.listing_id) ?? 0) + 1);
+    }
   }
 
   const listingsWithCounts: ListingWithCounts[] = (listings ?? []).map((listing) => ({
     ...listing,
     feedbackCount: feedbackCounts.get(listing.id) ?? 0,
     offerCount: offerCounts.get(listing.id) ?? 0,
+    applicantCount: applicantCounts.get(listing.id) ?? 0,
     unreadCount: unreadCounts.get(listing.id) ?? 0,
   }));
 

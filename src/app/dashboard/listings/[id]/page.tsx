@@ -8,12 +8,19 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
 import { DeleteListingButton } from "./DeleteListingButton";
 import { FeedbackOffersReport } from "./FeedbackOffersReport";
+import { FeedbackApplicantsReport } from "./FeedbackApplicantsReport";
 import {
   PRICE_LABELS,
   SETTLEMENT_LABELS,
   LEVEL_LABELS,
 } from "@/components/listings/sellerPreferences";
-import type { Listing, Feedback, Offer } from "@/lib/types";
+import {
+  PETS_LABELS,
+  LEASE_TERM_LABELS,
+  SMOKING_LABELS,
+  EMPLOYMENT_VERIFICATION_LABELS,
+} from "@/components/listings/landlordPreferences";
+import type { Listing, Feedback, Offer, Applicant } from "@/lib/types";
 
 export default async function ListingDetailPage({
   params,
@@ -39,25 +46,40 @@ export default async function ListingDetailPage({
     notFound();
   }
 
-  const [{ data: feedback }, { data: offers }] = await Promise.all([
+  const isRental = listing.listing_type === "rental";
+
+  const [{ data: feedback }, { data: offers }, { data: applicants }] = await Promise.all([
     supabase
       .from("feedback")
       .select("*")
       .eq("listing_id", id)
       .order("created_at", { ascending: false })
       .returns<Feedback[]>(),
-    supabase
-      .from("offers")
-      .select("*")
-      .eq("listing_id", id)
-      .order("created_at", { ascending: false })
-      .returns<Offer[]>(),
+    isRental
+      ? Promise.resolve({ data: [] as Offer[] })
+      : supabase
+          .from("offers")
+          .select("*")
+          .eq("listing_id", id)
+          .order("created_at", { ascending: false })
+          .returns<Offer[]>(),
+    isRental
+      ? supabase
+          .from("applicants")
+          .select("*")
+          .eq("listing_id", id)
+          .order("created_at", { ascending: false })
+          .returns<Applicant[]>()
+      : Promise.resolve({ data: [] as Applicant[] }),
   ]);
 
   const unreadFeedbackIds = (feedback ?? [])
     .filter((item) => !item.read_at)
     .map((item) => item.id);
   const unreadOfferIds = (offers ?? [])
+    .filter((item) => !item.read_at)
+    .map((item) => item.id);
+  const unreadApplicantIds = (applicants ?? [])
     .filter((item) => !item.read_at)
     .map((item) => item.id);
 
@@ -72,6 +94,12 @@ export default async function ListingDetailPage({
       .from("offers")
       .update({ read_at: new Date().toISOString() })
       .in("id", unreadOfferIds);
+  }
+  if (unreadApplicantIds.length > 0) {
+    await supabase
+      .from("applicants")
+      .update({ read_at: new Date().toISOString() })
+      .in("id", unreadApplicantIds);
   }
 
   const headersList = await headers();
@@ -102,6 +130,7 @@ export default async function ListingDetailPage({
             </h1>
             <p className="mt-1 text-ink-soft">
               ${Number(listing.price).toLocaleString()}
+              {isRental ? "/week" : ""}
               {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
               {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
               {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
@@ -128,7 +157,7 @@ export default async function ListingDetailPage({
           </h2>
           <p className="mt-1 text-sm text-ink-soft">
             Print this and display it at the open house. Visitors scan it to
-            leave feedback or submit an offer.
+            leave feedback or {isRental ? "apply to rent" : "submit an offer"}.
           </p>
           <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -150,86 +179,166 @@ export default async function ListingDetailPage({
           </div>
         </div>
 
-        <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="font-serif text-xl font-medium text-ink">
-                Seller preferences
-              </h2>
-              <p className="mt-1 text-sm text-ink-soft">
-                What the seller cares about — use this to judge offers below.
-              </p>
+        {isRental ? (
+          <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="font-serif text-xl font-medium text-ink">
+                  Landlord preferences
+                </h2>
+                <p className="mt-1 text-sm text-ink-soft">
+                  What the landlord cares about — use this to judge applicants below.
+                </p>
+              </div>
+              <Link
+                href={`/dashboard/listings/${listing.id}/edit#landlord-preferences`}
+                className="shrink-0 text-sm text-pine underline"
+              >
+                Edit preferences
+              </Link>
             </div>
-            <Link
-              href={`/dashboard/listings/${listing.id}/edit#seller-preferences`}
-              className="shrink-0 text-sm text-pine underline"
-            >
-              Edit preferences
-            </Link>
+
+            {listing.landlord_pref_pets ||
+            listing.landlord_pref_min_lease_term ||
+            listing.landlord_pref_smoking ||
+            listing.landlord_pref_employment_verification ? (
+              <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+                {listing.landlord_pref_pets ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Pets</dt>
+                    <dd className="text-sm text-ink">
+                      {PETS_LABELS[listing.landlord_pref_pets]}
+                    </dd>
+                  </div>
+                ) : null}
+                {listing.landlord_pref_min_lease_term ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Minimum lease term</dt>
+                    <dd className="text-sm text-ink">
+                      {LEASE_TERM_LABELS[listing.landlord_pref_min_lease_term]}
+                    </dd>
+                  </div>
+                ) : null}
+                {listing.landlord_pref_smoking ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Smoking</dt>
+                    <dd className="text-sm text-ink">
+                      {SMOKING_LABELS[listing.landlord_pref_smoking]}
+                    </dd>
+                  </div>
+                ) : null}
+                {listing.landlord_pref_employment_verification ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Proof of income</dt>
+                    <dd className="text-sm text-ink">
+                      {
+                        EMPLOYMENT_VERIFICATION_LABELS[
+                          listing.landlord_pref_employment_verification
+                        ]
+                      }
+                    </dd>
+                  </div>
+                ) : null}
+              </dl>
+            ) : (
+              <p className="mt-4 text-sm text-ink-soft">
+                No preferences set yet.
+              </p>
+            )}
           </div>
+        ) : (
+          <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="font-serif text-xl font-medium text-ink">
+                  Seller preferences
+                </h2>
+                <p className="mt-1 text-sm text-ink-soft">
+                  What the seller cares about — use this to judge offers below.
+                </p>
+              </div>
+              <Link
+                href={`/dashboard/listings/${listing.id}/edit#seller-preferences`}
+                className="shrink-0 text-sm text-pine underline"
+              >
+                Edit preferences
+              </Link>
+            </div>
 
-          {listing.seller_pref_price ||
-          listing.seller_pref_settlement ||
-          listing.seller_pref_waive_inspection ||
-          listing.seller_pref_finance_approved ||
-          listing.seller_pref_cash_buyer ? (
-            <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
-              {listing.seller_pref_price ? (
-                <div>
-                  <dt className="text-xs text-ink-soft">Price</dt>
-                  <dd className="text-sm text-ink">
-                    {PRICE_LABELS[listing.seller_pref_price]}
-                  </dd>
-                </div>
-              ) : null}
-              {listing.seller_pref_settlement ? (
-                <div>
-                  <dt className="text-xs text-ink-soft">Settlement period</dt>
-                  <dd className="text-sm text-ink">
-                    {SETTLEMENT_LABELS[listing.seller_pref_settlement]}
-                  </dd>
-                </div>
-              ) : null}
-              {listing.seller_pref_waive_inspection ? (
-                <div>
-                  <dt className="text-xs text-ink-soft">Waive inspection</dt>
-                  <dd className="text-sm text-ink">
-                    {LEVEL_LABELS[listing.seller_pref_waive_inspection]}
-                  </dd>
-                </div>
-              ) : null}
-              {listing.seller_pref_finance_approved ? (
-                <div>
-                  <dt className="text-xs text-ink-soft">Finance approved</dt>
-                  <dd className="text-sm text-ink">
-                    {LEVEL_LABELS[listing.seller_pref_finance_approved]}
-                  </dd>
-                </div>
-              ) : null}
-              {listing.seller_pref_cash_buyer ? (
-                <div>
-                  <dt className="text-xs text-ink-soft">Cash buyer</dt>
-                  <dd className="text-sm text-ink">
-                    {LEVEL_LABELS[listing.seller_pref_cash_buyer]}
-                  </dd>
-                </div>
-              ) : null}
-            </dl>
-          ) : (
-            <p className="mt-4 text-sm text-ink-soft">
-              No preferences set yet.
-            </p>
-          )}
-        </div>
+            {listing.seller_pref_price ||
+            listing.seller_pref_settlement ||
+            listing.seller_pref_waive_inspection ||
+            listing.seller_pref_finance_approved ||
+            listing.seller_pref_cash_buyer ? (
+              <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+                {listing.seller_pref_price ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Price</dt>
+                    <dd className="text-sm text-ink">
+                      {PRICE_LABELS[listing.seller_pref_price]}
+                    </dd>
+                  </div>
+                ) : null}
+                {listing.seller_pref_settlement ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Settlement period</dt>
+                    <dd className="text-sm text-ink">
+                      {SETTLEMENT_LABELS[listing.seller_pref_settlement]}
+                    </dd>
+                  </div>
+                ) : null}
+                {listing.seller_pref_waive_inspection ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Waive inspection</dt>
+                    <dd className="text-sm text-ink">
+                      {LEVEL_LABELS[listing.seller_pref_waive_inspection]}
+                    </dd>
+                  </div>
+                ) : null}
+                {listing.seller_pref_finance_approved ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Finance approved</dt>
+                    <dd className="text-sm text-ink">
+                      {LEVEL_LABELS[listing.seller_pref_finance_approved]}
+                    </dd>
+                  </div>
+                ) : null}
+                {listing.seller_pref_cash_buyer ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Cash buyer</dt>
+                    <dd className="text-sm text-ink">
+                      {LEVEL_LABELS[listing.seller_pref_cash_buyer]}
+                    </dd>
+                  </div>
+                ) : null}
+              </dl>
+            ) : (
+              <p className="mt-4 text-sm text-ink-soft">
+                No preferences set yet.
+              </p>
+            )}
+          </div>
+        )}
 
-        <FeedbackOffersReport
-          feedback={feedback ?? []}
-          offers={offers ?? []}
-          unreadFeedbackIds={unreadFeedbackIds}
-          unreadOfferIds={unreadOfferIds}
-          listingAddress={listing.address}
-          listing={listing}
-        />
+        {isRental ? (
+          <FeedbackApplicantsReport
+            feedback={feedback ?? []}
+            applicants={applicants ?? []}
+            unreadFeedbackIds={unreadFeedbackIds}
+            unreadApplicantIds={unreadApplicantIds}
+            listingAddress={listing.address}
+            listing={listing}
+          />
+        ) : (
+          <FeedbackOffersReport
+            feedback={feedback ?? []}
+            offers={offers ?? []}
+            unreadFeedbackIds={unreadFeedbackIds}
+            unreadOfferIds={unreadOfferIds}
+            listingAddress={listing.address}
+            listing={listing}
+          />
+        )}
       </main>
     </div>
   );

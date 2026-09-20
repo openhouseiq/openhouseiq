@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
+import { LandlordPreferenceFields } from "@/components/listings/LandlordPreferenceFields";
 import type { Listing } from "@/lib/types";
 
 export function EditListingForm({ listing }: { listing: Listing }) {
@@ -36,6 +37,13 @@ export function EditListingForm({ listing }: { listing: Listing }) {
       String(formData.get("sellerPrefFinanceApproved") ?? "") || null;
     const sellerPrefCashBuyer =
       String(formData.get("sellerPrefCashBuyer") ?? "") || null;
+    const landlordPrefPets = String(formData.get("landlordPrefPets") ?? "") || null;
+    const landlordPrefMinLeaseTerm =
+      String(formData.get("landlordPrefMinLeaseTerm") ?? "") || null;
+    const landlordPrefSmoking =
+      String(formData.get("landlordPrefSmoking") ?? "") || null;
+    const landlordPrefEmploymentVerification =
+      String(formData.get("landlordPrefEmploymentVerification") ?? "") || null;
 
     const { error: updateError } = await supabase
       .from("listings")
@@ -47,11 +55,20 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         car_spaces: carSpaces,
         sqft,
         description,
-        seller_pref_price: sellerPrefPrice,
-        seller_pref_settlement: sellerPrefSettlement,
-        seller_pref_waive_inspection: sellerPrefWaiveInspection,
-        seller_pref_finance_approved: sellerPrefFinanceApproved,
-        seller_pref_cash_buyer: sellerPrefCashBuyer,
+        ...(listing.listing_type === "sale"
+          ? {
+              seller_pref_price: sellerPrefPrice,
+              seller_pref_settlement: sellerPrefSettlement,
+              seller_pref_waive_inspection: sellerPrefWaiveInspection,
+              seller_pref_finance_approved: sellerPrefFinanceApproved,
+              seller_pref_cash_buyer: sellerPrefCashBuyer,
+            }
+          : {
+              landlord_pref_pets: landlordPrefPets,
+              landlord_pref_min_lease_term: landlordPrefMinLeaseTerm,
+              landlord_pref_smoking: landlordPrefSmoking,
+              landlord_pref_employment_verification: landlordPrefEmploymentVerification,
+            }),
         updated_at: new Date().toISOString(),
       })
       .eq("id", listing.id);
@@ -77,7 +94,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         required
       />
       <Field
-        label="Price"
+        label={listing.listing_type === "rental" ? "Weekly rent" : "Price"}
         id="price"
         type="number"
         min={0}
@@ -128,15 +145,27 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         defaultValue={listing.description ?? undefined}
       />
 
-      <SellerPreferenceFields
-        defaults={{
-          sellerPrefPrice: listing.seller_pref_price,
-          sellerPrefSettlement: listing.seller_pref_settlement,
-          sellerPrefWaiveInspection: listing.seller_pref_waive_inspection,
-          sellerPrefFinanceApproved: listing.seller_pref_finance_approved,
-          sellerPrefCashBuyer: listing.seller_pref_cash_buyer,
-        }}
-      />
+      {listing.listing_type === "sale" ? (
+        <SellerPreferenceFields
+          defaults={{
+            sellerPrefPrice: listing.seller_pref_price,
+            sellerPrefSettlement: listing.seller_pref_settlement,
+            sellerPrefWaiveInspection: listing.seller_pref_waive_inspection,
+            sellerPrefFinanceApproved: listing.seller_pref_finance_approved,
+            sellerPrefCashBuyer: listing.seller_pref_cash_buyer,
+          }}
+        />
+      ) : (
+        <LandlordPreferenceFields
+          defaults={{
+            landlordPrefPets: listing.landlord_pref_pets,
+            landlordPrefMinLeaseTerm: listing.landlord_pref_min_lease_term,
+            landlordPrefSmoking: listing.landlord_pref_smoking,
+            landlordPrefEmploymentVerification:
+              listing.landlord_pref_employment_verification,
+          }}
+        />
+      )}
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
 
