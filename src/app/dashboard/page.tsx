@@ -20,11 +20,21 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const { data: subscription } = await supabase
-    .from("subscriptions")
-    .select("status")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const checkFeedbackPrompt = accountAgeDays(user.created_at) >= 30;
+
+  const [{ data: subscription }, { data: listings }, { data: existingFeedback }] =
+    await Promise.all([
+      supabase.from("subscriptions").select("status").eq("user_id", user.id).maybeSingle(),
+      supabase
+        .from("listings")
+        .select("*")
+        .eq("agent_id", user.id)
+        .order("created_at", { ascending: false })
+        .returns<Listing[]>(),
+      checkFeedbackPrompt
+        ? supabase.from("product_feedback").select("id").eq("user_id", user.id).maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]);
 
   if (subscription?.status === "incomplete") {
     redirect("/dashboard/welcome");
@@ -32,23 +42,7 @@ export default async function DashboardPage() {
 
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const firstName = fullName.split(" ")[0] || user.email || "there";
-
-  let showFeedbackPrompt = false;
-  if (accountAgeDays(user.created_at) >= 30) {
-    const { data: existingFeedback } = await supabase
-      .from("product_feedback")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    showFeedbackPrompt = !existingFeedback;
-  }
-
-  const { data: listings } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("agent_id", user.id)
-    .order("created_at", { ascending: false })
-    .returns<Listing[]>();
+  const showFeedbackPrompt = checkFeedbackPrompt && !existingFeedback;
 
   const listingIds = (listings ?? []).map((listing) => listing.id);
   const unreadCounts = new Map<string, number>();
