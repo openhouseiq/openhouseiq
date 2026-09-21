@@ -1,5 +1,6 @@
 import { sendPushToAgent } from "@/lib/push";
 import { sendNotificationEmail } from "@/lib/notificationEmail";
+import { getAgentEmailNotificationsEnabled } from "@/lib/agent-notification-prefs";
 
 type NotifyKind = "offer" | "feedback" | "applicant";
 
@@ -29,10 +30,14 @@ export async function notifyAgentOfSubmission({
   const path = `/dashboard/listings/${listingId}`;
   const body = `You've received a new ${label} on ${listingAddress}.`;
 
+  const emailEnabled = agentEmail
+    ? await getAgentEmailNotificationsEnabled(agentId)
+    : false;
+
   await Promise.all([
     sendPushToAgent(agentId, { title, body, url: path }),
-    agentEmail
-      ? sendNotificationEmail(agentEmail, title, `${body}\n\n${baseUrl}${path}`)
+    emailEnabled
+      ? sendNotificationEmail(agentEmail as string, title, `${body}\n\n${baseUrl}${path}`)
       : Promise.resolve(),
   ]);
 }

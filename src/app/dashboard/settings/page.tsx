@@ -21,6 +21,8 @@ export default async function SettingsPage() {
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const phone = (user.user_metadata?.phone as string | undefined) ?? "";
   const photoUrl = (user.user_metadata?.photo_url as string | undefined) ?? "";
+  const emailNotificationsEnabled =
+    (user.user_metadata?.email_notifications_enabled as boolean | undefined) ?? true;
 
   const { data: subscription } = await supabase
     .from("subscriptions")
@@ -68,7 +70,10 @@ export default async function SettingsPage() {
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">
               Notifications
             </h2>
-            <NotificationSettings userId={user.id} />
+            <NotificationSettings
+              userId={user.id}
+              initialEmailEnabled={emailNotificationsEnabled}
+            />
           </section>
 
           <section

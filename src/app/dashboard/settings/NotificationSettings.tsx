@@ -13,9 +13,36 @@ function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0))).buffer as ArrayBuffer;
 }
 
-export function NotificationSettings({ userId }: { userId: string }) {
+export function NotificationSettings({
+  userId,
+  initialEmailEnabled,
+}: {
+  userId: string;
+  initialEmailEnabled: boolean;
+}) {
   const [status, setStatus] = useState<Status>("checking");
   const [error, setError] = useState<string | null>(null);
+  const [emailEnabled, setEmailEnabled] = useState(initialEmailEnabled);
+  const [emailSaving, setEmailSaving] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  async function toggleEmail(next: boolean) {
+    setEmailEnabled(next);
+    setEmailSaving(true);
+    setEmailError(null);
+
+    const supabase = createClient();
+    const { error: updateError } = await supabase.auth.updateUser({
+      data: { email_notifications_enabled: next },
+    });
+
+    setEmailSaving(false);
+
+    if (updateError) {
+      setEmailEnabled(!next);
+      setEmailError(updateError.message);
+    }
+  }
 
   useEffect(() => {
     async function check() {
@@ -109,45 +136,67 @@ export function NotificationSettings({ userId }: { userId: string }) {
     }
   }
 
-  if (status === "checking") return null;
-
-  if (status === "unsupported") {
-    return (
-      <p className="text-sm text-ink-soft">
-        Push notifications aren&apos;t supported in this browser.
-      </p>
-    );
-  }
-
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-ink-soft">
-        Get notified on this device the moment an offer, applicant, or
-        feedback comes in.
-      </p>
-
-      {status === "denied" ? (
-        <p className="text-sm text-error">
-          Notifications are blocked for this site — enable them in your
-          browser settings to turn this on.
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-ink">Email</p>
+        <p className="text-sm text-ink-soft">
+          Get emailed the moment an offer, applicant, or feedback comes in.
         </p>
-      ) : null}
+        <label className="flex items-center gap-2 text-sm text-ink">
+          <input
+            type="checkbox"
+            checked={emailEnabled}
+            disabled={emailSaving}
+            onChange={(e) => toggleEmail(e.target.checked)}
+            className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+          />
+          Email me on new submissions
+        </label>
+        {emailError ? <p className="text-sm text-error">{emailError}</p> : null}
+      </div>
 
-      {error ? <p className="text-sm text-error">{error}</p> : null}
+      <div className="space-y-3 border-t border-line pt-6">
+        <p className="text-sm font-medium text-ink">Push</p>
 
-      {status === "on" ? (
-        <Button variant="secondary" onClick={disable}>
-          Turn off notifications on this device
-        </Button>
-      ) : (
-        <Button
-          variant="secondary"
-          onClick={enable}
-          disabled={status === "loading"}
-        >
-          {status === "loading" ? "Enabling…" : "Enable notifications on this device"}
-        </Button>
-      )}
+        {status === "checking" ? null : status === "unsupported" ? (
+          <p className="text-sm text-ink-soft">
+            Push notifications aren&apos;t supported in this browser.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm text-ink-soft">
+              Get notified on this device the moment an offer, applicant, or
+              feedback comes in.
+            </p>
+
+            {status === "denied" ? (
+              <p className="text-sm text-error">
+                Notifications are blocked for this site — enable them in
+                your browser settings to turn this on.
+              </p>
+            ) : null}
+
+            {error ? <p className="text-sm text-error">{error}</p> : null}
+
+            {status === "on" ? (
+              <Button variant="secondary" onClick={disable}>
+                Turn off notifications on this device
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={enable}
+                disabled={status === "loading"}
+              >
+                {status === "loading"
+                  ? "Enabling…"
+                  : "Enable notifications on this device"}
+              </Button>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
