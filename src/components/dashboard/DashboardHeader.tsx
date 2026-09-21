@@ -23,9 +23,10 @@ export function DashboardHeader({
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <Link
             href="/dashboard/settings"
-            className="whitespace-nowrap text-ink-soft hover:text-pine"
+            className="flex items-center gap-x-4 whitespace-nowrap text-ink-soft hover:text-pine"
           >
-            {agentLabel} Settings
+            <span>{agentLabel}</span>
+            <span>Settings</span>
           </Link>
           <Link
             href="/dashboard/settings#contact"
