@@ -86,7 +86,7 @@ export default async function SettingsPage() {
 
           <section className="rounded-md border border-error/30 bg-paper-card p-6">
             <h2 className="mb-4 font-serif text-lg font-medium text-error">
-              Danger zone
+              Delete your account
             </h2>
             <DeleteAccountSection />
           </section>
