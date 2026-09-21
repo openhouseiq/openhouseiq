@@ -25,7 +25,7 @@ export function DashboardHeader({
             href="/dashboard/settings"
             className="whitespace-nowrap text-ink-soft hover:text-pine"
           >
-            {agentLabel} · Edit profile
+            {agentLabel} Settings
           </Link>
           <Link
             href="/dashboard/settings#contact"
