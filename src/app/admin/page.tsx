@@ -492,7 +492,14 @@ export default async function AdminPage({
                       </p>
                     </div>
                     {agent?.email ? (
-                      <p className="text-xs text-ink-soft">{agent.email}</p>
+                      <a
+                        href={`mailto:${agent.email}?subject=${encodeURIComponent(
+                          "Re: your OpenHouseIQ message",
+                        )}`}
+                        className="text-xs text-pine underline"
+                      >
+                        {agent.email}
+                      </a>
                     ) : null}
                     <p className="mt-2 text-sm text-ink">{m.message}</p>
                   </div>
