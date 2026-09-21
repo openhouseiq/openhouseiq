@@ -1,28 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { toCsv, downloadCsv } from "@/lib/csv";
 import type { AgentRow, MonthlyStatement, FinancialYearSummary } from "./page";
-
-function csvCell(value: unknown): string {
-  const str = value === null || value === undefined ? "" : String(value);
-  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
-}
-
-function toCsv(rows: (string | number)[][]): string {
-  return rows.map((row) => row.map(csvCell).join(",")).join("\n");
-}
-
-function downloadCsv(filename: string, content: string) {
-  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
 
 export function MonthlyStatementExportButton({
   statement,

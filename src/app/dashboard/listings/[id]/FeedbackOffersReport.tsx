@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 import { scoreOffer, type OfferScore } from "@/lib/offerScoring";
+import { toCsv, downloadCsv } from "@/lib/csv";
 import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
 import type { Feedback, Offer, Listing } from "@/lib/types";
 
@@ -74,24 +75,6 @@ function MatchBadge({ score }: { score: OfferScore }) {
       {score.matchPercent}% match
     </span>
   );
-}
-
-function csvCell(value: unknown): string {
-  const str = value === null || value === undefined ? "" : String(value);
-  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
-}
-
-function downloadCsv(filename: string, rows: (string | number)[][]) {
-  const csv = rows.map((row) => row.map(csvCell).join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 }
 
 export function FeedbackOffersReport({
@@ -203,7 +186,7 @@ export function FeedbackOffersReport({
       f.wants_followup ? "Yes" : "No",
       f.comments ?? "",
     ]);
-    downloadCsv(`${listingAddress} - feedback.csv`, [header, ...rows]);
+    downloadCsv(`${listingAddress} - feedback.csv`, toCsv([header, ...rows]));
   }
 
   function exportOffers() {
@@ -237,7 +220,7 @@ export function FeedbackOffersReport({
       score.unmetRequired.join(", "),
       o.notes ?? "",
     ]);
-    downloadCsv(`${listingAddress} - offers.csv`, [header, ...rows]);
+    downloadCsv(`${listingAddress} - offers.csv`, toCsv([header, ...rows]));
   }
 
   return (
