@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 import { scoreOffer, type OfferScore } from "@/lib/offerScoring";
 import { toCsv, downloadCsv } from "@/lib/csv";
+import { ContactLine } from "@/components/ui/ContactLine";
 import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
 import type { Feedback, Offer, Listing } from "@/lib/types";
 
@@ -271,11 +272,13 @@ export function FeedbackOffersReport({
                       </span>
                     ) : null}
                   </div>
-                  {!item.is_anonymous && (item.email || item.phone) ? (
-                    <p className="mt-0.5 text-xs text-ink-soft">
-                      {[item.email, item.phone].filter(Boolean).join(" · ")}
-                      {item.wants_followup ? " · Wants follow-up" : ""}
-                    </p>
+                  {!item.is_anonymous ? (
+                    <ContactLine
+                      email={item.email}
+                      phone={item.phone}
+                      suffix={item.wants_followup ? "Wants follow-up" : null}
+                      className="mt-0.5 text-xs text-ink-soft"
+                    />
                   ) : null}
 
                   {item.rating_price ||
@@ -367,9 +370,11 @@ export function FeedbackOffersReport({
                       ${Number(offer.offer_amount).toLocaleString()}
                     </p>
                   </div>
-                  <p className="mt-0.5 text-xs text-ink-soft">
-                    {[offer.email, offer.phone].filter(Boolean).join(" · ")}
-                  </p>
+                  <ContactLine
+                    email={offer.email}
+                    phone={offer.phone}
+                    className="mt-0.5 text-xs text-ink-soft"
+                  />
                   {hasSellerPreferences ? (
                     <div className="mt-2">
                       <MatchBadge score={score} />

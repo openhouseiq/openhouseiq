@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 import { scoreApplicant, type ApplicantScore } from "@/lib/rentalScoring";
 import { toCsv, downloadCsv } from "@/lib/csv";
+import { ContactLine } from "@/components/ui/ContactLine";
 import {
   LEASE_TERM_LABELS,
   INCOME_RANGE_LABELS,
@@ -267,11 +268,13 @@ export function FeedbackApplicantsReport({
                       </span>
                     ) : null}
                   </div>
-                  {!item.is_anonymous && (item.email || item.phone) ? (
-                    <p className="mt-0.5 text-xs text-ink-soft">
-                      {[item.email, item.phone].filter(Boolean).join(" · ")}
-                      {item.wants_followup ? " · Wants follow-up" : ""}
-                    </p>
+                  {!item.is_anonymous ? (
+                    <ContactLine
+                      email={item.email}
+                      phone={item.phone}
+                      suffix={item.wants_followup ? "Wants follow-up" : null}
+                      className="mt-0.5 text-xs text-ink-soft"
+                    />
                   ) : null}
 
                   {item.rating_price ||
@@ -344,9 +347,11 @@ export function FeedbackApplicantsReport({
                       ) : null}
                     </div>
                   </div>
-                  <p className="mt-0.5 text-xs text-ink-soft">
-                    {[applicant.email, applicant.phone].filter(Boolean).join(" · ")}
-                  </p>
+                  <ContactLine
+                    email={applicant.email}
+                    phone={applicant.phone}
+                    className="mt-0.5 text-xs text-ink-soft"
+                  />
                   {hasLandlordPreferences ? (
                     <div className="mt-2">
                       <MatchBadge score={score} />
@@ -397,7 +402,17 @@ export function FeedbackApplicantsReport({
                       {applicant.reference_relationship
                         ? ` (${applicant.reference_relationship})`
                         : ""}
-                      {applicant.reference_phone ? ` · ${applicant.reference_phone}` : ""}
+                      {applicant.reference_phone ? (
+                        <>
+                          {" · "}
+                          <a
+                            href={`tel:${applicant.reference_phone}`}
+                            className="underline hover:text-pine"
+                          >
+                            {applicant.reference_phone}
+                          </a>
+                        </>
+                      ) : null}
                     </p>
                   ) : null}
                   {applicant.notes ? (
