@@ -6,6 +6,7 @@ const LIMITS: Record<string, number> = {
   feedback: 5,
   offers: 5,
   applicants: 5,
+  contact: 5,
   "signup-profile": 10,
 };
 

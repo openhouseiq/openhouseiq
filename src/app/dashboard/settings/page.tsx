@@ -6,9 +6,10 @@ import { AgentProfileForm } from "./AgentProfileForm";
 import { PasswordSection } from "./PasswordSection";
 import { BillingSection } from "./BillingSection";
 import { ContactSection } from "./ContactSection";
+import { FAQSection } from "./FAQSection";
 import { NotificationSettings } from "./NotificationSettings";
 import { DeleteAccountSection } from "./DeleteAccountSection";
-import type { Subscription } from "@/lib/types";
+import type { Subscription, ContactMessage } from "@/lib/types";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -24,12 +25,20 @@ export default async function SettingsPage() {
   const emailNotificationsEnabled =
     (user.user_metadata?.email_notifications_enabled as boolean | undefined) ?? true;
 
-  const { data: subscription } = await supabase
-    .from("subscriptions")
-    .select("*")
-    .eq("user_id", user.id)
-    .returns<Subscription[]>()
-    .maybeSingle();
+  const [{ data: subscription }, { data: contactMessages }] = await Promise.all([
+    supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", user.id)
+      .returns<Subscription[]>()
+      .maybeSingle(),
+    supabase
+      .from("contact_messages")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .returns<ContactMessage[]>(),
+  ]);
 
   return (
     <div className="min-h-screen bg-paper">
@@ -76,12 +85,17 @@ export default async function SettingsPage() {
             />
           </section>
 
+          <section className="rounded-md border border-line bg-paper-card p-6">
+            <h2 className="mb-4 font-serif text-lg font-medium text-ink">FAQ</h2>
+            <FAQSection />
+          </section>
+
           <section
             id="contact"
             className="scroll-mt-6 rounded-md border border-line bg-paper-card p-6"
           >
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">Contact us</h2>
-            <ContactSection userId={user.id} />
+            <ContactSection initialMessages={contactMessages ?? []} />
           </section>
 
           <section className="rounded-md border border-error/30 bg-paper-card p-6">

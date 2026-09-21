@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe";
 import { MonthlyStatementExportButton } from "./MonthlyStatementExportButton";
 import { ExtendTrialButton } from "./ExtendTrialButton";
+import { AdminContactMessages } from "./AdminContactMessages";
 import type { ProductFeedback, ContactMessage } from "@/lib/types";
 
 export type PeriodSummary = {
@@ -475,37 +476,14 @@ export default async function AdminPage({
             <h2 className="font-serif text-xl font-medium text-ink">
               Support messages
             </h2>
-            <div className="mt-4 space-y-4">
-              {contactMessageRows.map((m) => {
-                const agent = agentRows.find((a) => a.id === m.user_id);
-                return (
-                  <div
-                    key={m.id}
-                    className="rounded-md border border-line bg-paper-card p-4"
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-ink">
-                        {agent?.fullName || agent?.email || m.user_id}
-                      </p>
-                      <p className="text-xs text-ink-soft">
-                        {new Date(m.created_at).toLocaleString()}
-                      </p>
-                    </div>
-                    {agent?.email ? (
-                      <a
-                        href={`mailto:${agent.email}?subject=${encodeURIComponent(
-                          "Re: your OpenHouseIQ message",
-                        )}`}
-                        className="text-xs text-pine underline"
-                      >
-                        {agent.email}
-                      </a>
-                    ) : null}
-                    <p className="mt-2 text-sm text-ink">{m.message}</p>
-                  </div>
-                );
-              })}
-            </div>
+            <AdminContactMessages
+              messages={contactMessageRows}
+              agentRows={agentRows.map((a) => ({
+                id: a.id,
+                fullName: a.fullName,
+                email: a.email,
+              }))}
+            />
           </div>
         ) : null}
 
