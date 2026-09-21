@@ -13,7 +13,6 @@ export type ListingWithCounts = Listing & {
 };
 
 type SortOption = "newest" | "oldest" | "price_high" | "price_low";
-type TypeFilter = "all" | "sale" | "rental";
 
 const SORT_LABELS: Record<SortOption, string> = {
   newest: "Newest first",
@@ -22,48 +21,122 @@ const SORT_LABELS: Record<SortOption, string> = {
   price_low: "Price: low to high",
 };
 
-const TYPE_FILTER_LABELS: Record<TypeFilter, string> = {
-  all: "All types",
-  sale: "For sale",
-  rental: "Rentals",
-};
+function sortListings(
+  listings: ListingWithCounts[],
+  sort: SortOption,
+): ListingWithCounts[] {
+  const sorted = [...listings];
+  switch (sort) {
+    case "newest":
+      sorted.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+      break;
+    case "oldest":
+      sorted.sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+      );
+      break;
+    case "price_high":
+      sorted.sort((a, b) => Number(b.price) - Number(a.price));
+      break;
+    case "price_low":
+      sorted.sort((a, b) => Number(a.price) - Number(b.price));
+      break;
+  }
+  return sorted;
+}
+
+function ListingCard({ listing }: { listing: ListingWithCounts }) {
+  return (
+    <li className="flex items-center justify-between rounded-md border border-line bg-paper-card px-6 py-4 hover:border-pine">
+      <Link href={`/dashboard/listings/${listing.id}`} className="flex-1">
+        <div className="flex items-center gap-2">
+          <p className="font-medium text-ink">{listing.address}</p>
+          <span
+            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+              listing.listing_type === "rental"
+                ? "bg-pine/10 text-pine"
+                : "bg-brass/10 text-brass"
+            }`}
+          >
+            {listing.listing_type === "rental" ? "Rental" : "For sale"}
+          </span>
+          {listing.unreadCount ? (
+            <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-paper">
+              {listing.unreadCount} new
+            </span>
+          ) : null}
+        </div>
+        <p className="text-sm text-ink-soft">
+          ${Number(listing.price).toLocaleString()}
+          {listing.listing_type === "rental" ? "/week" : ""}
+          {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
+          {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
+          {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
+          {listing.sqft ? ` · ${listing.sqft.toLocaleString()} sqft` : ""}
+        </p>
+        <div className="mt-1.5 flex items-center gap-2">
+          <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
+            {listing.feedbackCount} feedback
+          </span>
+          <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
+            {listing.listing_type === "rental"
+              ? `${listing.applicantCount} applicants`
+              : `${listing.offerCount} offers`}
+          </span>
+        </div>
+      </Link>
+      <DeleteListingButton listingId={listing.id} label="Delete" />
+    </li>
+  );
+}
+
+function ListingColumn({
+  listings,
+  emptyLabel,
+}: {
+  listings: ListingWithCounts[];
+  emptyLabel: React.ReactNode;
+}) {
+  if (listings.length === 0) {
+    return (
+      <div className="rounded-md border border-line bg-paper-card px-6 py-16 text-center">
+        <p className="text-sm text-ink-soft">{emptyLabel}</p>
+      </div>
+    );
+  }
+
+  return (
+    <ul className="space-y-3">
+      {listings.map((listing) => (
+        <ListingCard key={listing.id} listing={listing} />
+      ))}
+    </ul>
+  );
+}
 
 export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortOption>("newest");
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const [showSale, setShowSale] = useState(true);
+  const [showRental, setShowRental] = useState(true);
 
-  const visible = useMemo(() => {
+  const matched = useMemo(() => {
     const q = query.trim().toLowerCase();
-    let filtered = q
+    return q
       ? listings.filter((listing) => listing.address.toLowerCase().includes(q))
       : listings;
+  }, [listings, query]);
 
-    if (typeFilter !== "all") {
-      filtered = filtered.filter((listing) => listing.listing_type === typeFilter);
-    }
-
-    const sorted = [...filtered];
-    switch (sort) {
-      case "newest":
-        sorted.sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        );
-        break;
-      case "oldest":
-        sorted.sort(
-          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
-        );
-        break;
-      case "price_high":
-        sorted.sort((a, b) => Number(b.price) - Number(a.price));
-        break;
-      case "price_low":
-        sorted.sort((a, b) => Number(a.price) - Number(b.price));
-        break;
-    }
-    return sorted;
-  }, [listings, query, sort, typeFilter]);
+  const saleListings = useMemo(
+    () => sortListings(matched.filter((l) => l.listing_type === "sale"), sort),
+    [matched, sort],
+  );
+  const rentalListings = useMemo(
+    () => sortListings(matched.filter((l) => l.listing_type === "rental"), sort),
+    [matched, sort],
+  );
 
   if (listings.length === 0) {
     return (
@@ -72,6 +145,12 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
       </div>
     );
   }
+
+  const noResultsLabel = query ? (
+    <>No listings match &quot;{query}&quot;</>
+  ) : (
+    "No listings"
+  );
 
   return (
     <div className="mt-8">
@@ -84,17 +163,30 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
           className="w-full rounded-md border border-line bg-paper-card px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-pine focus:outline-none sm:max-w-xs"
         />
         <div className="flex gap-3">
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
-            className="rounded-md border border-line bg-paper-card px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none"
-          >
-            {(Object.keys(TYPE_FILTER_LABELS) as TypeFilter[]).map((option) => (
-              <option key={option} value={option}>
-                {TYPE_FILTER_LABELS[option]}
-              </option>
-            ))}
-          </select>
+          <div className="flex">
+            <button
+              type="button"
+              onClick={() => setShowSale((v) => !v)}
+              className={`rounded-l-md border px-3 py-2 text-sm font-medium transition-colors ${
+                showSale
+                  ? "border-pine bg-pine text-paper"
+                  : "border-line bg-white text-ink hover:border-pine"
+              }`}
+            >
+              For sale
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowRental((v) => !v)}
+              className={`-ml-px rounded-r-md border px-3 py-2 text-sm font-medium transition-colors ${
+                showRental
+                  ? "border-pine bg-pine text-paper"
+                  : "border-line bg-white text-ink hover:border-pine"
+              }`}
+            >
+              Rental
+            </button>
+          </div>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
@@ -109,66 +201,42 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
         </div>
       </div>
 
-      {visible.length === 0 ? (
+      {!showSale && !showRental ? (
         <div className="mt-4 rounded-md border border-line bg-paper-card px-6 py-16 text-center">
           <p className="text-sm text-ink-soft">
-            {query ? (
-              <>No listings match &quot;{query}&quot;</>
-            ) : typeFilter === "sale" ? (
-              "No listings for sale"
-            ) : (
-              "No rental listings"
-            )}
+            Select &quot;For sale&quot; or &quot;Rental&quot; above to see your listings.
           </p>
         </div>
+      ) : showSale && showRental ? (
+        <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <h2 className="mb-3 font-serif text-lg font-medium text-ink">For sale</h2>
+            <ListingColumn
+              listings={saleListings}
+              emptyLabel={query ? noResultsLabel : "No listings for sale"}
+            />
+          </div>
+          <div>
+            <h2 className="mb-3 font-serif text-lg font-medium text-ink">Rental</h2>
+            <ListingColumn
+              listings={rentalListings}
+              emptyLabel={query ? noResultsLabel : "No rental listings"}
+            />
+          </div>
+        </div>
       ) : (
-        <ul className="mt-4 space-y-3">
-          {visible.map((listing) => (
-            <li
-              key={listing.id}
-              className="flex items-center justify-between rounded-md border border-line bg-paper-card px-6 py-4 hover:border-pine"
-            >
-              <Link href={`/dashboard/listings/${listing.id}`} className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-medium text-ink">{listing.address}</p>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      listing.listing_type === "rental"
-                        ? "bg-pine/10 text-pine"
-                        : "bg-brass/10 text-brass"
-                    }`}
-                  >
-                    {listing.listing_type === "rental" ? "Rental" : "For sale"}
-                  </span>
-                  {listing.unreadCount ? (
-                    <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-paper">
-                      {listing.unreadCount} new
-                    </span>
-                  ) : null}
-                </div>
-                <p className="text-sm text-ink-soft">
-                  ${Number(listing.price).toLocaleString()}
-                  {listing.listing_type === "rental" ? "/week" : ""}
-                  {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
-                  {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
-                  {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
-                  {listing.sqft ? ` · ${listing.sqft.toLocaleString()} sqft` : ""}
-                </p>
-                <div className="mt-1.5 flex items-center gap-2">
-                  <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
-                    {listing.feedbackCount} feedback
-                  </span>
-                  <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
-                    {listing.listing_type === "rental"
-                      ? `${listing.applicantCount} applicants`
-                      : `${listing.offerCount} offers`}
-                  </span>
-                </div>
-              </Link>
-              <DeleteListingButton listingId={listing.id} label="Delete" />
-            </li>
-          ))}
-        </ul>
+        <div className="mt-4">
+          <ListingColumn
+            listings={showSale ? saleListings : rentalListings}
+            emptyLabel={
+              query
+                ? noResultsLabel
+                : showSale
+                  ? "No listings for sale"
+                  : "No rental listings"
+            }
+          />
+        </div>
       )}
     </div>
   );
