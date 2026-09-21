@@ -156,8 +156,9 @@ export default async function ListingDetailPage({
             Open house QR code
           </h2>
           <p className="mt-1 text-sm text-ink-soft">
-            Print this and display it at the open house. Visitors scan it to
-            leave feedback or {isRental ? "apply to rent" : "submit an offer"}.
+            Download it and attach it to your open home flyer, or add it to
+            your listing online. Visitors scan it to leave feedback or{" "}
+            {isRental ? "apply to rent" : "submit an offer"}.
           </p>
           <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
