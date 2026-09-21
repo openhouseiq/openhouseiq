@@ -145,6 +145,8 @@ export type Applicant = {
   has_pets: boolean;
   pet_details: string | null;
   number_of_occupants: number | null;
+  number_of_adults: number | null;
+  number_of_children: number | null;
   is_smoker: boolean;
   reference_name: string | null;
   reference_phone: string | null;

@@ -37,6 +37,8 @@ export async function POST(request: Request) {
     has_pets: Boolean(body.hasPets),
     pet_details: body.petDetails || null,
     number_of_occupants: body.numberOfOccupants || null,
+    number_of_adults: body.numberOfAdults || null,
+    number_of_children: body.numberOfChildren ?? null,
     is_smoker: Boolean(body.isSmoker),
     reference_name: body.referenceName || null,
     reference_phone: body.referencePhone || null,

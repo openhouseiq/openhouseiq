@@ -12,14 +12,31 @@ import {
 const selectClasses =
   "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine";
 
+const TOTAL_OCCUPANT_OPTIONS = Array.from({ length: 10 }, (_, i) => i + 1);
+const ADULT_OPTIONS = Array.from({ length: 10 }, (_, i) => i + 1);
+const CHILD_OPTIONS = Array.from({ length: 11 }, (_, i) => i);
+
 export function ApplicationForm({ listingId }: { listingId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [totalOccupants, setTotalOccupants] = useState("");
+  const [adultOccupants, setAdultOccupants] = useState("");
+  const [childOccupants, setChildOccupants] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    if (totalOccupants && adultOccupants && childOccupants) {
+      if (Number(totalOccupants) !== Number(adultOccupants) + Number(childOccupants)) {
+        setError(
+          "Total occupants must equal the number of adults plus children.",
+        );
+        return;
+      }
+    }
+
     setLoading(true);
 
     const form = e.currentTarget;
@@ -43,9 +60,9 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
           desiredLeaseTerm: String(formData.get("desired_lease_term") ?? "") || null,
           hasPets: formData.get("has_pets") === "on",
           petDetails: String(formData.get("pet_details") ?? "") || null,
-          numberOfOccupants: formData.get("number_of_occupants")
-            ? Number(formData.get("number_of_occupants"))
-            : null,
+          numberOfOccupants: totalOccupants ? Number(totalOccupants) : null,
+          numberOfAdults: adultOccupants ? Number(adultOccupants) : null,
+          numberOfChildren: childOccupants ? Number(childOccupants) : null,
           isSmoker: formData.get("is_smoker") === "on",
           referenceName: String(formData.get("reference_name") ?? "") || null,
           referencePhone: String(formData.get("reference_phone") ?? "") || null,
@@ -141,13 +158,71 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
         </div>
       </div>
 
-      <Field
-        label="Number of occupants"
-        id="number_of_occupants"
-        type="number"
-        min={1}
-        step="1"
-      />
+      <div className="grid grid-cols-3 gap-3">
+        <div>
+          <label
+            htmlFor="number_of_occupants"
+            className="mb-1.5 block text-sm font-medium text-ink"
+          >
+            Total occupants
+          </label>
+          <select
+            id="number_of_occupants"
+            value={totalOccupants}
+            onChange={(e) => setTotalOccupants(e.target.value)}
+            className={selectClasses}
+          >
+            <option value="">—</option>
+            {TOTAL_OCCUPANT_OPTIONS.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label
+            htmlFor="number_of_adults"
+            className="mb-1.5 block text-sm font-medium text-ink"
+          >
+            Adults
+          </label>
+          <select
+            id="number_of_adults"
+            value={adultOccupants}
+            onChange={(e) => setAdultOccupants(e.target.value)}
+            className={selectClasses}
+          >
+            <option value="">—</option>
+            {ADULT_OPTIONS.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label
+            htmlFor="number_of_children"
+            className="mb-1.5 block text-sm font-medium text-ink"
+          >
+            Children (under 16)
+          </label>
+          <select
+            id="number_of_children"
+            value={childOccupants}
+            onChange={(e) => setChildOccupants(e.target.value)}
+            className={selectClasses}
+          >
+            <option value="">—</option>
+            {CHILD_OPTIONS.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <label className="flex items-center gap-2 text-sm text-ink">
         <input

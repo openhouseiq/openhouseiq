@@ -194,7 +194,9 @@ export function FeedbackApplicantsReport({
       "Can provide proof of income",
       "Desired move-in date",
       "Desired lease term",
-      "Occupants",
+      "Occupants (total)",
+      "Occupants (adults)",
+      "Occupants (children)",
       "Has pets",
       "Pet details",
       "Smoker",
@@ -219,6 +221,8 @@ export function FeedbackApplicantsReport({
         ? LEASE_TERM_LABELS[a.desired_lease_term] ?? a.desired_lease_term
         : "",
       a.number_of_occupants ?? "",
+      a.number_of_adults ?? "",
+      a.number_of_children ?? "",
       a.has_pets ? "Yes" : "No",
       a.pet_details ?? "",
       a.is_smoker ? "Yes" : "No",
@@ -391,7 +395,12 @@ export function FeedbackApplicantsReport({
                           applicant.desired_lease_term
                         : null,
                       applicant.number_of_occupants
-                        ? `${applicant.number_of_occupants} occupant${applicant.number_of_occupants === 1 ? "" : "s"}`
+                        ? `${applicant.number_of_occupants} occupant${applicant.number_of_occupants === 1 ? "" : "s"}${
+                            applicant.number_of_adults !== null &&
+                            applicant.number_of_children !== null
+                              ? ` (${applicant.number_of_adults} adult${applicant.number_of_adults === 1 ? "" : "s"}, ${applicant.number_of_children} child${applicant.number_of_children === 1 ? "" : "ren"})`
+                              : ""
+                          }`
                         : null,
                       applicant.has_pets ? "Has pets" : null,
                       applicant.is_smoker ? "Smoker" : null,
