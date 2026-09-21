@@ -37,14 +37,14 @@ export function StartTrialSection() {
           disabled={loading !== null}
           onClick={() => startTrial("monthly")}
         >
-          {loading === "monthly" ? "Loading…" : "Start free trial — $29/month after"}
+          {loading === "monthly" ? "Loading…" : "Start free trial — $39/month after"}
         </Button>
         <Button
           variant="secondary"
           disabled={loading !== null}
           onClick={() => startTrial("yearly")}
         >
-          {loading === "yearly" ? "Loading…" : "Start free trial — $290/year after"}
+          {loading === "yearly" ? "Loading…" : "Start free trial — $390/year after"}
         </Button>
       </div>
       {error ? <p className="text-sm text-error">{error}</p> : null}

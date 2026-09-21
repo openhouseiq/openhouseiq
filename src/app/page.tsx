@@ -154,7 +154,7 @@ export default function Home() {
             <div className="rounded-md border border-line bg-paper-card p-8">
               <p className="text-sm font-medium text-ink-soft">Monthly</p>
               <p className="mt-2 font-serif text-4xl font-medium text-ink">
-                $29
+                $39
                 <span className="text-base font-sans font-normal text-ink-soft">
                   /month
                 </span>
@@ -163,7 +163,7 @@ export default function Home() {
             <div className="rounded-md border-2 border-pine bg-paper-card p-8">
               <p className="text-sm font-medium text-pine">Yearly · save 2 months</p>
               <p className="mt-2 font-serif text-4xl font-medium text-ink">
-                $290
+                $390
                 <span className="text-base font-sans font-normal text-ink-soft">
                   /year
                 </span>

@@ -260,13 +260,34 @@ export default async function AdminPage({
   const pastDueCount = subscriptionRows.filter((s) => s.status === "past_due").length;
   const canceledCount = subscriptionRows.filter((s) => s.status === "canceled").length;
 
-  const monthlyPriceId = process.env.STRIPE_PRICE_MONTHLY;
-  const yearlyPriceId = process.env.STRIPE_PRICE_YEARLY;
+  // Look up each active subscription's actual Stripe price (rather than
+  // hardcoding today's dollar amounts) so agents grandfathered onto an
+  // older price still count correctly toward MRR after a price change.
+  const activePriceIds = [
+    ...new Set(
+      subscriptionRows
+        .filter((s) => s.status === "active" && s.price_id)
+        .map((s) => s.price_id as string),
+    ),
+  ];
+  const monthlyEquivalentByPriceId = new Map<string, number>();
+  await Promise.all(
+    activePriceIds.map(async (priceId) => {
+      try {
+        const price = await stripe.prices.retrieve(priceId);
+        const amount = (price.unit_amount ?? 0) / 100;
+        const monthlyEquivalent =
+          price.recurring?.interval === "year" ? amount / 12 : amount;
+        monthlyEquivalentByPriceId.set(priceId, monthlyEquivalent);
+      } catch {
+        // Price no longer exists in Stripe — skip rather than crash the page.
+      }
+    }),
+  );
   let mrr = 0;
   for (const s of subscriptionRows) {
-    if (s.status !== "active") continue;
-    if (s.price_id === monthlyPriceId) mrr += 29;
-    else if (s.price_id === yearlyPriceId) mrr += 290 / 12;
+    if (s.status !== "active" || !s.price_id) continue;
+    mrr += monthlyEquivalentByPriceId.get(s.price_id) ?? 0;
   }
 
   const stats = [

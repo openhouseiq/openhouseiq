@@ -102,14 +102,14 @@ export function BillingSection({ subscription }: { subscription: Subscription | 
             disabled={loading !== null}
             onClick={() => goToCheckout("monthly")}
           >
-            {loading === "monthly" ? "Loading…" : "Subscribe — $29/month"}
+            {loading === "monthly" ? "Loading…" : "Subscribe — $39/month"}
           </Button>
           <Button
             variant="secondary"
             disabled={loading !== null}
             onClick={() => goToCheckout("yearly")}
           >
-            {loading === "yearly" ? "Loading…" : "Subscribe — $290/year"}
+            {loading === "yearly" ? "Loading…" : "Subscribe — $390/year"}
           </Button>
           {subscription?.stripe_customer_id ? (
             <button
