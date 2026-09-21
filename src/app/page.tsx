@@ -8,9 +8,9 @@ const FEATURES = [
       "Generated automatically the moment you create a listing. Download it and add it to your open home flyer or signage.",
   },
   {
-    title: "Instant feedback & offers",
+    title: "Instant feedback, offers & applications",
     description:
-      "Visitors leave feedback or submit an offer right from their phone — no app to download, no login required.",
+      "Visitors leave feedback, submit an offer, or apply to rent — right from their phone. No app to download, no login required.",
   },
   {
     title: "Every lead, one dashboard",
@@ -35,7 +35,7 @@ const STEPS = [
     number: "3",
     title: "Visitors scan and respond",
     description:
-      "No app to download, no account to create. Feedback or an offer in under a minute.",
+      "No app to download, no account to create. Feedback, an offer, or a rental application in under a minute.",
   },
   {
     number: "4",
@@ -47,7 +47,7 @@ const STEPS = [
 
 const INCLUDED = [
   "Unlimited listings and QR codes",
-  "Structured visitor feedback & offers",
+  "Structured visitor feedback, offers & rental applications",
   "CSV export reports by date range",
   "CAPTCHA-protected public forms",
   "14-day free trial, no card required",
@@ -76,9 +76,9 @@ export default function Home() {
           Run better open houses.
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
-          OpenHouseIQ turns every open house into a lead-generating machine —
-          one QR code, instant visitor feedback and offers, no paper sign-in
-          sheets.
+          OpenHouseIQ turns every open house or rental inspection into a
+          lead-generating machine — one QR code, instant visitor feedback,
+          offers, and rental applications, no paper sign-in sheets.
         </p>
         <div className="mt-8 flex justify-center gap-3">
           <Link href="/signup">
