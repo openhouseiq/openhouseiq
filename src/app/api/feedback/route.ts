@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
+import { notifyAgentOfSubmission } from "@/lib/notify";
 
 export async function POST(request: Request) {
   const allowed = await checkRateLimit("feedback", clientIp(request));
@@ -44,6 +45,25 @@ export async function POST(request: Request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  const { data: listing } = await supabase
+    .from("listings")
+    .select("agent_id, agent_email, address")
+    .eq("id", body.listingId)
+    .maybeSingle();
+
+  if (listing) {
+    const host = request.headers.get("host");
+    const protocol = host?.startsWith("localhost") ? "http" : "https";
+    await notifyAgentOfSubmission({
+      agentId: listing.agent_id,
+      agentEmail: listing.agent_email,
+      kind: "feedback",
+      listingAddress: listing.address,
+      listingId: body.listingId,
+      baseUrl: `${protocol}://${host}`,
+    });
   }
 
   return NextResponse.json({ success: true });
