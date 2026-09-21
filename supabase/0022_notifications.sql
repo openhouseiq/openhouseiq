@@ -9,7 +9,7 @@ create table if not exists push_subscriptions (
   agent_id uuid not null references auth.users(id) on delete cascade,
   endpoint text not null unique,
   p256dh text not null,
-  auth text not null,
+  auth_key text not null,
   created_at timestamptz not null default now()
 );
 

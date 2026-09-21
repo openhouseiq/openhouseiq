@@ -94,7 +94,7 @@ export function NotificationSettings({
             agent_id: userId,
             endpoint: json.endpoint,
             p256dh: json.keys?.p256dh,
-            auth: json.keys?.auth,
+            auth_key: json.keys?.auth,
           },
           { onConflict: "endpoint" },
         );

@@ -24,7 +24,7 @@ export async function sendPushToAgent(
   const supabase = createServiceClient();
   const { data: subscriptions } = await supabase
     .from("push_subscriptions")
-    .select("id, endpoint, p256dh, auth")
+    .select("id, endpoint, p256dh, auth_key")
     .eq("agent_id", agentId);
 
   if (!subscriptions || subscriptions.length === 0) return;
@@ -35,7 +35,7 @@ export async function sendPushToAgent(
         await webpush.sendNotification(
           {
             endpoint: sub.endpoint,
-            keys: { p256dh: sub.p256dh, auth: sub.auth },
+            keys: { p256dh: sub.p256dh, auth: sub.auth_key },
           },
           JSON.stringify(payload),
         );
