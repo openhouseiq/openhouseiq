@@ -102,7 +102,7 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
       <Field label="Email" id="email" type="email" required />
       <Field label="Phone" id="phone" type="tel" />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Employer" id="employer" type="text" />
         <Field label="Occupation" id="occupation" type="text" />
       </div>
@@ -132,7 +132,7 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
         Can provide proof of income / employment if asked
       </label>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Desired move-in date" id="desired_move_in_date" type="date" />
         <div>
           <label
@@ -158,7 +158,7 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div>
           <label
             htmlFor="number_of_occupants"
@@ -243,7 +243,7 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
         I smoke
       </label>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Reference name" id="reference_name" type="text" />
         <Field label="Reference phone" id="reference_phone" type="tel" />
       </div>
