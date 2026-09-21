@@ -49,7 +49,7 @@ export default async function FeedbackPage({
       ) : (
         <div className="mb-6" />
       )}
-      <FeedbackForm listingId={listing.id} />
+      <FeedbackForm listingId={listing.id} isRental={listing.listing_type === "rental"} />
     </VisitLayout>
   );
 }

@@ -7,12 +7,17 @@ import { StarRating } from "@/components/ui/StarRating";
 import { Turnstile } from "@/components/ui/Turnstile";
 import type { InterestLevel, PurchaseTimeframe } from "@/lib/types";
 
-const INTEREST_LEVELS: { value: InterestLevel; label: string }[] = [
-  { value: "not_interested", label: "Not interested" },
-  { value: "considering", label: "Considering" },
-  { value: "very_interested", label: "Very interested" },
-  { value: "ready_to_offer", label: "Ready to make an offer" },
-];
+function interestLevels(isRental: boolean): { value: InterestLevel; label: string }[] {
+  return [
+    { value: "not_interested", label: "Not interested" },
+    { value: "considering", label: "Considering" },
+    { value: "very_interested", label: "Very interested" },
+    {
+      value: "ready_to_offer",
+      label: isRental ? "Ready to apply" : "Ready to make an offer",
+    },
+  ];
+}
 
 const TIMEFRAMES: { value: PurchaseTimeframe; label: string }[] = [
   { value: "immediately", label: "Immediately" },
@@ -22,7 +27,13 @@ const TIMEFRAMES: { value: PurchaseTimeframe; label: string }[] = [
   { value: "just_browsing", label: "Just browsing" },
 ];
 
-export function FeedbackForm({ listingId }: { listingId: string }) {
+export function FeedbackForm({
+  listingId,
+  isRental = false,
+}: {
+  listingId: string;
+  isRental?: boolean;
+}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -48,7 +59,7 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
       setError("Please rate price, condition, location, and layout.");
       return;
     }
-    if (!timeframe) {
+    if (!isRental && !timeframe) {
       setError("Please select a purchase timeframe.");
       return;
     }
@@ -112,7 +123,7 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
           How interested are you in this property?
         </label>
         <div className="space-y-1.5">
-          {INTEREST_LEVELS.map((level) => (
+          {interestLevels(isRental).map((level) => (
             <button
               key={level.value}
               type="button"
@@ -145,15 +156,17 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
       </div>
 
       <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm text-ink">
-          <input
-            type="checkbox"
-            checked={preApproved}
-            onChange={(e) => setPreApproved(e.target.checked)}
-            className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
-          />
-          I&apos;m pre-approved for finance
-        </label>
+        {isRental ? null : (
+          <label className="flex items-center gap-2 text-sm text-ink">
+            <input
+              type="checkbox"
+              checked={preApproved}
+              onChange={(e) => setPreApproved(e.target.checked)}
+              className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+            />
+            I&apos;m pre-approved for finance
+          </label>
+        )}
         <label className="flex items-center gap-2 text-sm text-ink">
           <input
             type="checkbox"
@@ -163,30 +176,32 @@ export function FeedbackForm({ listingId }: { listingId: string }) {
           />
           I&apos;m already working with an agent
         </label>
-        <div>
-          <label
-            htmlFor="timeframe"
-            className="mb-1.5 block text-sm font-medium text-ink"
-          >
-            Purchase timeframe
-          </label>
-          <select
-            id="timeframe"
-            value={timeframe}
-            required
-            onChange={(e) => setTimeframe(e.target.value as PurchaseTimeframe)}
-            className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
-          >
-            <option value="" disabled>
-              Select one…
-            </option>
-            {TIMEFRAMES.map((tf) => (
-              <option key={tf.value} value={tf.value}>
-                {tf.label}
+        {isRental ? null : (
+          <div>
+            <label
+              htmlFor="timeframe"
+              className="mb-1.5 block text-sm font-medium text-ink"
+            >
+              Purchase timeframe
+            </label>
+            <select
+              id="timeframe"
+              value={timeframe}
+              required
+              onChange={(e) => setTimeframe(e.target.value as PurchaseTimeframe)}
+              className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
+            >
+              <option value="" disabled>
+                Select one…
               </option>
-            ))}
-          </select>
-        </div>
+              {TIMEFRAMES.map((tf) => (
+                <option key={tf.value} value={tf.value}>
+                  {tf.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <Field label="Name" id="name" type="text" required />
