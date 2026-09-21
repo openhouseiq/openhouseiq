@@ -112,7 +112,13 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
       {visible.length === 0 ? (
         <div className="mt-4 rounded-md border border-line bg-paper-card px-6 py-16 text-center">
           <p className="text-sm text-ink-soft">
-            No listings match &quot;{query}&quot;
+            {query ? (
+              <>No listings match &quot;{query}&quot;</>
+            ) : typeFilter === "sale" ? (
+              "No listings for sale"
+            ) : (
+              "No rental listings"
+            )}
           </p>
         </div>
       ) : (
