@@ -7,6 +7,7 @@ import { PasswordSection } from "./PasswordSection";
 import { BillingSection } from "./BillingSection";
 import { ContactSection } from "./ContactSection";
 import { FAQSection } from "./FAQSection";
+import { InstallAppSection } from "./InstallAppSection";
 import { NotificationSettings } from "./NotificationSettings";
 import { DeleteAccountSection } from "./DeleteAccountSection";
 import type { Subscription, ContactMessage } from "@/lib/types";
@@ -73,6 +74,13 @@ export default async function SettingsPage() {
           <section className="rounded-md border border-line bg-paper-card p-6">
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">Password</h2>
             <PasswordSection />
+          </section>
+
+          <section className="rounded-md border border-line bg-paper-card p-6">
+            <h2 className="mb-4 font-serif text-lg font-medium text-ink">
+              Install as an app
+            </h2>
+            <InstallAppSection />
           </section>
 
           <section className="rounded-md border border-line bg-paper-card p-6">

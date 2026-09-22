@@ -172,42 +172,15 @@ export function NotificationSettings({
 
             {status !== "on" ? (
               <div className="rounded-md border border-line bg-white p-3 text-sm text-ink-soft">
-                <p className="font-medium text-ink">
-                  On your phone? Here&apos;s how to set it up:
+                <p className="font-medium text-ink">On your phone?</p>
+                <p className="mt-1">
+                  On iPhone, you&apos;ll need to install OpenHouseIQ as an app
+                  first — see{" "}
+                  <span className="font-medium">&quot;Install as an app&quot;</span>{" "}
+                  above, then open it from your Home Screen icon and come back
+                  here. (Requires iOS 16.4 or later.) On Android, you can just
+                  tap the button below in Chrome — no install needed.
                 </p>
-                <div className="mt-2">
-                  <p className="font-medium text-ink">iPhone</p>
-                  <ol className="mt-1 list-decimal space-y-0.5 pl-4">
-                    <li>
-                      Open this site in <span className="font-medium">Safari</span>{" "}
-                      — not Chrome. iPhone only supports notifications
-                      through Safari.
-                    </li>
-                    <li>
-                      Tap the Share icon, then{" "}
-                      <span className="font-medium">Add to Home Screen</span>.
-                    </li>
-                    <li>Open the app from the new icon on your Home Screen.</li>
-                    <li>
-                      Come back to this page and tap{" "}
-                      <span className="font-medium">
-                        Enable notifications on this device
-                      </span>{" "}
-                      below.
-                    </li>
-                  </ol>
-                  <p className="mt-1 text-xs">Requires iOS 16.4 or later.</p>
-                </div>
-                <div className="mt-3">
-                  <p className="font-medium text-ink">Android</p>
-                  <p className="mt-1">
-                    Open this site in Chrome and tap{" "}
-                    <span className="font-medium">
-                      Enable notifications on this device
-                    </span>{" "}
-                    below — no extra setup needed.
-                  </p>
-                </div>
               </div>
             ) : null}
 
