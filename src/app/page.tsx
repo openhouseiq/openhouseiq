@@ -1,5 +1,47 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
+
+export const metadata: Metadata = {
+  title: "CueProperty — QR Code Feedback, Offers & Rental Applications for Agents",
+  description:
+    "Turn every open house or rental inspection into instant feedback, offers, and rental applications. One QR code, no paper sign-in sheets, no app for visitors to download. Built for real estate agents and property managers in Australia.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "CueProperty — QR Code Feedback, Offers & Rental Applications for Agents",
+    description:
+      "One QR code per listing. Visitors leave feedback, submit an offer, or apply to rent from their phone — agents see every lead ranked in one dashboard.",
+    url: "/",
+  },
+};
+
+const FAQS = [
+  {
+    question: "What is CueProperty?",
+    answer:
+      "CueProperty is software for real estate agents and property managers that turns a printed QR code into instant visitor feedback, offers, and rental applications at open houses and rental inspections — no app for visitors to download, no paper sign-in sheets.",
+  },
+  {
+    question: "Does CueProperty work for rental inspections as well as sales?",
+    answer:
+      "Yes. Each listing is set up as either for sale or for rent. Sale listings collect feedback and offers; rental listings collect feedback and rental applications, ranked against what the landlord is looking for.",
+  },
+  {
+    question: "Do visitors need to download an app or create an account?",
+    answer:
+      "No. Visitors scan the listing's QR code and submit feedback, an offer, or a rental application directly from their phone's browser — no app, no account.",
+  },
+  {
+    question: "How much does CueProperty cost?",
+    answer:
+      "CueProperty is one plan with every feature included: $39/month or $390/year (two months free). New accounts start with a 14-day free trial.",
+  },
+  {
+    question: "Is CueProperty a replacement for my CRM?",
+    answer:
+      "No. CueProperty isn't a CRM — it captures the moment someone walks into an open house or rental inspection, ranks the responses, and lets you export every lead as a CSV to import into whatever CRM you already use.",
+  },
+];
 
 const FEATURES = [
   {
@@ -65,7 +107,7 @@ const INCLUDED = [
   "Structured visitor feedback, offers & rental applications",
   "CSV export reports by date range",
   "CAPTCHA-protected public forms",
-  "14-day free trial, no card required",
+  "14-day free trial",
 ];
 
 export default function Home() {
@@ -208,8 +250,7 @@ export default function Home() {
             Simple pricing
           </h2>
           <p className="mt-3 text-ink-soft">
-            One plan, every feature. Start with a 14-day free trial — no card
-            required.
+            One plan, every feature. Start with a 14-day free trial.
           </p>
           <div className="mx-auto mt-10 grid max-w-xl gap-6 sm:grid-cols-2">
             <div className="rounded-md border border-line bg-paper-card p-8">
@@ -249,6 +290,26 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="border-t border-line bg-paper-card px-6 py-20">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-center font-serif text-3xl font-medium text-ink">
+            Frequently asked questions
+          </h2>
+          <div className="mt-10 space-y-8">
+            {FAQS.map((faq) => (
+              <div key={faq.question}>
+                <h3 className="font-serif text-lg font-medium text-ink">
+                  {faq.question}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  {faq.answer}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <footer className="border-t border-line px-6 py-6 text-center text-xs text-ink-soft">
         <p>© 2026 CueProperty</p>
         <p className="mt-2">
@@ -265,6 +326,53 @@ export default function Home() {
           </Link>
         </p>
       </footer>
+
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: "CueProperty",
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
+              description:
+                "QR code feedback, offers, and rental applications for real estate agents. One QR code per listing — visitors respond from their phone, agents see every lead ranked in one dashboard.",
+              offers: {
+                "@type": "Offer",
+                price: "39",
+                priceCurrency: "AUD",
+                priceValidUntil: "2026-12-31",
+                url: "https://www.cueproperty.com.au/signup",
+              },
+              audience: {
+                "@type": "Audience",
+                audienceType: "Real estate agents and property managers",
+              },
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "CueProperty",
+              url: "https://www.cueproperty.com.au",
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: FAQS.map((faq) => ({
+                "@type": "Question",
+                name: faq.question,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: faq.answer,
+                },
+              })),
+            },
+          ]),
+        }}
+      />
     </div>
   );
 }
