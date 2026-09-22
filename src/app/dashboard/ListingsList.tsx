@@ -63,7 +63,7 @@ function ListingCard({ listing }: { listing: ListingWithCounts }) {
             {listing.listing_type === "rental" ? "Rental" : "For sale"}
           </span>
           {listing.unreadCount ? (
-            <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-paper">
+            <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
               {listing.unreadCount} new
             </span>
           ) : null}
@@ -169,7 +169,7 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
               onClick={() => setShowSale((v) => !v)}
               className={`rounded-l-md border px-3 py-2 text-sm font-medium transition-colors ${
                 showSale
-                  ? "border-pine bg-pine text-paper"
+                  ? "border-pine bg-pine text-ink"
                   : "border-line bg-white text-ink hover:border-pine"
               }`}
             >
@@ -180,7 +180,7 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
               onClick={() => setShowRental((v) => !v)}
               className={`-ml-px rounded-r-md border px-3 py-2 text-sm font-medium transition-colors ${
                 showRental
-                  ? "border-pine bg-pine text-paper"
+                  ? "border-pine bg-pine text-ink"
                   : "border-line bg-white text-ink hover:border-pine"
               }`}
             >

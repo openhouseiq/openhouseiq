@@ -138,7 +138,7 @@ export default function Home() {
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((step) => (
               <div key={step.number}>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-ink font-serif text-sm font-medium text-paper">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brass font-serif text-sm font-medium text-ink">
                   {step.number}
                 </div>
                 <h3 className="mt-4 font-serif text-lg font-medium text-ink">

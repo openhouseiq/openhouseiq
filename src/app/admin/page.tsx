@@ -108,8 +108,8 @@ async function getFinancialYearSummary(
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  active: "bg-pine text-paper",
-  trialing: "bg-brass text-paper",
+  active: "bg-pine text-ink",
+  trialing: "bg-brass text-ink",
   past_due: "bg-error/10 text-error",
   canceled: "bg-line text-ink-soft",
   none: "bg-line text-ink-soft",
@@ -476,7 +476,7 @@ export default async function AdminPage({
                   <td className="px-4 py-3 text-ink">{row.offersCount}</td>
                   <td className="px-4 py-3">
                     {row.productFeedbackSubmittedAt ? (
-                      <span className="rounded-full bg-pine px-2 py-0.5 text-xs font-medium text-paper">
+                      <span className="rounded-full bg-pine px-2 py-0.5 text-xs font-medium text-ink">
                         {new Date(row.productFeedbackSubmittedAt).toLocaleDateString()}
                       </span>
                     ) : (

@@ -109,7 +109,7 @@ export function NewListingForm() {
             onClick={() => setListingType("sale")}
             className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
               listingType === "sale"
-                ? "border-pine bg-pine text-paper"
+                ? "border-pine bg-pine text-ink"
                 : "border-line bg-white text-ink hover:border-pine"
             }`}
           >
@@ -120,7 +120,7 @@ export function NewListingForm() {
             onClick={() => setListingType("rental")}
             className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
               listingType === "rental"
-                ? "border-pine bg-pine text-paper"
+                ? "border-pine bg-pine text-ink"
                 : "border-line bg-white text-ink hover:border-pine"
             }`}
           >

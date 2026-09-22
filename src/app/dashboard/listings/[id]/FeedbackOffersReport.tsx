@@ -35,8 +35,8 @@ const INTEREST_LEVEL_LABELS: Record<string, string> = {
 const INTEREST_LEVEL_STYLES: Record<string, string> = {
   not_interested: "bg-line text-ink-soft",
   considering: "bg-line text-ink-soft",
-  very_interested: "bg-brass text-paper",
-  ready_to_offer: "bg-pine text-paper",
+  very_interested: "bg-brass text-ink",
+  ready_to_offer: "bg-pine text-ink",
 };
 
 const TIMEFRAME_LABELS: Record<string, string> = {
@@ -67,9 +67,9 @@ function MatchBadge({ score }: { score: OfferScore }) {
   if (score.matchPercent === null) return null;
   const style =
     score.matchPercent >= 75
-      ? "bg-pine text-paper"
+      ? "bg-pine text-ink"
       : score.matchPercent >= 40
-        ? "bg-brass text-paper"
+        ? "bg-brass text-ink"
         : "bg-line text-ink-soft";
   return (
     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${style}`}>
@@ -255,7 +255,7 @@ export function FeedbackOffersReport({
                         {item.is_anonymous ? "Anonymous" : item.name || "—"}
                       </p>
                       {unreadFeedbackIds.includes(item.id) ? (
-                        <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-paper">
+                        <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
                           New
                         </span>
                       ) : null}
@@ -361,7 +361,7 @@ export function FeedbackOffersReport({
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-medium text-ink">{offer.name}</p>
                       {unreadOfferIds.includes(offer.id) ? (
-                        <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-paper">
+                        <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
                           New
                         </span>
                       ) : null}

@@ -13,24 +13,24 @@ export function AuthLayout({
 }) {
   return (
     <div className="flex min-h-screen w-full">
-      <div className="hidden md:flex md:w-[42%] flex-col bg-ink px-10 py-16">
+      <div className="hidden md:flex md:w-[42%] flex-col bg-paper px-10 py-16">
         <div className="flex flex-col items-center pt-8">
           <h1 className="font-serif text-3xl tracking-tight">
             <span className="text-brass">C</span>
-            <span className="text-paper">ue</span>
+            <span className="text-ink">ue</span>
             <span className="text-brass">P</span>
-            <span className="text-paper">roperty</span>
+            <span className="text-ink">roperty</span>
           </h1>
           <div className="mt-6 mb-10 h-px w-12 bg-brass" />
-          <h2 className="text-center font-serif text-2xl font-medium text-paper">
+          <h2 className="text-center font-serif text-2xl font-medium text-ink">
             {headline}
           </h2>
-          <p className="mt-4 max-w-xs text-center text-sm leading-relaxed text-paper/70">
+          <p className="mt-4 max-w-xs text-center text-sm leading-relaxed text-ink/70">
             {description}
           </p>
         </div>
         {footer ? (
-          <p className="mt-auto pt-8 text-center text-xs text-paper/50">
+          <p className="mt-auto pt-8 text-center text-xs text-ink/50">
             {footer}
           </p>
         ) : null}
