@@ -17,8 +17,10 @@ export function DashboardHeader({
           href="/dashboard"
           className="whitespace-nowrap font-serif text-xl tracking-tight"
         >
-          <span className="text-ink">Cue</span>
-          <span className="text-brass">Property</span>
+          <span className="text-brass">C</span>
+          <span className="text-ink">ue</span>
+          <span className="text-brass">P</span>
+          <span className="text-ink">roperty</span>
         </Link>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <Link

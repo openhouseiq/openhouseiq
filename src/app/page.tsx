@@ -73,8 +73,10 @@ export default function Home() {
     <div className="min-h-screen bg-paper">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
         <span className="font-serif text-xl tracking-tight">
-          <span className="text-ink">Cue</span>
-          <span className="text-brass">Property</span>
+          <span className="text-brass">C</span>
+          <span className="text-ink">ue</span>
+          <span className="text-brass">P</span>
+          <span className="text-ink">roperty</span>
         </span>
         <div className="flex items-center gap-4">
           <Link href="/login" className="text-sm text-ink-soft hover:text-pine">
