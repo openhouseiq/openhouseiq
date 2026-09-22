@@ -15,7 +15,7 @@ export function MonthlyStatementExportButton({
 }) {
   function handleExport() {
     const summarySection = toCsv([
-      ["OpenHouseIQ Monthly Statement"],
+      ["CueProperty Monthly Statement"],
       ["Period", statement.label],
       [],
       ["New signups", statement.newSignups],
@@ -63,7 +63,7 @@ export function MonthlyStatementExportButton({
     const agentSection = toCsv([agentHeader, ...agentRowsCsv]);
 
     downloadCsv(
-      `openhouseiq-statement-${statement.monthKey}.csv`,
+      `cueproperty-statement-${statement.monthKey}.csv`,
       `${summarySection}\n${agentSection}`,
     );
   }

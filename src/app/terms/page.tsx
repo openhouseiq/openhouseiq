@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Terms of Service — OpenHouseIQ" };
+export const metadata = { title: "Terms of Service — CueProperty" };
 
 export default function TermsPage() {
   return (
@@ -21,7 +21,7 @@ export default function TermsPage() {
             <h2 className="font-serif text-lg font-medium text-ink">1. Agreement</h2>
             <p className="mt-2">
               These Terms of Service (&quot;Terms&quot;) govern your use of
-              OpenHouseIQ (the &quot;Service&quot;), operated by OpenHouseIQ
+              CueProperty (the &quot;Service&quot;), operated by CueProperty
               (&quot;we&quot;, &quot;us&quot;). By creating an account or using
               the Service, you agree to these Terms.
             </p>
@@ -32,7 +32,7 @@ export default function TermsPage() {
               2. The Service
             </h2>
             <p className="mt-2">
-              OpenHouseIQ lets real estate agents create property listings,
+              CueProperty lets real estate agents create property listings,
               generate a QR code for each listing, and collect visitor feedback
               and offers submitted through a public web form at an open house.
             </p>
@@ -113,7 +113,7 @@ export default function TermsPage() {
             <p className="mt-2">
               The Service is provided &quot;as is.&quot; We aim for high availability but
               do not guarantee uninterrupted access. To the maximum extent
-              permitted by law, OpenHouseIQ is not liable for indirect or
+              permitted by law, CueProperty is not liable for indirect or
               consequential losses, including lost leads or lost sales,
               arising from your use of the Service.
             </p>

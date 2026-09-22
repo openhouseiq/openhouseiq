@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Privacy Policy — OpenHouseIQ" };
+export const metadata = { title: "Privacy Policy — CueProperty" };
 
 export default function PrivacyPage() {
   return (
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
         <div className="mt-8 space-y-6 text-sm leading-relaxed text-ink">
           <section>
             <p>
-              OpenHouseIQ (&quot;we&quot;, &quot;us&quot;) respects your
+              CueProperty (&quot;we&quot;, &quot;us&quot;) respects your
               privacy. This policy explains what information we collect, why,
               and how it&apos;s handled, consistent with the Australian
               Privacy Principles under the Privacy Act 1988 (Cth).
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
               3. Who we share it with
             </h2>
             <p className="mt-2">
-              We use a small number of service providers to run OpenHouseIQ:
+              We use a small number of service providers to run CueProperty:
               Supabase (database, authentication, and file storage), Stripe
               (payments), Cloudflare (CAPTCHA/spam protection), and Netlify
               (hosting). Each processes data only as needed to provide their

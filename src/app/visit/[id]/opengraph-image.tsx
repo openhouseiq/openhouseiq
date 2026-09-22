@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAgentPhotoUrl } from "@/lib/agent-photo";
 import type { Listing } from "@/lib/types";
 
-export const alt = "OpenHouseIQ listing";
+export const alt = "CueProperty listing";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -58,7 +58,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
             textAlign: "center",
           }}
         >
-          {listing?.address ?? "OpenHouseIQ"}
+          {listing?.address ?? "CueProperty"}
         </div>
 
         {listing?.agent_name ? (
@@ -76,7 +76,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
             opacity: 0.6,
           }}
         >
-          OpenHouseIQ
+          CueProperty
         </div>
       </div>
     ),

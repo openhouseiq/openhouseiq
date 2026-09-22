@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Security — OpenHouseIQ" };
+export const metadata = { title: "Security — CueProperty" };
 
 export default function SecurityPage() {
   return (
@@ -19,7 +19,7 @@ export default function SecurityPage() {
         <div className="mt-8 space-y-6 text-sm leading-relaxed text-ink">
           <section>
             <p>
-              An overview of how OpenHouseIQ protects agent and visitor data.
+              An overview of how CueProperty protects agent and visitor data.
               If you need more detail for a vendor security review, contact{" "}
               <a href="mailto:mick_orr@hotmail.com" className="text-pine underline">
                 mick_orr@hotmail.com
@@ -33,7 +33,7 @@ export default function SecurityPage() {
               Encryption in transit and at rest
             </h2>
             <p className="mt-2">
-              All traffic to and from OpenHouseIQ is encrypted over HTTPS/TLS.
+              All traffic to and from CueProperty is encrypted over HTTPS/TLS.
               Data at rest — agent accounts, listings, feedback, and offers —
               is stored in a managed Postgres database with encryption at
               rest, provided by our infrastructure partner Supabase.
@@ -73,7 +73,7 @@ export default function SecurityPage() {
               Subscription payments are handled entirely by Stripe, a PCI DSS
               Level 1 certified payment processor. Card details are entered
               directly into Stripe&apos;s hosted checkout — they never pass
-              through or get stored on OpenHouseIQ&apos;s servers.
+              through or get stored on CueProperty&apos;s servers.
             </p>
           </section>
 

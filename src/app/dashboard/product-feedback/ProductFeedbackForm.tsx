@@ -76,7 +76,7 @@ export function ProductFeedbackForm() {
 
       <div>
         <label className="mb-1.5 block text-sm font-medium text-ink">
-          Would you recommend OpenHouseIQ to another agent?
+          Would you recommend CueProperty to another agent?
         </label>
         <div className="flex gap-2">
           <button

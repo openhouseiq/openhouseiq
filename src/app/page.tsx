@@ -91,7 +91,7 @@ export default function Home() {
           Run better open houses.
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
-          OpenHouseIQ turns every open house or rental inspection into a
+          CueProperty turns every open house or rental inspection into a
           lead-generating machine — one QR code, instant visitor feedback,
           offers, and rental applications, no paper sign-in sheets.
         </p>
@@ -163,7 +163,7 @@ export default function Home() {
               Not another CRM
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-ink-soft">
-              OpenHouseIQ isn&apos;t trying to replace the CRM you already
+              CueProperty isn&apos;t trying to replace the CRM you already
               use — it&apos;s built for one moment your CRM was never
               designed for.
             </p>
@@ -173,7 +173,7 @@ export default function Home() {
             <div className="grid grid-cols-2 border-b border-line bg-paper-card text-sm font-medium">
               <div className="px-6 py-3 text-ink-soft">Your CRM</div>
               <div className="border-l border-line px-6 py-3 text-pine">
-                OpenHouseIQ
+                CueProperty
               </div>
             </div>
             {COMPARISON.map((row, i) => (
@@ -193,7 +193,7 @@ export default function Home() {
 
           <p className="mt-8 text-center text-sm text-ink-soft">
             Export every lead to CSV and drop it into whatever you already
-            use — OpenHouseIQ was never trying to replace it.
+            use — CueProperty was never trying to replace it.
           </p>
         </div>
       </section>
@@ -246,7 +246,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-line px-6 py-6 text-center text-xs text-ink-soft">
-        <p>© 2026 OpenHouseIQ</p>
+        <p>© 2026 CueProperty</p>
         <p className="mt-2">
           <Link href="/terms" className="underline hover:text-pine">
             Terms

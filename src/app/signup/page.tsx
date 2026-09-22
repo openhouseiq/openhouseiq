@@ -63,8 +63,8 @@ export default function SignUpPage() {
   return (
     <AuthLayout
       headline="List more homes, faster."
-      description="OpenHouseIQ helps real estate agents run open houses and follow up with leads in one place."
-      footer="© 2026 OpenHouseIQ"
+      description="CueProperty helps real estate agents run open houses and follow up with leads in one place."
+      footer="© 2026 CueProperty"
     >
       <h2 className="font-serif text-2xl font-medium text-ink">
         Create your account

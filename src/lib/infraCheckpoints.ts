@@ -57,7 +57,7 @@ export async function checkInfrastructureCheckpoint(): Promise<void> {
     adminEmails.map((email) =>
       sendNotificationEmail(
         email,
-        `OpenHouseIQ just hit ${count} subscribers - infrastructure checkpoint`,
+        `CueProperty just hit ${count} subscribers - infrastructure checkpoint`,
         `You've reached ${count} subscribers.\n\n${checkpoint.action}`,
       ),
     ),

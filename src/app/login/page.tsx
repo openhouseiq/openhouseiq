@@ -49,7 +49,7 @@ export default function LoginPage() {
     <AuthLayout
       headline="Welcome back."
       description="Log in to manage your open houses and follow up with your leads."
-      footer="© 2026 OpenHouseIQ"
+      footer="© 2026 CueProperty"
     >
       <h2 className="font-serif text-2xl font-medium text-ink">Log in</h2>
       <p className="mt-1.5 text-sm text-ink-soft">

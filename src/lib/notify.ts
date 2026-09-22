@@ -77,7 +77,7 @@ export async function notifyAgentOfContactReply({
   agentEmail: string | null;
   baseUrl: string;
 }): Promise<void> {
-  const title = "OpenHouseIQ support replied to your message";
+  const title = "CueProperty support replied to your message";
   const path = "/dashboard/settings#contact";
   const body = "You have a reply to your Contact Us message.";
 

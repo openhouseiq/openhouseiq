@@ -2,7 +2,7 @@ export function InstallAppSection() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-ink-soft">
-        Add OpenHouseIQ to your Home Screen for quick, full-screen access —
+        Add CueProperty to your Home Screen for quick, full-screen access —
         no app store needed. This is also required on iPhone before push
         notifications can be turned on.
       </p>
@@ -18,7 +18,7 @@ export function InstallAppSection() {
             Tap the Share icon, then{" "}
             <span className="font-medium">Add to Home Screen</span>.
           </li>
-          <li>Open OpenHouseIQ from the new icon on your Home Screen.</li>
+          <li>Open CueProperty from the new icon on your Home Screen.</li>
         </ol>
       </div>
 
@@ -33,7 +33,7 @@ export function InstallAppSection() {
             <span className="font-medium">Add to Home screen</span> (or{" "}
             <span className="font-medium">Install app</span>).
           </li>
-          <li>Open OpenHouseIQ from the new icon on your Home Screen.</li>
+          <li>Open CueProperty from the new icon on your Home Screen.</li>
         </ol>
       </div>
     </div>

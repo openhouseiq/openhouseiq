@@ -121,7 +121,7 @@ export default async function DashboardPage() {
         {showFeedbackPrompt ? (
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-md border border-brass bg-brass/10 px-6 py-4">
             <p className="text-sm text-ink">
-              You&apos;ve been using OpenHouseIQ for a month — we&apos;d love
+              You&apos;ve been using CueProperty for a month — we&apos;d love
               your feedback.
             </p>
             <Link href="/dashboard/product-feedback">

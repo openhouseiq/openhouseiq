@@ -32,7 +32,7 @@ export default async function ProductFeedbackPage() {
 
       <main className="mx-auto max-w-xl px-6 py-12">
         <h1 className="font-serif text-2xl font-medium text-ink">
-          How&apos;s OpenHouseIQ working for you?
+          How&apos;s CueProperty working for you?
         </h1>
         <p className="mt-2 text-sm text-ink-soft">
           You&apos;re one of the first agents trying this out — your honest

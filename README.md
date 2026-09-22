@@ -1,4 +1,4 @@
-# OpenHouseIQ
+# CueProperty
 
 A tool for real estate agents to manage listings, generate a QR code for
 each open house, and collect visitor feedback and offers on the spot.

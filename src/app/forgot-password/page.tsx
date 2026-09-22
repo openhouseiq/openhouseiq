@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
     <AuthLayout
       headline="Forgot your password?"
       description="Enter your email and we'll send you a link to reset it."
-      footer="© 2026 OpenHouseIQ"
+      footer="© 2026 CueProperty"
     >
       <h2 className="font-serif text-2xl font-medium text-ink">Reset password</h2>
       <p className="mt-1.5 text-sm text-ink-soft">

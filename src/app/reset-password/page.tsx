@@ -42,8 +42,8 @@ export default function ResetPasswordPage() {
   return (
     <AuthLayout
       headline="Choose a new password"
-      description="Enter a new password for your OpenHouseIQ account."
-      footer="© 2026 OpenHouseIQ"
+      description="Enter a new password for your CueProperty account."
+      footer="© 2026 CueProperty"
     >
       <h2 className="font-serif text-2xl font-medium text-ink">Set new password</h2>
 

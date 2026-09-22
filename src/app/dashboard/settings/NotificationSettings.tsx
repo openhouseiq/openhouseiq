@@ -174,7 +174,7 @@ export function NotificationSettings({
               <div className="rounded-md border border-line bg-white p-3 text-sm text-ink-soft">
                 <p className="font-medium text-ink">On your phone?</p>
                 <p className="mt-1">
-                  On iPhone, you&apos;ll need to install OpenHouseIQ as an app
+                  On iPhone, you&apos;ll need to install CueProperty as an app
                   first — see{" "}
                   <span className="font-medium">&quot;Install as an app&quot;</span>{" "}
                   above, then open it from your Home Screen icon and come back
