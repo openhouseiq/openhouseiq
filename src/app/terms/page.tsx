@@ -7,8 +7,8 @@ export default function TermsPage() {
     <div className="min-h-screen bg-paper">
       <header className="mx-auto flex max-w-3xl items-center px-6 py-6">
         <Link href="/" className="font-serif text-xl tracking-tight">
-          <span className="text-ink">OpenHouse</span>
-          <span className="text-brass">IQ</span>
+          <span className="text-ink">Cue</span>
+          <span className="text-brass">Property</span>
         </Link>
       </header>
 

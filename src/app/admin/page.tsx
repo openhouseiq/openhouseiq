@@ -308,8 +308,8 @@ export default async function AdminPage({
     <div className="min-h-screen bg-paper">
       <header className="border-b border-line bg-paper-card px-6 py-4">
         <span className="font-serif text-xl tracking-tight">
-          <span className="text-ink">OpenHouse</span>
-          <span className="text-brass">IQ</span>
+          <span className="text-ink">Cue</span>
+          <span className="text-brass">Property</span>
           <span className="ml-2 text-sm font-sans font-normal text-ink-soft">Admin</span>
         </span>
       </header>

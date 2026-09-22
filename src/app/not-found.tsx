@@ -5,8 +5,8 @@ export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-paper px-6 text-center">
       <h1 className="font-serif text-3xl tracking-tight">
-        <span className="text-ink">OpenHouse</span>
-        <span className="text-brass">IQ</span>
+        <span className="text-ink">Cue</span>
+        <span className="text-brass">Property</span>
       </h1>
       <p className="font-serif text-xl font-medium text-ink">Page not found</p>
       <p className="max-w-sm text-sm text-ink-soft">

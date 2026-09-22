@@ -17,8 +17,8 @@ export function DashboardHeader({
           href="/dashboard"
           className="whitespace-nowrap font-serif text-xl tracking-tight"
         >
-          <span className="text-ink">OpenHouse</span>
-          <span className="text-brass">IQ</span>
+          <span className="text-ink">Cue</span>
+          <span className="text-brass">Property</span>
         </Link>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <Link

@@ -19,8 +19,8 @@ export default function Image() {
         }}
       >
         <div style={{ display: "flex", fontSize: 96, fontWeight: 600 }}>
-          <span style={{ color: "#EFEAE0" }}>OpenHouse</span>
-          <span style={{ color: "#B08D57" }}>IQ</span>
+          <span style={{ color: "#EFEAE0" }}>Cue</span>
+          <span style={{ color: "#B08D57" }}>Property</span>
         </div>
         <div style={{ display: "flex", marginTop: 24, fontSize: 32, color: "#EFEAE0" }}>
           Open house feedback, offers, and listings for real estate agents
