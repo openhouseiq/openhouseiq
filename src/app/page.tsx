@@ -45,6 +45,21 @@ const STEPS = [
   },
 ];
 
+const COMPARISON = [
+  {
+    crm: "Manages your whole pipeline, every contact, for months or years",
+    us: "Captures the moment someone walks into an open house or rental inspection",
+  },
+  {
+    crm: "Needs setup, custom fields, and training before it's useful",
+    us: "Print a QR code and go",
+  },
+  {
+    crm: "Doesn't know what your seller or landlord actually cares about",
+    us: "Ranks every offer or application against exactly that",
+  },
+];
+
 const INCLUDED = [
   "Unlimited listings and QR codes",
   "Structured visitor feedback, offers & rental applications",
@@ -138,6 +153,48 @@ export default function Home() {
               <Button variant="primary">Get started free</Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="border-t border-line px-6 py-20">
+        <div className="mx-auto max-w-4xl">
+          <div className="text-center">
+            <h2 className="font-serif text-3xl font-medium text-ink">
+              Not another CRM
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-ink-soft">
+              OpenHouseIQ isn&apos;t trying to replace the CRM you already
+              use — it&apos;s built for one moment your CRM was never
+              designed for.
+            </p>
+          </div>
+
+          <div className="mt-12 overflow-hidden rounded-md border border-line">
+            <div className="grid grid-cols-2 border-b border-line bg-paper-card text-sm font-medium">
+              <div className="px-6 py-3 text-ink-soft">Your CRM</div>
+              <div className="border-l border-line px-6 py-3 text-pine">
+                OpenHouseIQ
+              </div>
+            </div>
+            {COMPARISON.map((row, i) => (
+              <div
+                key={row.crm}
+                className={`grid grid-cols-2 bg-paper-card ${i > 0 ? "border-t border-line" : ""}`}
+              >
+                <div className="px-6 py-4 text-sm text-ink-soft">
+                  {row.crm}
+                </div>
+                <div className="border-l border-line px-6 py-4 text-sm text-ink">
+                  {row.us}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-8 text-center text-sm text-ink-soft">
+            Export every lead to CSV and drop it into whatever you already
+            use — OpenHouseIQ was never trying to replace it.
+          </p>
         </div>
       </section>
 
