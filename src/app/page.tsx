@@ -71,20 +71,22 @@ const INCLUDED = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-paper">
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
-        <span className="font-serif text-xl tracking-tight">
-          <span className="text-brass">C</span>
-          <span className="text-ink">ue</span>
-          <span className="text-brass">P</span>
-          <span className="text-ink">roperty</span>
-        </span>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-ink-soft hover:text-brass">
-            Log in
-          </Link>
-          <Link href="/signup">
-            <Button variant="primary">Sign up</Button>
-          </Link>
+      <header className="bg-navy px-6 py-6">
+        <div className="mx-auto flex max-w-5xl items-center justify-between">
+          <span className="font-serif text-xl tracking-tight">
+            <span className="text-brass">C</span>
+            <span className="text-paper">ue</span>
+            <span className="text-brass">P</span>
+            <span className="text-paper">roperty</span>
+          </span>
+          <div className="flex items-center gap-4">
+            <Link href="/login" className="text-sm text-navy-soft hover:text-brass">
+              Log in
+            </Link>
+            <Link href="/signup">
+              <Button variant="primary">Sign up</Button>
+            </Link>
+          </div>
         </div>
       </header>
 

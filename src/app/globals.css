@@ -1,23 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #1b2430;
-  --foreground: #efeae0;
+  --background: #efeae0;
+  --foreground: #1b2430;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* CueProperty brand palette — dark navy theme */
-  --color-paper: #1b2430;
-  --color-paper-card: #242e3d;
-  --color-ink: #efeae0;
-  --color-ink-soft: #a6a49b;
+  /* CueProperty brand palette — light content, dark navy header/brand accents */
+  --color-paper: #efeae0;
+  --color-paper-card: #ffffff;
+  --color-ink: #1b2430;
+  --color-ink-soft: #3b4657;
+  --color-navy: #1b2430;
+  --color-navy-soft: #efeae0cc;
   --color-brass: #b08d57;
-  --color-pine: #4a7a5c;
-  --color-line: #34404f;
-  --color-error: #c85a44;
+  --color-line: #dad3c2;
+  --color-error: #a83e2c;
 
   --font-sans: var(--font-inter);
   --font-serif: var(--font-source-serif);

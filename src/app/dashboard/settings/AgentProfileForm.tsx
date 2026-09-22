@@ -6,7 +6,7 @@ import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 
 const fileInputClasses =
-  "w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-paper";
+  "w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink";
 
 async function uploadHeadshot(userId: string, file: File) {
   const supabase = createClient();

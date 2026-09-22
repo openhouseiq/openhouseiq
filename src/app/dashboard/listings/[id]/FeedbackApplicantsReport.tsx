@@ -31,7 +31,7 @@ const INTEREST_LEVEL_STYLES: Record<string, string> = {
   not_interested: "bg-line text-ink-soft",
   considering: "bg-line text-ink-soft",
   very_interested: "bg-brass text-ink",
-  ready_to_offer: "bg-brass text-paper",
+  ready_to_offer: "bg-brass text-ink",
 };
 
 function CategoryStars({ label, value }: { label: string; value: number | null }) {
@@ -54,7 +54,7 @@ function MatchBadge({ score }: { score: ApplicantScore }) {
   if (score.matchPercent === null) return null;
   const style =
     score.matchPercent >= 75
-      ? "bg-brass text-paper"
+      ? "bg-brass text-ink"
       : score.matchPercent >= 40
         ? "bg-brass text-ink"
         : "bg-line text-ink-soft";

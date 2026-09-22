@@ -1,13 +1,13 @@
 export default function DashboardLoading() {
   return (
     <div className="min-h-screen bg-paper">
-      <header className="border-b border-line bg-paper-card px-6 py-4">
+      <header className="bg-navy px-6 py-4">
         <div className="flex items-center justify-between gap-3">
           <span className="font-serif text-xl tracking-tight">
             <span className="text-brass">C</span>
-            <span className="text-ink">ue</span>
+            <span className="text-paper">ue</span>
             <span className="text-brass">P</span>
-            <span className="text-ink">roperty</span>
+            <span className="text-paper">roperty</span>
           </span>
         </div>
       </header>

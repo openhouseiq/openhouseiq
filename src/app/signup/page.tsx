@@ -9,7 +9,7 @@ import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 
 const fileInputClasses =
-  "w-full text-sm text-[#3b4657] file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-paper";
+  "w-full text-sm text-[#3b4657] file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -66,7 +66,7 @@ export default function SignUpPage() {
       description="CueProperty helps real estate agents run open houses and follow up with leads in one place."
       footer="© 2026 CueProperty"
     >
-      <h2 className="font-serif text-2xl font-medium text-paper">
+      <h2 className="font-serif text-2xl font-medium text-ink">
         Create your account
       </h2>
       <p className="mt-1.5 text-sm text-[#3b4657]">
@@ -112,7 +112,7 @@ export default function SignUpPage() {
           />
 
           <div className="border-t border-line pt-4">
-            <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-paper">
+            <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-ink">
               Headshot
             </label>
             <p className="mb-1.5 text-xs text-[#3b4657]">
