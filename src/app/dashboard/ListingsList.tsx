@@ -162,29 +162,32 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
           placeholder="Search by address…"
           className="w-full rounded-md border border-line bg-paper-card px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-brass focus:outline-none sm:max-w-xs"
         />
-        <div className="flex gap-3">
-          <div className="flex">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-ink-soft">Show:</span>
             <button
               type="button"
               onClick={() => setShowSale((v) => !v)}
-              className={`rounded-l-md border px-3 py-2 text-sm font-medium transition-colors ${
+              aria-pressed={showSale}
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                 showSale
                   ? "border-brass bg-brass text-ink"
-                  : "border-line bg-white text-ink hover:border-brass"
+                  : "border-line bg-white text-ink-soft hover:border-brass hover:text-ink"
               }`}
             >
-              For sale
+              {showSale ? "✓ For sale" : "For sale"}
             </button>
             <button
               type="button"
               onClick={() => setShowRental((v) => !v)}
-              className={`-ml-px rounded-r-md border px-3 py-2 text-sm font-medium transition-colors ${
+              aria-pressed={showRental}
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                 showRental
                   ? "border-brass bg-brass text-ink"
-                  : "border-line bg-white text-ink hover:border-brass"
+                  : "border-line bg-white text-ink-soft hover:border-brass hover:text-ink"
               }`}
             >
-              Rental
+              {showRental ? "✓ Rental" : "Rental"}
             </button>
           </div>
           <select
