@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/service";
+import { checkInfrastructureCheckpoint } from "@/lib/infraCheckpoints";
 
 export async function POST(request: Request) {
   const signature = request.headers.get("stripe-signature");
@@ -44,6 +45,8 @@ export async function POST(request: Request) {
             updated_at: new Date().toISOString(),
           })
           .eq("user_id", userId);
+
+        await checkInfrastructureCheckpoint();
       }
       break;
     }
