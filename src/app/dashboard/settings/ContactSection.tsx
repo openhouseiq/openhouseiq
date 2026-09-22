@@ -63,7 +63,7 @@ export function ContactSection({
           rows={4}
           required
           placeholder="How can we help?"
-          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
+          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
         />
 
         {error ? <p className="text-sm text-error">{error}</p> : null}
@@ -86,8 +86,8 @@ export function ContactSection({
               </p>
               <p className="mt-1 text-sm text-ink">{m.message}</p>
               {m.reply_text ? (
-                <div className="mt-2 rounded-md bg-pine/5 p-2">
-                  <p className="text-xs font-medium text-pine">Reply</p>
+                <div className="mt-2 rounded-md bg-brass/5 p-2">
+                  <p className="text-xs font-medium text-brass">Reply</p>
                   <p className="mt-0.5 text-sm text-ink">{m.reply_text}</p>
                 </div>
               ) : (

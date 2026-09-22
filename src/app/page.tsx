@@ -79,7 +79,7 @@ export default function Home() {
           <span className="text-ink">roperty</span>
         </span>
         <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-ink-soft hover:text-pine">
+          <Link href="/login" className="text-sm text-ink-soft hover:text-brass">
             Log in
           </Link>
           <Link href="/signup">
@@ -174,7 +174,7 @@ export default function Home() {
           <div className="mt-12 overflow-hidden rounded-md border border-line">
             <div className="grid grid-cols-2 border-b border-line bg-paper-card text-sm font-medium">
               <div className="px-6 py-3 text-ink-soft">Your CRM</div>
-              <div className="border-l border-line px-6 py-3 text-pine">
+              <div className="border-l border-line px-6 py-3 text-brass">
                 CueProperty
               </div>
             </div>
@@ -219,8 +219,8 @@ export default function Home() {
                 </span>
               </p>
             </div>
-            <div className="rounded-md border-2 border-pine bg-paper-card p-8">
-              <p className="text-sm font-medium text-pine">Yearly · save 2 months</p>
+            <div className="rounded-md border-2 border-brass bg-paper-card p-8">
+              <p className="text-sm font-medium text-brass">Yearly · save 2 months</p>
               <p className="mt-2 font-serif text-4xl font-medium text-ink">
                 $390
                 <span className="text-base font-sans font-normal text-ink-soft">
@@ -233,7 +233,7 @@ export default function Home() {
           <ul className="mx-auto mt-10 max-w-md space-y-2 text-left">
             {INCLUDED.map((item) => (
               <li key={item} className="flex items-start gap-2 text-sm text-ink">
-                <span className="mt-0.5 text-pine">✓</span>
+                <span className="mt-0.5 text-brass">✓</span>
                 {item}
               </li>
             ))}
@@ -250,15 +250,15 @@ export default function Home() {
       <footer className="border-t border-line px-6 py-6 text-center text-xs text-ink-soft">
         <p>© 2026 CueProperty</p>
         <p className="mt-2">
-          <Link href="/terms" className="underline hover:text-pine">
+          <Link href="/terms" className="underline hover:text-brass">
             Terms
           </Link>
           <span className="mx-2">·</span>
-          <Link href="/privacy" className="underline hover:text-pine">
+          <Link href="/privacy" className="underline hover:text-brass">
             Privacy
           </Link>
           <span className="mx-2">·</span>
-          <Link href="/security" className="underline hover:text-pine">
+          <Link href="/security" className="underline hover:text-brass">
             Security
           </Link>
         </p>

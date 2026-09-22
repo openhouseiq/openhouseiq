@@ -59,7 +59,7 @@ export function PasswordForm() {
       />
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
-      {saved ? <p className="text-sm text-pine">Password updated.</p> : null}
+      {saved ? <p className="text-sm text-brass">Password updated.</p> : null}
 
       <Button type="submit" variant="primary" disabled={loading}>
         {loading ? "Saving…" : "Update password"}

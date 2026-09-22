@@ -116,7 +116,7 @@ export function BillingSection({ subscription }: { subscription: Subscription | 
               type="button"
               disabled={loading !== null}
               onClick={goToPortal}
-              className="text-sm text-pine underline disabled:opacity-60"
+              className="text-sm text-brass underline disabled:opacity-60"
             >
               {loading === "portal" ? "Loading…" : "Manage billing"}
             </button>

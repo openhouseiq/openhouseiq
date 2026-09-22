@@ -36,13 +36,13 @@ export function AuthLayout({
         ) : null}
       </div>
 
-      <div className="flex w-full flex-1 items-center justify-center bg-paper-card px-6 py-12">
+      <div className="flex w-full flex-1 items-center justify-center bg-white px-6 py-12">
         <div className="w-full max-w-[380px]">
           <h1 className="mb-8 font-serif text-2xl tracking-tight md:hidden">
             <span className="text-brass">C</span>
-            <span className="text-ink">ue</span>
+            <span className="text-paper">ue</span>
             <span className="text-brass">P</span>
-            <span className="text-ink">roperty</span>
+            <span className="text-paper">roperty</span>
           </h1>
           {children}
         </div>

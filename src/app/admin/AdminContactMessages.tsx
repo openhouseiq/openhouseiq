@@ -80,7 +80,7 @@ export function AdminContactMessages({
                 href={`mailto:${agent.email}?subject=${encodeURIComponent(
                   "Re: your CueProperty message",
                 )}`}
-                className="text-xs text-pine underline"
+                className="text-xs text-brass underline"
               >
                 {agent.email}
               </a>
@@ -88,8 +88,8 @@ export function AdminContactMessages({
             <p className="mt-2 text-sm text-ink">{m.message}</p>
 
             {m.reply_text ? (
-              <div className="mt-3 rounded-md bg-pine/5 p-3">
-                <p className="text-xs font-medium text-pine">
+              <div className="mt-3 rounded-md bg-brass/5 p-3">
+                <p className="text-xs font-medium text-brass">
                   Replied {m.replied_at ? new Date(m.replied_at).toLocaleString() : ""}
                 </p>
                 <p className="mt-1 text-sm text-ink">{m.reply_text}</p>
@@ -103,7 +103,7 @@ export function AdminContactMessages({
                   }
                   rows={2}
                   placeholder="Write a reply…"
-                  className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
+                  className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
                 />
                 {errors[m.id] ? (
                   <p className="text-sm text-error">{errors[m.id]}</p>

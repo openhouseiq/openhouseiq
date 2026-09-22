@@ -25,14 +25,14 @@ export function DashboardHeader({
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <Link
             href="/dashboard/settings"
-            className="flex items-center gap-x-4 whitespace-nowrap text-ink-soft hover:text-pine"
+            className="flex items-center gap-x-4 whitespace-nowrap text-ink-soft hover:text-brass"
           >
             <span>{agentLabel}</span>
             <span>Settings</span>
           </Link>
           <Link
             href="/dashboard/settings#contact"
-            className="whitespace-nowrap text-ink-soft hover:text-pine"
+            className="whitespace-nowrap text-ink-soft hover:text-brass"
           >
             Contact us
           </Link>
@@ -40,7 +40,7 @@ export function DashboardHeader({
         </div>
       </div>
       {backHref ? (
-        <Link href={backHref} className="mt-2 inline-block text-sm text-pine underline">
+        <Link href={backHref} className="mt-2 inline-block text-sm text-brass underline">
           {backLabel ?? "Back"}
         </Link>
       ) : null}

@@ -6,7 +6,7 @@ import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 
 const fileInputClasses =
-  "w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-pine file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink";
+  "w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-paper";
 
 async function uploadHeadshot(userId: string, file: File) {
   const supabase = createClient();
@@ -116,11 +116,11 @@ export function AgentProfileForm({
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
       {emailPending ? (
-        <p className="text-sm text-pine">
+        <p className="text-sm text-brass">
           Check your inbox (old and new address) to confirm your new email.
         </p>
       ) : saved ? (
-        <p className="text-sm text-pine">Saved.</p>
+        <p className="text-sm text-brass">Saved.</p>
       ) : null}
 
       <Button type="submit" variant="primary" disabled={loading}>

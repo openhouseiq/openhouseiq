@@ -23,7 +23,7 @@ export default function SecurityPage() {
             <p>
               An overview of how CueProperty protects agent and visitor data.
               If you need more detail for a vendor security review, contact{" "}
-              <a href="mailto:mick_orr@hotmail.com" className="text-pine underline">
+              <a href="mailto:mick_orr@hotmail.com" className="text-brass underline">
                 mick_orr@hotmail.com
               </a>
               .
@@ -99,7 +99,7 @@ export default function SecurityPage() {
               data at any time from Settings. Visitor feedback or offers can
               be deleted individually by the listing agent on request. See
               our{" "}
-              <Link href="/privacy" className="text-pine underline">
+              <Link href="/privacy" className="text-brass underline">
                 Privacy Policy
               </Link>{" "}
               for details.
@@ -113,7 +113,7 @@ export default function SecurityPage() {
             <p className="mt-2">
               If you believe you&apos;ve found a security vulnerability,
               please report it to{" "}
-              <a href="mailto:mick_orr@hotmail.com" className="text-pine underline">
+              <a href="mailto:mick_orr@hotmail.com" className="text-brass underline">
                 mick_orr@hotmail.com
               </a>{" "}
               before disclosing it publicly. We&apos;ll acknowledge reports

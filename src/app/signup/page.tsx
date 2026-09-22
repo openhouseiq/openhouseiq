@@ -9,7 +9,7 @@ import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 
 const fileInputClasses =
-  "w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-pine file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink";
+  "w-full text-sm text-[#3b4657] file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-paper";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -66,12 +66,12 @@ export default function SignUpPage() {
       description="CueProperty helps real estate agents run open houses and follow up with leads in one place."
       footer="© 2026 CueProperty"
     >
-      <h2 className="font-serif text-2xl font-medium text-ink">
+      <h2 className="font-serif text-2xl font-medium text-paper">
         Create your account
       </h2>
-      <p className="mt-1.5 text-sm text-ink-soft">
+      <p className="mt-1.5 text-sm text-[#3b4657]">
         Already have an account?{" "}
-        <Link href="/login" className="text-pine underline">
+        <Link href="/login" className="text-brass underline">
           Log in
         </Link>
       </p>
@@ -112,10 +112,10 @@ export default function SignUpPage() {
           />
 
           <div className="border-t border-line pt-4">
-            <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-ink">
+            <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-paper">
               Headshot
             </label>
-            <p className="mb-1.5 text-xs text-ink-soft">
+            <p className="mb-1.5 text-xs text-[#3b4657]">
               Optional — shown on your exported reports. You can add this
               later from Settings.
             </p>
@@ -132,13 +132,13 @@ export default function SignUpPage() {
 
           <SubmitButton loading={loading}>Sign up</SubmitButton>
 
-          <p className="text-center text-xs text-ink-soft">
+          <p className="text-center text-xs text-[#3b4657]">
             By signing up, you agree to our{" "}
-            <Link href="/terms" className="text-pine underline">
+            <Link href="/terms" className="text-brass underline">
               Terms
             </Link>{" "}
             and{" "}
-            <Link href="/privacy" className="text-pine underline">
+            <Link href="/privacy" className="text-brass underline">
               Privacy Policy
             </Link>
             .

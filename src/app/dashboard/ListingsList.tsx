@@ -49,14 +49,14 @@ function sortListings(
 
 function ListingCard({ listing }: { listing: ListingWithCounts }) {
   return (
-    <li className="flex items-center justify-between rounded-md border border-line bg-paper-card px-6 py-4 hover:border-pine">
+    <li className="flex items-center justify-between rounded-md border border-line bg-paper-card px-6 py-4 hover:border-brass">
       <Link href={`/dashboard/listings/${listing.id}`} className="flex-1">
         <div className="flex items-center gap-2">
           <p className="font-medium text-ink">{listing.address}</p>
           <span
             className={`rounded-full px-2 py-0.5 text-xs font-medium ${
               listing.listing_type === "rental"
-                ? "bg-pine/10 text-pine"
+                ? "bg-brass/10 text-brass"
                 : "bg-brass/10 text-brass"
             }`}
           >
@@ -160,7 +160,7 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by address…"
-          className="w-full rounded-md border border-line bg-paper-card px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-pine focus:outline-none sm:max-w-xs"
+          className="w-full rounded-md border border-line bg-paper-card px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-brass focus:outline-none sm:max-w-xs"
         />
         <div className="flex gap-3">
           <div className="flex">
@@ -169,8 +169,8 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
               onClick={() => setShowSale((v) => !v)}
               className={`rounded-l-md border px-3 py-2 text-sm font-medium transition-colors ${
                 showSale
-                  ? "border-pine bg-pine text-ink"
-                  : "border-line bg-white text-ink hover:border-pine"
+                  ? "border-brass bg-brass text-paper"
+                  : "border-line bg-white text-ink hover:border-brass"
               }`}
             >
               For sale
@@ -180,8 +180,8 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
               onClick={() => setShowRental((v) => !v)}
               className={`-ml-px rounded-r-md border px-3 py-2 text-sm font-medium transition-colors ${
                 showRental
-                  ? "border-pine bg-pine text-ink"
-                  : "border-line bg-white text-ink hover:border-pine"
+                  ? "border-brass bg-brass text-paper"
+                  : "border-line bg-white text-ink hover:border-brass"
               }`}
             >
               Rental
@@ -190,7 +190,7 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
-            className="rounded-md border border-line bg-paper-card px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none"
+            className="rounded-md border border-line bg-paper-card px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none"
           >
             {(Object.keys(SORT_LABELS) as SortOption[]).map((option) => (
               <option key={option} value={option}>

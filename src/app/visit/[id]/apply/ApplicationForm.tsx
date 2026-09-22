@@ -10,7 +10,7 @@ import {
 } from "@/components/listings/landlordPreferences";
 
 const selectClasses =
-  "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine";
+  "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass";
 
 const TOTAL_OCCUPANT_OPTIONS = Array.from({ length: 10 }, (_, i) => i + 1);
 const ADULT_OPTIONS = Array.from({ length: 10 }, (_, i) => i + 1);
@@ -127,7 +127,7 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
         <input
           type="checkbox"
           name="can_provide_proof_of_income"
-          className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+          className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
         />
         Can provide proof of income / employment if asked
       </label>
@@ -228,7 +228,7 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
         <input
           type="checkbox"
           name="has_pets"
-          className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+          className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
         />
         I have pets
       </label>
@@ -238,7 +238,7 @@ export function ApplicationForm({ listingId }: { listingId: string }) {
         <input
           type="checkbox"
           name="is_smoker"
-          className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+          className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
         />
         I smoke
       </label>

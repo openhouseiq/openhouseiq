@@ -84,7 +84,7 @@ export function ProductFeedbackForm() {
             onClick={() => setWouldRecommend(true)}
             className={`rounded-md border px-4 py-2 text-sm ${
               wouldRecommend === true
-                ? "border-pine bg-pine/5 text-ink"
+                ? "border-brass bg-brass/5 text-ink"
                 : "border-line text-ink-soft"
             }`}
           >
@@ -95,7 +95,7 @@ export function ProductFeedbackForm() {
             onClick={() => setWouldRecommend(false)}
             className={`rounded-md border px-4 py-2 text-sm ${
               wouldRecommend === false
-                ? "border-pine bg-pine/5 text-ink"
+                ? "border-brass bg-brass/5 text-ink"
                 : "border-line text-ink-soft"
             }`}
           >

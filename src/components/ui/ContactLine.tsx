@@ -14,13 +14,13 @@ export function ContactLine({
   return (
     <p className={className}>
       {email ? (
-        <a href={`mailto:${email}`} className="underline hover:text-pine">
+        <a href={`mailto:${email}`} className="underline hover:text-brass">
           {email}
         </a>
       ) : null}
       {email && phone ? " · " : ""}
       {phone ? (
-        <a href={`tel:${phone}`} className="underline hover:text-pine">
+        <a href={`tel:${phone}`} className="underline hover:text-brass">
           {phone}
         </a>
       ) : null}

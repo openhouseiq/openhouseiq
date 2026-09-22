@@ -36,7 +36,7 @@ const INTEREST_LEVEL_STYLES: Record<string, string> = {
   not_interested: "bg-line text-ink-soft",
   considering: "bg-line text-ink-soft",
   very_interested: "bg-brass text-ink",
-  ready_to_offer: "bg-pine text-ink",
+  ready_to_offer: "bg-brass text-paper",
 };
 
 const TIMEFRAME_LABELS: Record<string, string> = {
@@ -67,7 +67,7 @@ function MatchBadge({ score }: { score: OfferScore }) {
   if (score.matchPercent === null) return null;
   const style =
     score.matchPercent >= 75
-      ? "bg-pine text-ink"
+      ? "bg-brass text-paper"
       : score.matchPercent >= 40
         ? "bg-brass text-ink"
         : "bg-line text-ink-soft";
@@ -366,7 +366,7 @@ export function FeedbackOffersReport({
                         </span>
                       ) : null}
                     </div>
-                    <p className="text-sm font-medium text-pine">
+                    <p className="text-sm font-medium text-brass">
                       ${Number(offer.offer_amount).toLocaleString()}
                     </p>
                   </div>

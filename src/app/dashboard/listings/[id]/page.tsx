@@ -193,7 +193,7 @@ export default async function ListingDetailPage({
               </div>
               <Link
                 href={`/dashboard/listings/${listing.id}/edit#landlord-preferences`}
-                className="shrink-0 text-sm text-pine underline"
+                className="shrink-0 text-sm text-brass underline"
               >
                 Edit preferences
               </Link>
@@ -260,7 +260,7 @@ export default async function ListingDetailPage({
               </div>
               <Link
                 href={`/dashboard/listings/${listing.id}/edit#seller-preferences`}
-                className="shrink-0 text-sm text-pine underline"
+                className="shrink-0 text-sm text-brass underline"
               >
                 Edit preferences
               </Link>

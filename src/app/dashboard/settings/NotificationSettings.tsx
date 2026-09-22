@@ -149,7 +149,7 @@ export function NotificationSettings({
             checked={emailEnabled}
             disabled={emailSaving}
             onChange={(e) => toggleEmail(e.target.checked)}
-            className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+            className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
           />
           Email me on new submissions
         </label>

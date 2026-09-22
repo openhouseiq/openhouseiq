@@ -11,7 +11,7 @@ export function PasswordSection() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-sm text-pine underline"
+        className="text-sm text-brass underline"
       >
         Change password
       </button>

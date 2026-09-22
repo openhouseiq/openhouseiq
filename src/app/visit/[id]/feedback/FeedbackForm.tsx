@@ -130,7 +130,7 @@ export function FeedbackForm({
               onClick={() => setInterestLevel(level.value)}
               className={`w-full rounded-md border px-3 py-2 text-left text-sm ${
                 interestLevel === level.value
-                  ? "border-pine bg-pine/5 text-ink"
+                  ? "border-brass bg-brass/5 text-ink"
                   : "border-line text-ink-soft"
               }`}
             >
@@ -162,7 +162,7 @@ export function FeedbackForm({
               type="checkbox"
               checked={preApproved}
               onChange={(e) => setPreApproved(e.target.checked)}
-              className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+              className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
             />
             I&apos;m pre-approved for finance
           </label>
@@ -172,7 +172,7 @@ export function FeedbackForm({
             type="checkbox"
             checked={workingWithAgent}
             onChange={(e) => setWorkingWithAgent(e.target.checked)}
-            className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+            className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
           />
           I&apos;m already working with an agent
         </label>
@@ -189,7 +189,7 @@ export function FeedbackForm({
               value={timeframe}
               required
               onChange={(e) => setTimeframe(e.target.value as PurchaseTimeframe)}
-              className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
+              className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
             >
               <option value="" disabled>
                 Select one…
@@ -212,7 +212,7 @@ export function FeedbackForm({
           type="checkbox"
           checked={wantsFollowup}
           onChange={(e) => setWantsFollowup(e.target.checked)}
-          className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+          className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
         />
         I&apos;d like the agent to follow up with me
       </label>

@@ -74,7 +74,7 @@ export function OfferForm({ listingId }: { listingId: string }) {
         <select
           id="financing_type"
           name="financing_type"
-          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
+          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
         >
           <option value="cash">Cash buyer</option>
           <option value="pre_approved">Pre-approved financing</option>
@@ -93,7 +93,7 @@ export function OfferForm({ listingId }: { listingId: string }) {
           id="settlement_term"
           name="settlement_term"
           required
-          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-pine focus:outline-none focus:ring-1 focus:ring-pine"
+          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
         >
           <option value="" disabled selected>
             Select one…
@@ -110,7 +110,7 @@ export function OfferForm({ listingId }: { listingId: string }) {
         <input
           type="checkbox"
           name="waive_inspection"
-          className="h-4 w-4 rounded border-line text-pine focus:ring-pine"
+          className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
         />
         Willing to waive building & pest inspection
       </label>

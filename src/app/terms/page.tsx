@@ -147,7 +147,7 @@ export default function TermsPage() {
             <h2 className="font-serif text-lg font-medium text-ink">10. Contact</h2>
             <p className="mt-2">
               Questions about these Terms can be sent to{" "}
-              <a href="mailto:mick_orr@hotmail.com" className="text-pine underline">
+              <a href="mailto:mick_orr@hotmail.com" className="text-brass underline">
                 mick_orr@hotmail.com
               </a>
               .

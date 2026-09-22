@@ -46,7 +46,7 @@ export function ExtendTrialButton({
         type="button"
         disabled={loading}
         onClick={() => extend(90)}
-        className="text-xs text-pine underline disabled:opacity-60"
+        className="text-xs text-brass underline disabled:opacity-60"
       >
         {loading ? "Updating…" : "Set 90-day pilot"}
       </button>

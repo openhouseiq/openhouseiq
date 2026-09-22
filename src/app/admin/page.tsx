@@ -108,7 +108,7 @@ async function getFinancialYearSummary(
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  active: "bg-pine text-ink",
+  active: "bg-brass text-paper",
   trialing: "bg-brass text-ink",
   past_due: "bg-error/10 text-error",
   canceled: "bg-line text-ink-soft",
@@ -334,18 +334,18 @@ export default async function AdminPage({
             <div className="flex items-center gap-3 text-sm">
               <Link
                 href={`/admin?month=${prevMonthKey}`}
-                className="text-pine underline"
+                className="text-brass underline"
               >
                 ← Previous
               </Link>
               {!isCurrentMonth ? (
-                <Link href="/admin" className="text-pine underline">
+                <Link href="/admin" className="text-brass underline">
                   Current month
                 </Link>
               ) : null}
               <Link
                 href={`/admin?month=${nextMonthKey}`}
-                className="text-pine underline"
+                className="text-brass underline"
               >
                 Next →
               </Link>
@@ -476,7 +476,7 @@ export default async function AdminPage({
                   <td className="px-4 py-3 text-ink">{row.offersCount}</td>
                   <td className="px-4 py-3">
                     {row.productFeedbackSubmittedAt ? (
-                      <span className="rounded-full bg-pine px-2 py-0.5 text-xs font-medium text-ink">
+                      <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-paper">
                         {new Date(row.productFeedbackSubmittedAt).toLocaleDateString()}
                       </span>
                     ) : (

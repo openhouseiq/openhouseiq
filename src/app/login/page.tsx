@@ -51,10 +51,10 @@ export default function LoginPage() {
       description="Log in to manage your open houses and follow up with your leads."
       footer="© 2026 CueProperty"
     >
-      <h2 className="font-serif text-2xl font-medium text-ink">Log in</h2>
-      <p className="mt-1.5 text-sm text-ink-soft">
+      <h2 className="font-serif text-2xl font-medium text-paper">Log in</h2>
+      <p className="mt-1.5 text-sm text-[#3b4657]">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-pine underline">
+        <Link href="/signup" className="text-brass underline">
           Sign up
         </Link>
       </p>
@@ -75,7 +75,7 @@ export default function LoginPage() {
           required
         />
         <p className="text-right text-sm">
-          <Link href="/forgot-password" className="text-pine underline">
+          <Link href="/forgot-password" className="text-brass underline">
             Forgot password?
           </Link>
         </p>
