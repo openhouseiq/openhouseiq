@@ -58,13 +58,13 @@ export default async function VisitLandingPage({
         </Link>
         {listing.listing_type === "rental" ? (
           <Link href={`/visit/${listing.id}/apply`} className="block">
-            <Button variant="secondary" className="w-full">
+            <Button variant="primary" className="w-full">
               Apply to rent
             </Button>
           </Link>
         ) : (
           <Link href={`/visit/${listing.id}/offer`} className="block">
-            <Button variant="secondary" className="w-full">
+            <Button variant="primary" className="w-full">
               Submit an offer
             </Button>
           </Link>
