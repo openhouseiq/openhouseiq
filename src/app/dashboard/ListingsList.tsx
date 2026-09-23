@@ -169,7 +169,7 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
               type="button"
               onClick={() => setShowSale((v) => !v)}
               aria-pressed={showSale}
-              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                 showSale
                   ? "border-brass bg-brass text-ink"
                   : "border-line bg-white text-ink-soft hover:border-brass hover:text-ink"
@@ -181,7 +181,7 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
               type="button"
               onClick={() => setShowRental((v) => !v)}
               aria-pressed={showRental}
-              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                 showRental
                   ? "border-brass bg-brass text-ink"
                   : "border-line bg-white text-ink-soft hover:border-brass hover:text-ink"
