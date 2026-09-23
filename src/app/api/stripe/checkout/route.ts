@@ -39,21 +39,27 @@ export async function POST(request: Request) {
     );
   }
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    customer: subscription?.stripe_customer_id ?? undefined,
-    customer_email: subscription?.stripe_customer_id ? undefined : user.email,
-    client_reference_id: user.id,
-    line_items: [{ price: priceId, quantity: 1 }],
-    subscription_data: {
-      trial_period_days: 14,
-      metadata: { supabase_user_id: user.id },
-    },
-    payment_method_collection: "always",
-    managed_payments: { enabled: false },
-    success_url: `${origin}/dashboard/settings?billing=success`,
-    cancel_url: `${origin}/dashboard/settings?billing=cancelled`,
-  });
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer: subscription?.stripe_customer_id ?? undefined,
+      customer_email: subscription?.stripe_customer_id ? undefined : user.email,
+      client_reference_id: user.id,
+      line_items: [{ price: priceId, quantity: 1 }],
+      subscription_data: {
+        trial_period_days: 14,
+        metadata: { supabase_user_id: user.id },
+      },
+      payment_method_collection: "always",
+      managed_payments: { enabled: false },
+      success_url: `${origin}/dashboard/settings?billing=success`,
+      cancel_url: `${origin}/dashboard/settings?billing=cancelled`,
+    });
 
-  return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: session.url });
+  } catch (error) {
+    console.error("Stripe checkout session creation failed:", error);
+    const message = error instanceof Error ? error.message : "Could not start checkout.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

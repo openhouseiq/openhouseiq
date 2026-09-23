@@ -138,8 +138,8 @@ export default function PrivacyPage() {
             <h2 className="font-serif text-lg font-medium text-ink">8. Contact</h2>
             <p className="mt-2">
               For privacy questions or requests, contact{" "}
-              <a href="mailto:mick_orr@hotmail.com" className="text-brass underline">
-                mick_orr@hotmail.com
+              <a href="mailto:contact@cueproperty.com.au" className="text-brass underline">
+                contact@cueproperty.com.au
               </a>
               .
             </p>

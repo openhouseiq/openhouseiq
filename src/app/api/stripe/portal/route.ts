@@ -30,10 +30,16 @@ export async function POST() {
   const protocol = host?.startsWith("localhost") ? "http" : "https";
   const origin = `${protocol}://${host}`;
 
-  const session = await stripe.billingPortal.sessions.create({
-    customer: subscription.stripe_customer_id,
-    return_url: `${origin}/dashboard/settings`,
-  });
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: subscription.stripe_customer_id,
+      return_url: `${origin}/dashboard/settings`,
+    });
 
-  return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: session.url });
+  } catch (error) {
+    console.error("Stripe billing portal session creation failed:", error);
+    const message = error instanceof Error ? error.message : "Could not open billing portal.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
