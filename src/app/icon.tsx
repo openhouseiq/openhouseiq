@@ -20,7 +20,7 @@ export default function Icon() {
           letterSpacing: -1,
         }}
       >
-        IQ
+        CP
       </div>
     ),
     { ...size },
