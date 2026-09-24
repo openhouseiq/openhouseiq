@@ -138,6 +138,9 @@ export default async function ListingDetailPage({
             </p>
           </div>
           <div className="flex gap-2">
+            <Link href={`/dashboard/listings/${listing.id}/report`}>
+              <Button variant="secondary">View report</Button>
+            </Link>
             <Link href={`/dashboard/listings/${listing.id}/edit`}>
               <Button variant="secondary">Edit</Button>
             </Link>
