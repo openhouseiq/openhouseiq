@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe";
 import { MonthlyStatementExportButton } from "./MonthlyStatementExportButton";
 import { ExtendTrialButton } from "./ExtendTrialButton";
+import { DeleteUserButton } from "./DeleteUserButton";
 import { AdminContactMessages } from "./AdminContactMessages";
 import type { ProductFeedback, ContactMessage } from "@/lib/types";
 
@@ -486,7 +487,15 @@ export default async function AdminPage({
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <ExtendTrialButton userId={row.id} email={row.email} />
+                    <div className="flex flex-col gap-2">
+                      <ExtendTrialButton userId={row.id} email={row.email} />
+                      <DeleteUserButton
+                        userId={row.id}
+                        email={row.email}
+                        status={row.status}
+                        listingsCount={row.listingsCount}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}
