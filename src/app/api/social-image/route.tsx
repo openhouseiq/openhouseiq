@@ -161,7 +161,12 @@ export async function GET(request: Request) {
     {
       width: SIZE,
       height: SIZE,
-      headers: { "Cache-Control": "public, max-age=31536000, immutable" },
+      headers: {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        // Netlify's cache ignores the query string by default, which would
+        // serve one cached image for every headline/signature.
+        "Netlify-Vary": "query",
+      },
     },
   );
 }
