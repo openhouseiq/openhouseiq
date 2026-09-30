@@ -65,6 +65,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/api/stripe/webhook") ||
     request.nextUrl.pathname.startsWith("/api/signup-profile") ||
     request.nextUrl.pathname.startsWith("/api/facebook/publish") ||
+    request.nextUrl.pathname.startsWith("/api/facebook/insights") ||
     request.nextUrl.pathname.startsWith("/api/social-image") ||
     request.nextUrl.pathname.startsWith("/terms") ||
     request.nextUrl.pathname.startsWith("/privacy") ||
