@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   },
 };
 
+const FACEBOOK_PAGE_URL = "https://www.facebook.com/profile.php?id=61594377407694";
+
 const FAQS = [
   {
     question: "What is CueProperty?",
@@ -324,6 +326,15 @@ export default function Home() {
           <Link href="/security" className="underline hover:text-brass">
             Security
           </Link>
+          <span className="mx-2">·</span>
+          <a
+            href={FACEBOOK_PAGE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-brass"
+          >
+            Follow us on Facebook
+          </a>
         </p>
       </footer>
 
@@ -357,6 +368,7 @@ export default function Home() {
               "@type": "Organization",
               name: "CueProperty",
               url: "https://www.cueproperty.com.au",
+              sameAs: [FACEBOOK_PAGE_URL],
             },
             {
               "@context": "https://schema.org",
