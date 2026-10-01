@@ -81,6 +81,21 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => ({}));
+
+  // Health check: which Page will /api/facebook/publish post to?
+  if (body.check === "page") {
+    const pageId = process.env.FACEBOOK_PAGE_ID;
+    try {
+      const [configured, tokenOwner] = await Promise.all([
+        pageId ? graphGet(pageId, { access_token: accessToken, fields: "id,name,link" }) : null,
+        graphGet("me", { access_token: accessToken, fields: "id,name" }),
+      ]);
+      return NextResponse.json({ success: true, configured, tokenOwner });
+    } catch (error) {
+      return NextResponse.json({ error: (error as Error).message }, { status: 502 });
+    }
+  }
+
   const postIds: string[] = Array.isArray(body.postIds)
     ? body.postIds.filter(
         (id: unknown): id is string =>
