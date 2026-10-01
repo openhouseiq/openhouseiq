@@ -120,8 +120,7 @@ export default async function ListingReportPage({
     listing.seller_pref_price ||
       listing.seller_pref_settlement ||
       listing.seller_pref_waive_inspection ||
-      listing.seller_pref_finance_approved ||
-      listing.seller_pref_cash_buyer,
+      listing.seller_pref_finance,
   );
   const hasLandlordPreferences = Boolean(
     listing.landlord_pref_pets ||

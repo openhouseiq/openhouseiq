@@ -13,6 +13,7 @@ import {
   PRICE_LABELS,
   SETTLEMENT_LABELS,
   LEVEL_LABELS,
+  FINANCE_LABELS,
 } from "@/components/listings/sellerPreferences";
 import {
   PETS_LABELS,
@@ -272,8 +273,7 @@ export default async function ListingDetailPage({
             {listing.seller_pref_price ||
             listing.seller_pref_settlement ||
             listing.seller_pref_waive_inspection ||
-            listing.seller_pref_finance_approved ||
-            listing.seller_pref_cash_buyer ? (
+            listing.seller_pref_finance ? (
               <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
                 {listing.seller_pref_price ? (
                   <div>
@@ -299,19 +299,11 @@ export default async function ListingDetailPage({
                     </dd>
                   </div>
                 ) : null}
-                {listing.seller_pref_finance_approved ? (
+                {listing.seller_pref_finance ? (
                   <div>
-                    <dt className="text-xs text-ink-soft">Finance approved</dt>
+                    <dt className="text-xs text-ink-soft">Finance</dt>
                     <dd className="text-sm text-ink">
-                      {LEVEL_LABELS[listing.seller_pref_finance_approved]}
-                    </dd>
-                  </div>
-                ) : null}
-                {listing.seller_pref_cash_buyer ? (
-                  <div>
-                    <dt className="text-xs text-ink-soft">Cash buyer</dt>
-                    <dd className="text-sm text-ink">
-                      {LEVEL_LABELS[listing.seller_pref_cash_buyer]}
+                      {FINANCE_LABELS[listing.seller_pref_finance]}
                     </dd>
                   </div>
                 ) : null}

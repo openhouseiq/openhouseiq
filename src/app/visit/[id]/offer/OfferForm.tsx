@@ -69,7 +69,7 @@ export function OfferForm({ listingId }: { listingId: string }) {
 
       <div>
         <label htmlFor="financing_type" className="mb-1.5 block text-sm font-medium text-ink">
-          Financing
+          Finance
         </label>
         <select
           id="financing_type"

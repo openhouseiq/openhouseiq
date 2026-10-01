@@ -21,6 +21,13 @@ export const LEVEL_OPTIONS: { value: string; label: string }[] = [
   { value: "required", label: "Required" },
 ];
 
+export const FINANCE_OPTIONS: { value: string; label: string }[] = [
+  { value: "finance_preferred", label: "Finance approved — preferred" },
+  { value: "finance_required", label: "Finance approved — required" },
+  { value: "cash_preferred", label: "Cash buyer — preferred" },
+  { value: "cash_required", label: "Cash buyer — required" },
+];
+
 export const PRICE_LABELS = Object.fromEntries(
   PRICE_OPTIONS.map((o) => [o.value, o.label]),
 );
@@ -29,4 +36,7 @@ export const SETTLEMENT_LABELS = Object.fromEntries(
 );
 export const LEVEL_LABELS = Object.fromEntries(
   LEVEL_OPTIONS.map((o) => [o.value, o.label]),
+);
+export const FINANCE_LABELS = Object.fromEntries(
+  FINANCE_OPTIONS.map((o) => [o.value, o.label]),
 );

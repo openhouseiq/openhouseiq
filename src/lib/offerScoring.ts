@@ -31,8 +31,7 @@ export function scoreOffer(
     | "seller_pref_price"
     | "seller_pref_settlement"
     | "seller_pref_waive_inspection"
-    | "seller_pref_finance_approved"
-    | "seller_pref_cash_buyer"
+    | "seller_pref_finance"
   >,
 ): OfferScore {
   let score = 0;
@@ -65,25 +64,19 @@ export function scoreOffer(
     }
   }
 
-  const financeWeight = LEVEL_WEIGHTS[listing.seller_pref_finance_approved ?? ""] ?? 0;
-  if (financeWeight > 0) {
+  const financePref = listing.seller_pref_finance;
+  if (financePref) {
+    const isRequired = financePref.endsWith("required");
+    const wantsCashOnly = financePref.startsWith("cash");
+    const financeWeight = isRequired ? LEVEL_WEIGHTS.required : LEVEL_WEIGHTS.preferred;
     maxScore += financeWeight;
-    const hasApprovedFinance =
-      offer.financing_type === "cash" || offer.financing_type === "pre_approved";
-    if (hasApprovedFinance) {
+    const satisfied = wantsCashOnly
+      ? offer.financing_type === "cash"
+      : offer.financing_type === "cash" || offer.financing_type === "pre_approved";
+    if (satisfied) {
       score += financeWeight;
-    } else if (listing.seller_pref_finance_approved === "required") {
-      unmetRequired.push("Finance approved");
-    }
-  }
-
-  const cashWeight = LEVEL_WEIGHTS[listing.seller_pref_cash_buyer ?? ""] ?? 0;
-  if (cashWeight > 0) {
-    maxScore += cashWeight;
-    if (offer.financing_type === "cash") {
-      score += cashWeight;
-    } else if (listing.seller_pref_cash_buyer === "required") {
-      unmetRequired.push("Cash buyer");
+    } else if (isRequired) {
+      unmetRequired.push(wantsCashOnly ? "Cash buyer" : "Finance approved");
     }
   }
 

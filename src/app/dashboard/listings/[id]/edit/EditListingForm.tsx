@@ -33,10 +33,8 @@ export function EditListingForm({ listing }: { listing: Listing }) {
       String(formData.get("sellerPrefSettlement") ?? "") || null;
     const sellerPrefWaiveInspection =
       String(formData.get("sellerPrefWaiveInspection") ?? "") || null;
-    const sellerPrefFinanceApproved =
-      String(formData.get("sellerPrefFinanceApproved") ?? "") || null;
-    const sellerPrefCashBuyer =
-      String(formData.get("sellerPrefCashBuyer") ?? "") || null;
+    const sellerPrefFinance =
+      String(formData.get("sellerPrefFinance") ?? "") || null;
     const landlordPrefPets = String(formData.get("landlordPrefPets") ?? "") || null;
     const landlordPrefMinLeaseTerm =
       String(formData.get("landlordPrefMinLeaseTerm") ?? "") || null;
@@ -60,8 +58,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
               seller_pref_price: sellerPrefPrice,
               seller_pref_settlement: sellerPrefSettlement,
               seller_pref_waive_inspection: sellerPrefWaiveInspection,
-              seller_pref_finance_approved: sellerPrefFinanceApproved,
-              seller_pref_cash_buyer: sellerPrefCashBuyer,
+              seller_pref_finance: sellerPrefFinance,
             }
           : {
               landlord_pref_pets: landlordPrefPets,
@@ -151,8 +148,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
             sellerPrefPrice: listing.seller_pref_price,
             sellerPrefSettlement: listing.seller_pref_settlement,
             sellerPrefWaiveInspection: listing.seller_pref_waive_inspection,
-            sellerPrefFinanceApproved: listing.seller_pref_finance_approved,
-            sellerPrefCashBuyer: listing.seller_pref_cash_buyer,
+            sellerPrefFinance: listing.seller_pref_finance,
           }}
         />
       ) : (

@@ -15,8 +15,7 @@ type ScoringListing = Pick<
   | "seller_pref_price"
   | "seller_pref_settlement"
   | "seller_pref_waive_inspection"
-  | "seller_pref_finance_approved"
-  | "seller_pref_cash_buyer"
+  | "seller_pref_finance"
 >;
 
 const FINANCING_LABELS: Record<string, string> = {
@@ -123,8 +122,7 @@ export function FeedbackOffersReport({
     listing.seller_pref_price ||
       listing.seller_pref_settlement ||
       listing.seller_pref_waive_inspection ||
-      listing.seller_pref_finance_approved ||
-      listing.seller_pref_cash_buyer,
+      listing.seller_pref_finance,
   );
 
   const rankedOffers = useMemo(() => {

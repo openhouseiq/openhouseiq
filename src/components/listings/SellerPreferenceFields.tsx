@@ -2,6 +2,7 @@ import {
   PRICE_OPTIONS,
   SETTLEMENT_OPTIONS,
   LEVEL_OPTIONS,
+  FINANCE_OPTIONS,
 } from "./sellerPreferences";
 
 const selectClasses =
@@ -47,8 +48,7 @@ export function SellerPreferenceFields({
     sellerPrefPrice?: string | null;
     sellerPrefSettlement?: string | null;
     sellerPrefWaiveInspection?: string | null;
-    sellerPrefFinanceApproved?: string | null;
-    sellerPrefCashBuyer?: string | null;
+    sellerPrefFinance?: string | null;
   };
 }) {
   return (
@@ -82,16 +82,10 @@ export function SellerPreferenceFields({
         defaultValue={defaults?.sellerPrefWaiveInspection}
       />
       <PreferenceSelect
-        id="sellerPrefFinanceApproved"
-        label="Finance approved"
-        options={LEVEL_OPTIONS}
-        defaultValue={defaults?.sellerPrefFinanceApproved}
-      />
-      <PreferenceSelect
-        id="sellerPrefCashBuyer"
-        label="Cash buyer"
-        options={LEVEL_OPTIONS}
-        defaultValue={defaults?.sellerPrefCashBuyer}
+        id="sellerPrefFinance"
+        label="Finance"
+        options={FINANCE_OPTIONS}
+        defaultValue={defaults?.sellerPrefFinance}
       />
     </div>
   );

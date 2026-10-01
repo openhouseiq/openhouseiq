@@ -15,6 +15,12 @@ export type SettlementPreference =
 
 export type PreferenceLevel = "no_preference" | "preferred" | "required";
 
+export type FinancePreference =
+  | "finance_preferred"
+  | "finance_required"
+  | "cash_preferred"
+  | "cash_required";
+
 export type ListingType = "sale" | "rental";
 
 export type PetsPreference = "no_preference" | "not_allowed" | "allowed";
@@ -48,8 +54,7 @@ export type Listing = {
   seller_pref_price: PriceImportance | null;
   seller_pref_settlement: SettlementPreference | null;
   seller_pref_waive_inspection: PreferenceLevel | null;
-  seller_pref_finance_approved: PreferenceLevel | null;
-  seller_pref_cash_buyer: PreferenceLevel | null;
+  seller_pref_finance: FinancePreference | null;
   landlord_pref_pets: PetsPreference | null;
   landlord_pref_min_lease_term: LeaseTermPreference | null;
   landlord_pref_smoking: SmokingPreference | null;
