@@ -123,6 +123,57 @@ export type Subscription = {
   updated_at: string;
 };
 
+export type AgencyStatus =
+  | "incomplete"
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "incomplete_expired"
+  | "unpaid";
+
+export type Agency = {
+  id: string;
+  name: string;
+  owner_user_id: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  price_id: string | null;
+  billing_interval: "month" | "year" | null;
+  status: AgencyStatus;
+  trial_ends_at: string | null;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AgencyMemberStatus = "invited" | "active" | "removed";
+
+export type AgencyMember = {
+  id: string;
+  agency_id: string;
+  user_id: string | null;
+  email: string;
+  status: AgencyMemberStatus;
+  invited_at: string;
+  joined_at: string | null;
+  removed_at: string | null;
+};
+
+export const AGENCY_DISCOUNT_TIERS: { minSeats: number; maxSeats: number | null; discount: number }[] = [
+  { minSeats: 1, maxSeats: 2, discount: 0 },
+  { minSeats: 3, maxSeats: 6, discount: 0.1 },
+  { minSeats: 7, maxSeats: 19, discount: 0.15 },
+  { minSeats: 20, maxSeats: null, discount: 0.2 },
+];
+
+export function agencyDiscountForSeats(seats: number): number {
+  const tier = AGENCY_DISCOUNT_TIERS.find(
+    (t) => seats >= t.minSeats && (t.maxSeats === null || seats <= t.maxSeats),
+  );
+  return tier?.discount ?? 0;
+}
+
 export type Offer = {
   id: string;
   listing_id: string;

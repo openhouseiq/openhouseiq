@@ -176,6 +176,7 @@ export default async function AdminPage({
   const [
     { data: usersData },
     { data: subs },
+    { data: agencyRows },
     { data: listings },
     { data: feedbackRows },
     { data: offerRows },
@@ -184,6 +185,10 @@ export default async function AdminPage({
   ] = await Promise.all([
     service.auth.admin.listUsers({ perPage: 1000 }),
     service.from("subscriptions").select("*"),
+    service
+      .from("agencies")
+      .select("id, stripe_subscription_id, price_id, billing_interval, status")
+      .eq("status", "active"),
     service.from("listings").select("id, agent_id, created_at"),
     service.from("feedback").select("listing_id"),
     service.from("offers").select("listing_id"),
@@ -291,9 +296,38 @@ export default async function AdminPage({
     mrr += monthlyEquivalentByPriceId.get(s.price_id) ?? 0;
   }
 
+  // Agency subscriptions use Stripe's volume-tiered pricing: the unit
+  // price depends on the current seat quantity, so (unlike solo
+  // subscriptions) there's no flat unit_amount on the price itself —
+  // look up each agency's live subscription and price tiers instead.
+  const agencyMonthlyAmounts = await Promise.all(
+    (agencyRows ?? []).map(async (agency): Promise<number> => {
+      if (!agency.stripe_subscription_id || !agency.price_id) return 0;
+      try {
+        const [subscription, price] = await Promise.all([
+          stripe.subscriptions.retrieve(agency.stripe_subscription_id),
+          stripe.prices.retrieve(agency.price_id, { expand: ["tiers"] }),
+        ]);
+        const quantity = subscription.items.data[0]?.quantity ?? 0;
+        const tiers = price.tiers ?? [];
+        const tier =
+          tiers.find((t) => t.up_to !== null && quantity <= t.up_to) ??
+          tiers[tiers.length - 1];
+        const unitAmount = (tier?.unit_amount ?? 0) / 100;
+        const total = unitAmount * quantity;
+        return agency.billing_interval === "year" ? total / 12 : total;
+      } catch {
+        // Subscription or price no longer exists in Stripe — skip.
+        return 0;
+      }
+    }),
+  );
+  mrr += agencyMonthlyAmounts.reduce((sum, amount) => sum + amount, 0);
+
   const stats = [
     { label: "Total agents", value: users.length },
     { label: "Active subscriptions", value: activeCount },
+    { label: "Active agencies", value: (agencyRows ?? []).length },
     { label: "On trial", value: trialingCount },
     { label: "Past due", value: pastDueCount },
     { label: "Canceled", value: canceledCount },

@@ -5,6 +5,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { AgentProfileForm } from "./AgentProfileForm";
 import { PasswordSection } from "./PasswordSection";
 import { BillingSection } from "./BillingSection";
+import { AgencySection } from "./AgencySection";
 import { ContactSection } from "./ContactSection";
 import { FAQSection } from "./FAQSection";
 import { InstallAppSection } from "./InstallAppSection";
@@ -26,20 +27,56 @@ export default async function SettingsPage() {
   const emailNotificationsEnabled =
     (user.user_metadata?.email_notifications_enabled as boolean | undefined) ?? true;
 
-  const [{ data: subscription }, { data: contactMessages }] = await Promise.all([
-    supabase
-      .from("subscriptions")
-      .select("*")
+  const [{ data: subscription }, { data: contactMessages }, { data: ownedAgency }] =
+    await Promise.all([
+      supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", user.id)
+        .returns<Subscription[]>()
+        .maybeSingle(),
+      supabase
+        .from("contact_messages")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .returns<ContactMessage[]>(),
+      supabase.from("agencies").select("id, name").eq("owner_user_id", user.id).maybeSingle(),
+    ]);
+
+  let membership: { agencyName: string; isOwner: boolean } | null = null;
+  let pendingInvite: { agencyId: string; agencyName: string } | null = null;
+
+  if (ownedAgency) {
+    membership = { agencyName: ownedAgency.name, isOwner: true };
+  } else {
+    const { data: activeMembership } = await supabase
+      .from("agency_members")
+      .select("agency_id, agencies(name)")
       .eq("user_id", user.id)
-      .returns<Subscription[]>()
-      .maybeSingle(),
-    supabase
-      .from("contact_messages")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .returns<ContactMessage[]>(),
-  ]);
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (activeMembership) {
+      const agencyRow = activeMembership.agencies as unknown as { name: string } | null;
+      membership = { agencyName: agencyRow?.name ?? "your agency", isOwner: false };
+    } else if (user.email) {
+      const { data: invite } = await supabase
+        .from("agency_members")
+        .select("agency_id, agencies(name)")
+        .eq("email", user.email.toLowerCase())
+        .eq("status", "invited")
+        .maybeSingle();
+
+      if (invite) {
+        const agencyRow = invite.agencies as unknown as { name: string } | null;
+        pendingInvite = {
+          agencyId: invite.agency_id,
+          agencyName: agencyRow?.name ?? "an agency",
+        };
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-paper">
@@ -55,7 +92,12 @@ export default async function SettingsPage() {
         <div className="mt-8 space-y-6">
           <section className="rounded-md border border-line bg-paper-card p-6">
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">Billing</h2>
-            <BillingSection subscription={subscription} />
+            <BillingSection subscription={subscription} coveredByAgency={Boolean(membership)} />
+          </section>
+
+          <section className="rounded-md border border-line bg-paper-card p-6">
+            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Agency</h2>
+            <AgencySection membership={membership} pendingInvite={pendingInvite} />
           </section>
 
           <section className="rounded-md border border-line bg-paper-card p-6">

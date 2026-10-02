@@ -24,29 +24,57 @@ export async function POST(request: Request) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
-      const userId = session.client_reference_id;
-      if (userId && session.subscription) {
+      if (session.subscription) {
         const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string,
         );
-        await supabase
-          .from("subscriptions")
-          .update({
-            stripe_customer_id: session.customer as string,
-            stripe_subscription_id: subscription.id,
-            status: subscription.status,
-            price_id: subscription.items.data[0]?.price.id ?? null,
-            trial_ends_at: subscription.trial_end
-              ? new Date(subscription.trial_end * 1000).toISOString()
-              : null,
-            current_period_end: new Date(
-              subscription.items.data[0].current_period_end * 1000,
-            ).toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("user_id", userId);
 
-        await checkInfrastructureCheckpoint();
+        if (subscription.metadata?.type === "agency") {
+          const agencyId = subscription.metadata.agency_id;
+          if (agencyId) {
+            await supabase
+              .from("agencies")
+              .update({
+                stripe_customer_id: session.customer as string,
+                stripe_subscription_id: subscription.id,
+                status: subscription.status,
+                price_id: subscription.items.data[0]?.price.id ?? null,
+                trial_ends_at: subscription.trial_end
+                  ? new Date(subscription.trial_end * 1000).toISOString()
+                  : null,
+                current_period_end: new Date(
+                  subscription.items.data[0].current_period_end * 1000,
+                ).toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", agencyId);
+
+            await checkInfrastructureCheckpoint();
+          }
+          break;
+        }
+
+        const userId = session.client_reference_id;
+        if (userId) {
+          await supabase
+            .from("subscriptions")
+            .update({
+              stripe_customer_id: session.customer as string,
+              stripe_subscription_id: subscription.id,
+              status: subscription.status,
+              price_id: subscription.items.data[0]?.price.id ?? null,
+              trial_ends_at: subscription.trial_end
+                ? new Date(subscription.trial_end * 1000).toISOString()
+                : null,
+              current_period_end: new Date(
+                subscription.items.data[0].current_period_end * 1000,
+              ).toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq("user_id", userId);
+
+          await checkInfrastructureCheckpoint();
+        }
       }
       break;
     }
@@ -54,6 +82,29 @@ export async function POST(request: Request) {
     case "customer.subscription.updated":
     case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
+
+      if (subscription.metadata?.type === "agency") {
+        const agencyId = subscription.metadata.agency_id;
+        if (agencyId) {
+          await supabase
+            .from("agencies")
+            .update({
+              status: subscription.status,
+              price_id: subscription.items.data[0]?.price.id ?? null,
+              trial_ends_at: subscription.trial_end
+                ? new Date(subscription.trial_end * 1000).toISOString()
+                : null,
+              current_period_end: new Date(
+                subscription.items.data[0].current_period_end * 1000,
+              ).toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", agencyId)
+            .eq("stripe_subscription_id", subscription.id);
+        }
+        break;
+      }
+
       const userId = subscription.metadata?.supabase_user_id;
 
       const update = {

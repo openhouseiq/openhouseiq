@@ -9,7 +9,13 @@ function daysLeft(iso: string): number {
   return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
 }
 
-export function BillingSection({ subscription }: { subscription: Subscription | null }) {
+export function BillingSection({
+  subscription,
+  coveredByAgency = false,
+}: {
+  subscription: Subscription | null;
+  coveredByAgency?: boolean;
+}) {
   const [loading, setLoading] = useState<"monthly" | "yearly" | "portal" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,6 +64,15 @@ export function BillingSection({ subscription }: { subscription: Subscription | 
       setError("Something went wrong. Please try again.");
       setLoading(null);
     }
+  }
+
+  if (coveredByAgency) {
+    return (
+      <p className="text-sm text-ink">
+        Your access is covered by an agency plan — see the Agency section
+        below for details.
+      </p>
+    );
   }
 
   return (
