@@ -112,6 +112,13 @@ const INCLUDED = [
   "14-day free trial",
 ];
 
+const AGENCY_TIERS = [
+  { range: "1-2 agents", discount: "Full price" },
+  { range: "3-6 agents", discount: "10% off per agent" },
+  { range: "7-19 agents", discount: "15% off per agent" },
+  { range: "20+ agents", discount: "20% off per agent" },
+];
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-paper">
@@ -288,6 +295,35 @@ export default function Home() {
             <Link href="/signup">
               <Button variant="primary">Start your free trial</Button>
             </Link>
+          </div>
+
+          <div className="mx-auto mt-16 max-w-xl rounded-md border border-line bg-paper-card p-8 text-left">
+            <h3 className="font-serif text-xl font-medium text-ink">
+              Running a team? Save with an agency plan
+            </h3>
+            <p className="mt-2 text-sm text-ink-soft">
+              One subscription covers your whole agency. Invite agents and
+              the price per agent drops automatically — no negotiating, no
+              separate invoices.
+            </p>
+            <div className="mt-6 overflow-hidden rounded-md border border-line">
+              <table className="w-full text-sm">
+                <tbody>
+                  {AGENCY_TIERS.map((tier, i) => (
+                    <tr
+                      key={tier.range}
+                      className={i > 0 ? "border-t border-line" : ""}
+                    >
+                      <td className="px-4 py-2.5 text-ink">{tier.range}</td>
+                      <td className="px-4 py-2.5 text-ink-soft">{tier.discount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-4 text-xs text-ink-soft">
+              Set it up any time from your dashboard after signing up.
+            </p>
           </div>
         </div>
       </section>
