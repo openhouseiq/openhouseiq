@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { EditListingForm } from "./EditListingForm";
+import { getUserCurrentAgencyId, canAccessListing } from "@/lib/agency";
 import type { Listing } from "@/lib/types";
 
 export default async function EditListingPage({
@@ -25,7 +26,9 @@ export default async function EditListingPage({
     .returns<Listing[]>()
     .maybeSingle();
 
-  if (!listing || listing.agent_id !== user.id) {
+  const agencyId = await getUserCurrentAgencyId(supabase, user.id);
+
+  if (!listing || !canAccessListing(listing, user.id, agencyId)) {
     notFound();
   }
 

@@ -8,6 +8,7 @@ import { scoreApplicant } from "@/lib/rentalScoring";
 import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
 import { LEASE_TERM_LABELS, INCOME_RANGE_LABELS } from "@/components/listings/landlordPreferences";
 import { PrintButton } from "./PrintButton";
+import { getUserCurrentAgencyId, canAccessListing } from "@/lib/agency";
 import type { Listing, Feedback, Offer, Applicant } from "@/lib/types";
 
 const INTEREST_LEVEL_LABELS: Record<string, string> = {
@@ -83,7 +84,9 @@ export default async function ListingReportPage({
     .returns<Listing[]>()
     .maybeSingle();
 
-  if (!listing || listing.agent_id !== user.id) {
+  const agencyId = await getUserCurrentAgencyId(supabase, user.id);
+
+  if (!listing || !canAccessListing(listing, user.id, agencyId)) {
     notFound();
   }
 

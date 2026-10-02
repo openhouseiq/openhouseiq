@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
 import { LandlordPreferenceFields } from "@/components/listings/LandlordPreferenceFields";
 import { LandSizeField } from "@/components/listings/LandSizeField";
+import { getUserCurrentAgencyId } from "@/lib/agency";
 import type { ListingType } from "@/lib/types";
 
 export function NewListingForm() {
@@ -57,11 +58,13 @@ export function NewListingForm() {
       String(formData.get("landlordPrefEmploymentVerification") ?? "") || null;
 
     const agentName = (user.user_metadata?.full_name as string | undefined) ?? "";
+    const agencyId = await getUserCurrentAgencyId(supabase, user.id);
 
     const { data: listing, error: insertError } = await supabase
       .from("listings")
       .insert({
         agent_id: user.id,
+        agency_id: agencyId,
         listing_type: listingType,
         address,
         price,

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { DeleteListingButton } from "./DeleteListingButton";
 import { FeedbackOffersReport } from "./FeedbackOffersReport";
 import { FeedbackApplicantsReport } from "./FeedbackApplicantsReport";
+import { getUserCurrentAgencyId, canAccessListing } from "@/lib/agency";
 import {
   PRICE_LABELS,
   SETTLEMENT_LABELS,
@@ -43,7 +44,9 @@ export default async function ListingDetailPage({
     .returns<Listing[]>()
     .maybeSingle();
 
-  if (!listing || listing.agent_id !== user.id) {
+  const agencyId = await getUserCurrentAgencyId(supabase, user.id);
+
+  if (!listing || !canAccessListing(listing, user.id, agencyId)) {
     notFound();
   }
 

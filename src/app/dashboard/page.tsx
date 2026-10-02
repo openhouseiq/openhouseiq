@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/supabase/current-user";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
 import { ListingsList, type ListingWithCounts } from "./ListingsList";
+import { getUserCurrentAgencyId } from "@/lib/agency";
 import type { Listing } from "@/lib/types";
 
 function accountAgeDays(createdAt: string): number {
@@ -20,16 +21,26 @@ export default async function DashboardPage() {
   }
 
   const checkFeedbackPrompt = accountAgeDays(user.created_at) >= 30;
+  const agencyId = await getUserCurrentAgencyId(supabase, user.id);
 
-  const [{ data: subscription }, { data: listings }, { data: existingFeedback }] =
-    await Promise.all([
-      supabase.from("subscriptions").select("status").eq("user_id", user.id).maybeSingle(),
-      supabase
+  const listingsQuery = agencyId
+    ? supabase
+        .from("listings")
+        .select("*")
+        .or(`agent_id.eq.${user.id},agency_id.eq.${agencyId}`)
+        .order("created_at", { ascending: false })
+        .returns<Listing[]>()
+    : supabase
         .from("listings")
         .select("*")
         .eq("agent_id", user.id)
         .order("created_at", { ascending: false })
-        .returns<Listing[]>(),
+        .returns<Listing[]>();
+
+  const [{ data: subscription }, { data: listings }, { data: existingFeedback }] =
+    await Promise.all([
+      supabase.from("subscriptions").select("status").eq("user_id", user.id).maybeSingle(),
+      listingsQuery,
       checkFeedbackPrompt
         ? supabase.from("product_feedback").select("id").eq("user_id", user.id).maybeSingle()
         : Promise.resolve({ data: null }),

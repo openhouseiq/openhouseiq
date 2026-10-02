@@ -43,6 +43,7 @@ export type IncomeRange =
 export type Listing = {
   id: string;
   agent_id: string;
+  agency_id: string | null;
   listing_type: ListingType;
   address: string;
   price: number;
