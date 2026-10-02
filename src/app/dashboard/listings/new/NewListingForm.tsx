@@ -145,12 +145,12 @@ export function NewListingForm() {
         required
       />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-3 gap-4">
         <Field label="Bedrooms" id="bedrooms" type="number" min={0} step="1" />
         <Field label="Bathrooms" id="bathrooms" type="number" min={0} step="0.5" />
         <Field label="Car spaces" id="carSpaces" type="number" min={0} step="1" />
-        <LandSizeField />
       </div>
+      <LandSizeField />
 
       {listingType === "sale" ? (
         <SellerPreferenceFields />

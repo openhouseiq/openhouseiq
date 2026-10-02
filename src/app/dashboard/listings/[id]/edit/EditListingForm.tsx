@@ -103,7 +103,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         required
       />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-3 gap-4">
         <Field
           label="Bedrooms"
           id="bedrooms"
@@ -128,11 +128,11 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           step="1"
           defaultValue={listing.car_spaces ?? undefined}
         />
-        <LandSizeField
-          defaultValue={listing.land_size}
-          defaultUnit={listing.land_size_unit}
-        />
       </div>
+      <LandSizeField
+        defaultValue={listing.land_size}
+        defaultUnit={listing.land_size_unit}
+      />
 
       <TextAreaField
         label="Description"
