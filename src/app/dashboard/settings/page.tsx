@@ -45,7 +45,6 @@ export default async function SettingsPage() {
     ]);
 
   let membership: { agencyName: string; isOwner: boolean } | null = null;
-  let pendingInvite: { agencyId: string; agencyName: string } | null = null;
 
   if (ownedAgency) {
     membership = { agencyName: ownedAgency.name, isOwner: true };
@@ -60,21 +59,6 @@ export default async function SettingsPage() {
     if (activeMembership) {
       const agencyRow = activeMembership.agencies as unknown as { name: string } | null;
       membership = { agencyName: agencyRow?.name ?? "your agency", isOwner: false };
-    } else if (user.email) {
-      const { data: invite } = await supabase
-        .from("agency_members")
-        .select("agency_id, agencies(name)")
-        .eq("email", user.email.toLowerCase())
-        .eq("status", "invited")
-        .maybeSingle();
-
-      if (invite) {
-        const agencyRow = invite.agencies as unknown as { name: string } | null;
-        pendingInvite = {
-          agencyId: invite.agency_id,
-          agencyName: agencyRow?.name ?? "an agency",
-        };
-      }
     }
   }
 
@@ -97,7 +81,7 @@ export default async function SettingsPage() {
 
           <section className="rounded-md border border-line bg-paper-card p-6">
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">Agency</h2>
-            <AgencySection membership={membership} pendingInvite={pendingInvite} />
+            <AgencySection membership={membership} />
           </section>
 
           <section className="rounded-md border border-line bg-paper-card p-6">

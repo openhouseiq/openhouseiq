@@ -44,11 +44,7 @@ export default async function AgencyPage() {
     }
   }
 
-  if (!agency) {
-    redirect("/dashboard/agency/new");
-  }
-
-  const { data: members } = isOwner
+  const { data: members } = agency && isOwner
     ? await service
         .from("agency_members")
         .select("*")
@@ -69,7 +65,15 @@ export default async function AgencyPage() {
       />
 
       <main className="mx-auto max-w-2xl px-6 py-12">
-        <h1 className="font-serif text-2xl font-medium text-ink">{agency.name}</h1>
+        <h1 className="font-serif text-2xl font-medium text-ink">
+          {agency ? agency.name : "Set up an agency plan"}
+        </h1>
+        {!agency ? (
+          <p className="mt-2 text-sm text-ink-soft">
+            One subscription for your whole agency. Add agents right here —
+            the price per agent drops automatically as your team grows.
+          </p>
+        ) : null}
 
         <AgencyDashboard agency={agency} members={members ?? []} isOwner={isOwner} />
       </main>

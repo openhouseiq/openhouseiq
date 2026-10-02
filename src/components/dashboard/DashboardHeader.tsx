@@ -31,6 +31,12 @@ export function DashboardHeader({
             <span>Settings</span>
           </Link>
           <Link
+            href="/dashboard/agency"
+            className="whitespace-nowrap text-navy-soft hover:text-brass"
+          >
+            Agency
+          </Link>
+          <Link
             href="/dashboard/settings#contact"
             className="whitespace-nowrap text-navy-soft hover:text-brass"
           >
