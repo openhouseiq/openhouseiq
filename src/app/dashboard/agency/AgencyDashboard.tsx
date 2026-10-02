@@ -333,9 +333,7 @@ export function AgencyDashboard({
               >
                 <div>
                   <p className="text-sm text-ink">{member.email}</p>
-                  <p className="text-xs text-ink-soft">
-                    {member.status === "active" ? "Active" : "Invited"}
-                  </p>
+                  <p className="text-xs text-ink-soft">Active</p>
                 </div>
                 {member.user_id !== agency.owner_user_id ? (
                   <button

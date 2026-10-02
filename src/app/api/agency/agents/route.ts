@@ -54,6 +54,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Already a member." }, { status: 400 });
   }
 
+  if (user.email && email === user.email.toLowerCase()) {
+    return NextResponse.json(
+      { error: "You're already the owner of this agency." },
+      { status: 400 },
+    );
+  }
+
   // Look up whether this email already belongs to an OpenHouseIQ account.
   let existingUserId: string | null = null;
   let page = 1;
@@ -69,6 +76,26 @@ export async function POST(request: Request) {
   let tempPassword: string | null = null;
 
   if (existingUserId) {
+    // A person can belong to only one agency at a time — it decides whose
+    // listings they can see and manage.
+    const [{ data: ownsAgency }, { data: otherMembership }] = await Promise.all([
+      service.from("agencies").select("id").eq("owner_user_id", existingUserId).maybeSingle(),
+      service
+        .from("agency_members")
+        .select("id")
+        .eq("user_id", existingUserId)
+        .eq("status", "active")
+        .neq("agency_id", agencyId)
+        .maybeSingle(),
+    ]);
+
+    if (ownsAgency || otherMembership) {
+      return NextResponse.json(
+        { error: "That person already belongs to another agency." },
+        { status: 400 },
+      );
+    }
+
     // Already has an account — if it has its own paid subscription, cancel
     // it; they're now covered by the agency's seat instead.
     const { data: ownSubscription } = await service
