@@ -7,6 +7,7 @@ import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
 import { LandlordPreferenceFields } from "@/components/listings/LandlordPreferenceFields";
+import { LandSizeField } from "@/components/listings/LandSizeField";
 import type { ListingType } from "@/lib/types";
 
 export function NewListingForm() {
@@ -38,7 +39,8 @@ export function NewListingForm() {
     const bedrooms = formData.get("bedrooms") ? Number(formData.get("bedrooms")) : null;
     const bathrooms = formData.get("bathrooms") ? Number(formData.get("bathrooms")) : null;
     const carSpaces = formData.get("carSpaces") ? Number(formData.get("carSpaces")) : null;
-    const sqft = formData.get("sqft") ? Number(formData.get("sqft")) : null;
+    const landSize = formData.get("landSize") ? Number(formData.get("landSize")) : null;
+    const landSizeUnit = landSize ? String(formData.get("landSizeUnit") ?? "sqm") : null;
     const sellerPrefPrice = String(formData.get("sellerPrefPrice") ?? "") || null;
     const sellerPrefSettlement =
       String(formData.get("sellerPrefSettlement") ?? "") || null;
@@ -66,7 +68,8 @@ export function NewListingForm() {
         bedrooms,
         bathrooms,
         car_spaces: carSpaces,
-        sqft,
+        land_size: landSize,
+        land_size_unit: landSizeUnit,
         agent_name: agentName,
         agent_email: user.email,
         ...(listingType === "sale"
@@ -146,7 +149,7 @@ export function NewListingForm() {
         <Field label="Bedrooms" id="bedrooms" type="number" min={0} step="1" />
         <Field label="Bathrooms" id="bathrooms" type="number" min={0} step="0.5" />
         <Field label="Car spaces" id="carSpaces" type="number" min={0} step="1" />
-        <Field label="Sqft" id="sqft" type="number" min={0} step="1" />
+        <LandSizeField />
       </div>
 
       {listingType === "sale" ? (

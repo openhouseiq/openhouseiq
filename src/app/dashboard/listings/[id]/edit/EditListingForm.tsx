@@ -7,6 +7,7 @@ import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
 import { LandlordPreferenceFields } from "@/components/listings/LandlordPreferenceFields";
+import { LandSizeField } from "@/components/listings/LandSizeField";
 import type { Listing } from "@/lib/types";
 
 export function EditListingForm({ listing }: { listing: Listing }) {
@@ -26,7 +27,8 @@ export function EditListingForm({ listing }: { listing: Listing }) {
     const bedrooms = formData.get("bedrooms") ? Number(formData.get("bedrooms")) : null;
     const bathrooms = formData.get("bathrooms") ? Number(formData.get("bathrooms")) : null;
     const carSpaces = formData.get("carSpaces") ? Number(formData.get("carSpaces")) : null;
-    const sqft = formData.get("sqft") ? Number(formData.get("sqft")) : null;
+    const landSize = formData.get("landSize") ? Number(formData.get("landSize")) : null;
+    const landSizeUnit = landSize ? String(formData.get("landSizeUnit") ?? "sqm") : null;
     const description = String(formData.get("description") ?? "");
     const sellerPrefPrice = String(formData.get("sellerPrefPrice") ?? "") || null;
     const sellerPrefSettlement =
@@ -51,7 +53,8 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         bedrooms,
         bathrooms,
         car_spaces: carSpaces,
-        sqft,
+        land_size: landSize,
+        land_size_unit: landSizeUnit,
         description,
         ...(listing.listing_type === "sale"
           ? {
@@ -125,13 +128,9 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           step="1"
           defaultValue={listing.car_spaces ?? undefined}
         />
-        <Field
-          label="Sqft"
-          id="sqft"
-          type="number"
-          min={0}
-          step="1"
-          defaultValue={listing.sqft ?? undefined}
+        <LandSizeField
+          defaultValue={listing.land_size}
+          defaultUnit={listing.land_size_unit}
         />
       </div>
 

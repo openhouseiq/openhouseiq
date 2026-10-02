@@ -21,6 +21,8 @@ export type FinancePreference =
   | "cash_preferred"
   | "cash_required";
 
+export type LandSizeUnit = "sqm" | "ha" | "acres";
+
 export type ListingType = "sale" | "rental";
 
 export type PetsPreference = "no_preference" | "not_allowed" | "allowed";
@@ -48,7 +50,8 @@ export type Listing = {
   bedrooms: number | null;
   bathrooms: number | null;
   car_spaces: number | null;
-  sqft: number | null;
+  land_size: number | null;
+  land_size_unit: LandSizeUnit | null;
   agent_name: string | null;
   agent_email: string | null;
   seller_pref_price: PriceImportance | null;

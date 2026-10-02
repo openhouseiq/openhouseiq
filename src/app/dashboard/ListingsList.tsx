@@ -74,7 +74,9 @@ function ListingCard({ listing }: { listing: ListingWithCounts }) {
           {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
           {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
           {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
-          {listing.sqft ? ` · ${listing.sqft.toLocaleString()} sqft` : ""}
+          {listing.land_size
+            ? ` · ${listing.land_size.toLocaleString()} ${listing.land_size_unit ?? "sqm"}`
+            : ""}
         </p>
         <div className="mt-1.5 flex items-center gap-2">
           <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">

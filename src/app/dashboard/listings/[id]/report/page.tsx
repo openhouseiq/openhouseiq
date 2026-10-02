@@ -189,7 +189,9 @@ export default async function ListingReportPage({
               {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
               {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
               {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}
-              {listing.sqft ? ` · ${listing.sqft.toLocaleString()} sqft` : ""}
+              {listing.land_size
+                ? ` · ${listing.land_size.toLocaleString()} ${listing.land_size_unit ?? "sqm"}`
+                : ""}
             </p>
             <p className="mt-2 text-xs text-ink-soft">Generated {generatedDate}</p>
           </div>
