@@ -19,3 +19,15 @@ export async function sendNotificationEmail(
     text: body,
   });
 }
+
+// Like sendNotificationEmail, but reports whether the email was actually
+// accepted so callers can fall back to something else when it wasn't.
+export async function sendEmailChecked(to: string, subject: string, body: string): Promise<boolean> {
+  if (!resend || !fromEmail) return false;
+  try {
+    const { error } = await resend.emails.send({ from: fromEmail, to, subject, text: body });
+    return !error;
+  } catch {
+    return false;
+  }
+}

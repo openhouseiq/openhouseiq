@@ -116,7 +116,8 @@ const AGENCY_TIERS = [
   { range: "1-2 agents", discount: "Full price" },
   { range: "3-6 agents", discount: "10% off per agent" },
   { range: "7-19 agents", discount: "15% off per agent" },
-  { range: "20+ agents", discount: "20% off per agent" },
+  { range: "20 agents", discount: "20% off per agent" },
+  { range: "More than 20 agents", discount: "Contact us for pricing" },
 ];
 
 export default function Home() {
@@ -302,9 +303,9 @@ export default function Home() {
               Running a team? Save with an agency plan
             </h3>
             <p className="mt-2 text-sm text-ink-soft">
-              One subscription covers your whole agency. Invite agents and
-              the price per agent drops automatically — no negotiating, no
-              separate invoices.
+              Choose how many agents you need and pay one bill, monthly or
+              yearly. The more agents, the cheaper each one is — the discount
+              applies to every agent. Add or remove licences any time.
             </p>
             <div className="mt-6 overflow-hidden rounded-md border border-line">
               <table className="w-full text-sm">
@@ -321,8 +322,14 @@ export default function Home() {
                 </tbody>
               </table>
             </div>
-            <p className="mt-4 text-xs text-ink-soft">
-              Set it up any time from your dashboard after signing up.
+            <div className="mt-6">
+              <Link href="/signup?type=agency">
+                <Button variant="primary">Sign up as an agency</Button>
+              </Link>
+            </div>
+            <p className="mt-3 text-xs text-ink-soft">
+              Create the agency account, then add each agent&apos;s name and
+              email from the Manage page — they get their own login.
             </p>
           </div>
         </div>

@@ -5,7 +5,12 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { AgencyDashboard } from "./AgencyDashboard";
 import type { Agency, AgencyMember } from "@/lib/types";
 
-export default async function AgencyPage() {
+export default async function AgencyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ billing?: string }>;
+}) {
+  const { billing } = await searchParams;
   const user = await getCurrentUser();
 
   if (!user) {
@@ -70,12 +75,18 @@ export default async function AgencyPage() {
         </h1>
         {!agency ? (
           <p className="mt-2 text-sm text-ink-soft">
-            One subscription for your whole agency. Add agents right here —
-            the price per agent drops automatically as your team grows.
+            One subscription for your whole agency. Choose how many agents you
+            need and see the price straight away — the bigger your team, the
+            cheaper each agent is (10% off from 3 agents, 15% from 7, 20% at 20).
           </p>
         ) : null}
 
-        <AgencyDashboard agency={agency} members={members ?? []} isOwner={isOwner} />
+        <AgencyDashboard
+          agency={agency}
+          members={members ?? []}
+          isOwner={isOwner}
+          justPaid={billing === "success"}
+        />
       </main>
     </div>
   );

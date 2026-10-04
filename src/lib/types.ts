@@ -141,6 +141,8 @@ export type Agency = {
   stripe_subscription_id: string | null;
   price_id: string | null;
   billing_interval: "month" | "year" | null;
+  seats: number;
+  pending_seats: number | null;
   status: AgencyStatus;
   trial_ends_at: string | null;
   current_period_end: string | null;
@@ -161,18 +163,31 @@ export type AgencyMember = {
   removed_at: string | null;
 };
 
-export const AGENCY_DISCOUNT_TIERS: { minSeats: number; maxSeats: number | null; discount: number }[] = [
+// Agencies of up to 20 agents can sign up and manage themselves; larger
+// agencies are quoted individually.
+export const AGENCY_MAX_SELF_SERVE_SEATS = 20;
+
+export const AGENCY_BASE_PRICE = { month: 39, year: 390 } as const;
+
+export const AGENCY_DISCOUNT_TIERS: { minSeats: number; maxSeats: number; discount: number }[] = [
   { minSeats: 1, maxSeats: 2, discount: 0 },
   { minSeats: 3, maxSeats: 6, discount: 0.1 },
   { minSeats: 7, maxSeats: 19, discount: 0.15 },
-  { minSeats: 20, maxSeats: null, discount: 0.2 },
+  { minSeats: 20, maxSeats: 20, discount: 0.2 },
 ];
 
 export function agencyDiscountForSeats(seats: number): number {
-  const tier = AGENCY_DISCOUNT_TIERS.find(
-    (t) => seats >= t.minSeats && (t.maxSeats === null || seats <= t.maxSeats),
-  );
-  return tier?.discount ?? 0;
+  const tier = AGENCY_DISCOUNT_TIERS.find((t) => seats >= t.minSeats && seats <= t.maxSeats);
+  if (tier) return tier.discount;
+  return seats > AGENCY_MAX_SELF_SERVE_SEATS ? 0.2 : 0;
+}
+
+export function agencyPricePerAgent(seats: number, interval: "month" | "year"): number {
+  return Math.round(AGENCY_BASE_PRICE[interval] * (1 - agencyDiscountForSeats(seats)) * 100) / 100;
+}
+
+export function agencyTotalPrice(seats: number, interval: "month" | "year"): number {
+  return Math.round(agencyPricePerAgent(seats, interval) * seats * 100) / 100;
 }
 
 export type Offer = {

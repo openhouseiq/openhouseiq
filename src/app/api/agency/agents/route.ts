@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
+import { sendEmailChecked } from "@/lib/notificationEmail";
 
 function generateTempPassword(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(12));
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
 
   const { data: agency } = await service
     .from("agencies")
-    .select("id, owner_user_id, stripe_subscription_id")
+    .select("id, name, owner_user_id, stripe_subscription_id, seats")
     .eq("id", agencyId)
     .maybeSingle();
 
@@ -39,6 +41,19 @@ export async function POST(request: Request) {
   if (!agency.stripe_subscription_id) {
     return NextResponse.json(
       { error: "This agency's subscription isn't set up yet. Try again shortly." },
+      { status: 400 },
+    );
+  }
+
+  const { count: activeCount } = await service
+    .from("agency_members")
+    .select("id", { count: "exact", head: true })
+    .eq("agency_id", agencyId)
+    .eq("status", "active");
+
+  if ((activeCount ?? 0) >= agency.seats) {
+    return NextResponse.json(
+      { error: "All your licences are in use. Add a licence first, then add this agent." },
       { status: 400 },
     );
   }
@@ -73,7 +88,7 @@ export async function POST(request: Request) {
     page += 1;
   }
 
-  let tempPassword: string | null = null;
+  let isNewAccount = false;
 
   if (existingUserId) {
     // A person can belong to only one agency at a time — it decides whose
@@ -115,10 +130,10 @@ export async function POST(request: Request) {
       }
     }
   } else {
-    tempPassword = generateTempPassword();
+    isNewAccount = true;
     const { data: created, error: createError } = await service.auth.admin.createUser({
       email,
-      password: tempPassword,
+      password: generateTempPassword(),
       email_confirm: true,
       user_metadata: { full_name: name },
     });
@@ -131,16 +146,6 @@ export async function POST(request: Request) {
     }
 
     existingUserId = created.user.id;
-  }
-
-  try {
-    const subscription = await stripe.subscriptions.retrieve(agency.stripe_subscription_id);
-    const item = subscription.items.data[0];
-    const newQuantity = (item.quantity ?? 1) + 1;
-    await stripe.subscriptionItems.update(item.id, { quantity: newQuantity });
-  } catch (error) {
-    console.error("Could not update agency seat quantity:", error);
-    return NextResponse.json({ error: "Could not update the agency's billing. Try again." }, { status: 500 });
   }
 
   const memberData = {
@@ -170,5 +175,46 @@ export async function POST(request: Request) {
     memberId = inserted.id;
   }
 
-  return NextResponse.json({ success: true, memberId, email, tempPassword });
+  // Tell the agent they've been added. New accounts get a link to choose
+  // their own password; nobody is ever sent or shown a password.
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const protocol = host?.startsWith("localhost") ? "http" : "https";
+  const origin = `${protocol}://${host}`;
+  const ownerName = (user.user_metadata?.full_name as string | undefined) || user.email || "Your agency";
+
+  let setupLink: string | null = null;
+  let emailSent = false;
+
+  if (isNewAccount) {
+    const { data: linkData } = await service.auth.admin.generateLink({
+      type: "recovery",
+      email,
+      options: { redirectTo: `${origin}/reset-password` },
+    });
+    setupLink = linkData?.properties?.action_link ?? null;
+    if (setupLink) {
+      emailSent = await sendEmailChecked(
+        email,
+        `${agency.name} has added you to CueProperty`,
+        `Hi ${name},\n\n${ownerName} has added you to ${agency.name} on CueProperty. Your licence is already paid for by your agency.\n\nSet your password and log in here:\n${setupLink}\n\nAfter that you can log in any time at ${origin}/login.\n\n— CueProperty`,
+      );
+    }
+  } else {
+    emailSent = await sendEmailChecked(
+      email,
+      `${agency.name} has added you to CueProperty`,
+      `Hi ${name},\n\n${ownerName} has added you to ${agency.name} on CueProperty. Your licence is now covered by your agency, so any personal subscription you had has been cancelled.\n\nLog in with your existing details at ${origin}/login.\n\n— CueProperty`,
+    );
+  }
+
+  return NextResponse.json({
+    success: true,
+    memberId,
+    email,
+    isNewAccount,
+    emailSent,
+    // Only returned when the email couldn't be sent, so the owner can pass it on.
+    setupLink: emailSent ? null : setupLink,
+  });
 }

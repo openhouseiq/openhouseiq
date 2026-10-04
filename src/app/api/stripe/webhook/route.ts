@@ -39,6 +39,7 @@ export async function POST(request: Request) {
                 stripe_subscription_id: subscription.id,
                 status: subscription.status,
                 price_id: subscription.items.data[0]?.price.id ?? null,
+                seats: subscription.items.data[0]?.quantity ?? 1,
                 trial_ends_at: subscription.trial_end
                   ? new Date(subscription.trial_end * 1000).toISOString()
                   : null,
@@ -48,6 +49,31 @@ export async function POST(request: Request) {
                 updated_at: new Date().toISOString(),
               })
               .eq("id", agencyId);
+
+            // The owner is now covered by the agency plan, so end any solo
+            // subscription of theirs rather than billing them twice.
+            const { data: agency } = await supabase
+              .from("agencies")
+              .select("owner_user_id")
+              .eq("id", agencyId)
+              .maybeSingle();
+            if (agency) {
+              const { data: ownSub } = await supabase
+                .from("subscriptions")
+                .select("stripe_subscription_id, status")
+                .eq("user_id", agency.owner_user_id)
+                .maybeSingle();
+              if (
+                ownSub?.stripe_subscription_id &&
+                (ownSub.status === "active" || ownSub.status === "trialing")
+              ) {
+                try {
+                  await stripe.subscriptions.cancel(ownSub.stripe_subscription_id);
+                } catch (error) {
+                  console.error("Could not cancel owner's solo subscription:", error);
+                }
+              }
+            }
 
             await checkInfrastructureCheckpoint();
           }
@@ -86,6 +112,21 @@ export async function POST(request: Request) {
       if (subscription.metadata?.type === "agency") {
         const agencyId = subscription.metadata.agency_id;
         if (agencyId) {
+          const newPeriodEnd = new Date(subscription.items.data[0].current_period_end * 1000);
+
+          // A scheduled licence reduction takes effect once the agency has
+          // rolled into its next billing period.
+          const { data: current } = await supabase
+            .from("agencies")
+            .select("pending_seats, current_period_end")
+            .eq("id", agencyId)
+            .eq("stripe_subscription_id", subscription.id)
+            .maybeSingle();
+          const renewed =
+            current?.current_period_end &&
+            newPeriodEnd.getTime() > new Date(current.current_period_end).getTime();
+          const applyPending = Boolean(renewed) && current?.pending_seats != null;
+
           await supabase
             .from("agencies")
             .update({
@@ -94,9 +135,8 @@ export async function POST(request: Request) {
               trial_ends_at: subscription.trial_end
                 ? new Date(subscription.trial_end * 1000).toISOString()
                 : null,
-              current_period_end: new Date(
-                subscription.items.data[0].current_period_end * 1000,
-              ).toISOString(),
+              current_period_end: newPeriodEnd.toISOString(),
+              ...(applyPending ? { seats: current!.pending_seats, pending_seats: null } : {}),
               updated_at: new Date().toISOString(),
             })
             .eq("id", agencyId)

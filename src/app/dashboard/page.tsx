@@ -46,8 +46,13 @@ export default async function DashboardPage() {
         : Promise.resolve({ data: null }),
     ]);
 
+  // An agent added to an agency has no solo subscription of their own — the
+  // agency plan covers them, so don't send them to start a solo trial.
   if (subscription?.status === "incomplete") {
-    redirect("/dashboard/welcome");
+    const { data: hasAccess } = await supabase.rpc("has_active_access", { uid: user.id });
+    if (!hasAccess) {
+      redirect("/dashboard/welcome");
+    }
   }
 
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";

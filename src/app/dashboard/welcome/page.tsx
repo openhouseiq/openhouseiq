@@ -6,6 +6,8 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
 import { BillingSection } from "../settings/BillingSection";
 import { StartTrialSection } from "./StartTrialSection";
+import { CreateAgencyForm } from "../agency/AgencyDashboard";
+import { getUserCurrentAgencyId } from "@/lib/agency";
 import type { Subscription } from "@/lib/types";
 
 export default async function WelcomePage() {
@@ -28,6 +30,27 @@ export default async function WelcomePage() {
 
   const needsCard = subscription?.status === "incomplete";
 
+  const [{ data: hasAccess }, agencyId] = await Promise.all([
+    supabase.rpc("has_active_access", { uid: user.id }),
+    getUserCurrentAgencyId(supabase, user.id),
+  ]);
+  const coveredByAgency = needsCard && Boolean(hasAccess) && Boolean(agencyId);
+  const agencyName = (user.user_metadata?.agency_name as string | undefined) ?? "";
+  const startingAgency =
+    needsCard &&
+    !hasAccess &&
+    (user.user_metadata?.account_type === "agency" || Boolean(agencyId));
+
+  let existingAgencyName = agencyName;
+  if (startingAgency && agencyId) {
+    const { data: agency } = await supabase
+      .from("agencies")
+      .select("name")
+      .eq("id", agencyId)
+      .maybeSingle();
+    if (agency?.name) existingAgencyName = agency.name;
+  }
+
   return (
     <div className="min-h-screen bg-paper">
       <DashboardHeader agentLabel={fullName || user.email || ""} />
@@ -37,7 +60,31 @@ export default async function WelcomePage() {
           Welcome, {firstName}
         </h1>
 
-        {needsCard ? (
+        {coveredByAgency ? (
+          <>
+            <p className="mt-2 text-sm text-ink-soft">
+              Your account is ready — you&apos;re covered by your agency&apos;s
+              plan, so there&apos;s nothing to pay or set up.
+            </p>
+            <div className="mt-8">
+              <Link href="/dashboard">
+                <Button variant="primary">Go to dashboard</Button>
+              </Link>
+            </div>
+          </>
+        ) : startingAgency ? (
+          <>
+            <p className="mt-2 text-sm text-ink-soft">
+              Last step: start your agency&apos;s 14-day free trial. We&apos;ll
+              ask for a card, but you won&apos;t be charged until the trial
+              ends. Once it&apos;s started you can add your agents from the
+              Agency page.
+            </p>
+            <section className="mt-8 rounded-md border border-line bg-paper-card p-6">
+              <CreateAgencyForm initialName={existingAgencyName} />
+            </section>
+          </>
+        ) : needsCard ? (
           <>
             <p className="mt-2 text-sm text-ink-soft">
               Start your 14-day free trial. We&apos;ll ask for a card to set

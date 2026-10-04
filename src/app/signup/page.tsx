@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { FormField } from "@/components/auth/FormField";
@@ -11,11 +11,15 @@ import { SubmitButton } from "@/components/auth/SubmitButton";
 const fileInputClasses =
   "w-full text-sm text-[#3b4657] file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink";
 
-export default function SignUpPage() {
+function SignUpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [checkEmail, setCheckEmail] = useState(false);
+  const [accountType, setAccountType] = useState<"solo" | "agency">(
+    searchParams.get("type") === "agency" ? "agency" : "solo",
+  );
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -23,7 +27,9 @@ export default function SignUpPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    formData.set("accountType", accountType);
     const fullName = String(formData.get("fullName") ?? "");
+    const agencyName = accountType === "agency" ? String(formData.get("agencyName") ?? "").trim() : "";
     const phone = String(formData.get("phone") ?? "");
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
@@ -33,7 +39,11 @@ export default function SignUpPage() {
       email,
       password,
       options: {
-        data: { full_name: fullName, phone },
+        data: {
+          full_name: fullName,
+          phone,
+          ...(agencyName ? { account_type: "agency", agency_name: agencyName } : {}),
+        },
       },
     });
 
@@ -82,6 +92,45 @@ export default function SignUpPage() {
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-ink">I&apos;m signing up as</p>
+            <div className="flex gap-2">
+              {(
+                [
+                  ["solo", "An individual agent"],
+                  ["agency", "An agency"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setAccountType(value)}
+                  className={`flex-1 rounded-md border px-3 py-2.5 text-sm font-medium ${
+                    accountType === value
+                      ? "border-brass bg-brass text-ink"
+                      : "border-line bg-white text-[#3b4657] hover:border-brass hover:text-ink"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {accountType === "agency" ? (
+              <p className="mt-1.5 text-xs text-[#3b4657]">
+                You&apos;ll manage the agency and add your agents after
+                signing up. Volume discounts apply from 3 agents.
+              </p>
+            ) : null}
+          </div>
+          {accountType === "agency" ? (
+            <FormField
+              label="Agency name"
+              id="agencyName"
+              type="text"
+              autoComplete="organization"
+              required
+            />
+          ) : null}
           <FormField
             label="Full name"
             id="fullName"
@@ -146,5 +195,13 @@ export default function SignUpPage() {
         </form>
       )}
     </AuthLayout>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense>
+      <SignUpForm />
+    </Suspense>
   );
 }

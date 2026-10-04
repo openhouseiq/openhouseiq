@@ -38,6 +38,11 @@ export async function POST(request: Request) {
   const fullName = String(formData.get("fullName") ?? "");
   const phone = String(formData.get("phone") ?? "");
   const photo = formData.get("photo");
+  const agencyName = String(formData.get("agencyName") ?? "").trim();
+  const accountFields =
+    formData.get("accountType") === "agency" && agencyName
+      ? { account_type: "agency", agency_name: agencyName }
+      : {};
 
   const supabase = createServiceClient();
 
@@ -67,6 +72,7 @@ export async function POST(request: Request) {
     user_metadata: {
       full_name: fullName,
       phone,
+      ...accountFields,
       ...(photoUrl ? { photo_url: photoUrl } : {}),
     },
   });
