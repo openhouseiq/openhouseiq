@@ -13,10 +13,12 @@ export async function GET(
   const { code } = await params;
   const normalised = code.toUpperCase();
 
-  const url = request.nextUrl.clone();
-  url.pathname = "/signup";
-  url.search = "";
-  const response = NextResponse.redirect(url);
+  // Build the redirect from the host the visitor actually used. On Netlify,
+  // request.nextUrl points at an internal address, which would send the
+  // visitor to a different domain from the one the cookie is set on.
+  const host = request.headers.get("host");
+  const protocol = host?.startsWith("localhost") ? "http" : "https";
+  const response = NextResponse.redirect(new URL("/signup", `${protocol}://${host}`));
 
   // The code isn't checked against the database here, so this link can't be
   // used to find out which codes exist. It's validated when it's attributed.
