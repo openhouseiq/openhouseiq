@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
+import { attributeReferral } from "@/lib/referrals";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
   const origin = `${protocol}://${host}`;
 
   const service = createServiceClient();
+  await attributeReferral(service, user, request.headers.get("cookie")).catch(() => {});
   const { data: subscription } = await service
     .from("subscriptions")
     .select("stripe_customer_id, stripe_subscription_id, status")

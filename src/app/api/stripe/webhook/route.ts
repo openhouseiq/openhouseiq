@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkInfrastructureCheckpoint } from "@/lib/infraCheckpoints";
+import { applyPendingReferralCredits, processReferralInvoice } from "@/lib/referrals";
 
 export async function POST(request: Request) {
   const signature = request.headers.get("stripe-signature");
@@ -49,6 +50,15 @@ export async function POST(request: Request) {
                 updated_at: new Date().toISOString(),
               })
               .eq("id", agencyId);
+
+            const { data: ownerRow } = await supabase
+              .from("agencies")
+              .select("owner_user_id")
+              .eq("id", agencyId)
+              .maybeSingle();
+            if (ownerRow) {
+              await applyPendingReferralCredits(supabase, ownerRow.owner_user_id).catch(() => {});
+            }
 
             // The owner is now covered by the agency plan, so end any solo
             // subscription of theirs rather than billing them twice.
@@ -99,6 +109,7 @@ export async function POST(request: Request) {
             })
             .eq("user_id", userId);
 
+          await applyPendingReferralCredits(supabase, userId).catch(() => {});
           await checkInfrastructureCheckpoint();
         }
       }
@@ -176,6 +187,16 @@ export async function POST(request: Request) {
           .update(update)
           .eq("stripe_customer_id", subscription.customer as string)
           .eq("stripe_subscription_id", subscription.id);
+      }
+      break;
+    }
+
+    case "invoice.paid": {
+      // Every paid invoice may earn the referrer of this account a credit.
+      try {
+        await processReferralInvoice(supabase, event.data.object as Stripe.Invoice);
+      } catch (error) {
+        console.error("Referral processing failed:", error);
       }
       break;
     }

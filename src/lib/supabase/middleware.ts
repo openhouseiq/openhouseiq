@@ -59,10 +59,12 @@ export async function updateSession(request: NextRequest) {
   const isPublicRoute =
     isAuthRoute ||
     request.nextUrl.pathname.startsWith("/visit") ||
+    request.nextUrl.pathname.startsWith("/r/") ||
     request.nextUrl.pathname.startsWith("/reset-password") ||
     request.nextUrl.pathname.startsWith("/api/feedback") ||
     request.nextUrl.pathname.startsWith("/api/offers") ||
     request.nextUrl.pathname.startsWith("/api/stripe/webhook") ||
+    request.nextUrl.pathname.startsWith("/api/referrals/run-payouts") ||
     request.nextUrl.pathname.startsWith("/api/signup-profile") ||
     request.nextUrl.pathname.startsWith("/api/facebook/publish") ||
     request.nextUrl.pathname.startsWith("/api/facebook/insights") ||

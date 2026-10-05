@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
 import { AGENCY_MAX_SELF_SERVE_SEATS } from "@/lib/types";
+import { attributeReferral } from "@/lib/referrals";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
   }
 
   const service = createServiceClient();
+  await attributeReferral(service, user, request.headers.get("cookie")).catch(() => {});
 
   const { data: existingOwned } = await service
     .from("agencies")

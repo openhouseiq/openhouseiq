@@ -37,6 +37,12 @@ export function DashboardHeader({
             Agency
           </Link>
           <Link
+            href="/dashboard/referrals"
+            className="whitespace-nowrap text-navy-soft hover:text-brass"
+          >
+            Refer &amp; earn
+          </Link>
+          <Link
             href="/dashboard/settings#contact"
             className="whitespace-nowrap text-navy-soft hover:text-brass"
           >
