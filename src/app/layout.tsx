@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { PwaRegister } from "@/components/PwaRegister";
 import { MetaPixel } from "@/components/MetaPixel";
+import { UtmCapture } from "@/components/UtmCapture";
 import "./globals.css";
 
 const inter = Inter({
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col font-sans">
         <MetaPixel />
         <PwaRegister />
+        <UtmCapture />
         {children}
       </body>
     </html>

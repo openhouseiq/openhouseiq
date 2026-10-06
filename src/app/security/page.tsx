@@ -23,8 +23,8 @@ export default function SecurityPage() {
             <p>
               An overview of how CueProperty protects agent and visitor data.
               If you need more detail for a vendor security review, contact{" "}
-              <a href="mailto:mick_orr@hotmail.com" className="text-brass underline">
-                mick_orr@hotmail.com
+              <a href="mailto:contact@cueproperty.com.au" className="text-brass underline">
+                contact@cueproperty.com.au
               </a>
               .
             </p>
@@ -113,8 +113,8 @@ export default function SecurityPage() {
             <p className="mt-2">
               If you believe you&apos;ve found a security vulnerability,
               please report it to{" "}
-              <a href="mailto:mick_orr@hotmail.com" className="text-brass underline">
-                mick_orr@hotmail.com
+              <a href="mailto:contact@cueproperty.com.au" className="text-brass underline">
+                contact@cueproperty.com.au
               </a>{" "}
               before disclosing it publicly. We&apos;ll acknowledge reports
               within 2 business days.

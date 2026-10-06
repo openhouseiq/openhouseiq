@@ -148,6 +148,7 @@ export type AgentRow = {
   feedbackCount: number;
   offersCount: number;
   productFeedbackSubmittedAt: string | null;
+  source: string;
 };
 
 export default async function AdminPage({
@@ -255,6 +256,7 @@ export default async function AdminPage({
         feedbackCount: feedbackCountByAgent.get(u.id) ?? 0,
         offersCount: offersCountByAgent.get(u.id) ?? 0,
         productFeedbackSubmittedAt: productFeedbackByUser.get(u.id)?.created_at ?? null,
+        source: (u.user_metadata?.utm_source as string | undefined) ?? "Direct",
       };
     })
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -471,6 +473,7 @@ export default async function AdminPage({
               <tr className="border-b border-line text-xs text-ink-soft">
                 <th className="px-4 py-3 font-medium">Agent</th>
                 <th className="px-4 py-3 font-medium">Signed up</th>
+                <th className="px-4 py-3 font-medium">Source</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Trial ends / Renews</th>
                 <th className="px-4 py-3 font-medium">Listings</th>
@@ -490,6 +493,7 @@ export default async function AdminPage({
                   <td className="px-4 py-3 text-ink-soft">
                     {new Date(row.createdAt).toLocaleDateString()}
                   </td>
+                  <td className="px-4 py-3 text-ink-soft capitalize">{row.source}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${

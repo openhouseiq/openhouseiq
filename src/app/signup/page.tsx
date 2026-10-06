@@ -4,9 +4,11 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { readUtmCookie } from "@/lib/utm";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
+import { Turnstile, TURNSTILE_SITE_KEY } from "@/components/auth/Turnstile";
 
 const fileInputClasses =
   "w-full text-sm text-[#3b4657] file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink";
@@ -17,6 +19,8 @@ function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [checkEmail, setCheckEmail] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaReset, setCaptchaReset] = useState(0);
   const [accountType, setAccountType] = useState<"solo" | "agency">(
     searchParams.get("type") === "agency" ? "agency" : "solo",
   );
@@ -24,6 +28,12 @@ function SignUpForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError("Please complete the security check.");
+      return;
+    }
+
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -34,14 +44,18 @@ function SignUpForm() {
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
 
+    const utm = readUtmCookie();
+
     const supabase = createClient();
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        captchaToken: captchaToken ?? undefined,
         data: {
           full_name: fullName,
           phone,
+          ...utm,
           ...(agencyName ? { account_type: "agency", agency_name: agencyName } : {}),
         },
       },
@@ -50,11 +64,16 @@ function SignUpForm() {
     if (signUpError) {
       setLoading(false);
       setError(signUpError.message);
+      setCaptchaToken(null);
+      setCaptchaReset((n) => n + 1);
       return;
     }
 
     if (data.user) {
       formData.set("userId", data.user.id);
+      for (const [key, value] of Object.entries(utm)) {
+        formData.set(key, value);
+      }
       await fetch("/api/signup-profile", { method: "POST", body: formData }).catch(
         () => {},
       );
@@ -176,6 +195,8 @@ function SignUpForm() {
               className={fileInputClasses}
             />
           </div>
+
+          <Turnstile onToken={setCaptchaToken} resetKey={captchaReset} />
 
           {error ? <p className="text-sm text-error">{error}</p> : null}
 

@@ -7,15 +7,24 @@ import { createClient } from "@/lib/supabase/client";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
+import { Turnstile, TURNSTILE_SITE_KEY } from "@/components/auth/Turnstile";
 
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaReset, setCaptchaReset] = useState(0);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError("Please complete the security check.");
+      return;
+    }
+
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -26,12 +35,15 @@ export default function LoginPage() {
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
+      options: { captchaToken: captchaToken ?? undefined },
     });
 
     setLoading(false);
 
     if (signInError) {
       setError(signInError.message);
+      setCaptchaToken(null);
+      setCaptchaReset((n) => n + 1);
       return;
     }
 
@@ -79,6 +91,8 @@ export default function LoginPage() {
             Forgot password?
           </Link>
         </p>
+
+        <Turnstile onToken={setCaptchaToken} resetKey={captchaReset} />
 
         {error ? <p className="text-sm text-error">{error}</p> : null}
 

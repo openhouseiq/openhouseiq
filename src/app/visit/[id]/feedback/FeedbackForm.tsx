@@ -217,7 +217,7 @@ export function FeedbackForm({
         I&apos;d like the agent to follow up with me
       </label>
 
-      <TextAreaField label="Comments" id="comments" rows={4} required />
+      <TextAreaField label="Comments (optional)" id="comments" rows={4} />
 
       <Turnstile />
 

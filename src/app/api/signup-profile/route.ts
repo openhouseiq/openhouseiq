@@ -44,6 +44,12 @@ export async function POST(request: Request) {
       ? { account_type: "agency", agency_name: agencyName }
       : {};
 
+  const utmFields: Record<string, string> = {};
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+    const value = formData.get(key);
+    if (typeof value === "string" && value) utmFields[key] = value;
+  }
+
   const supabase = createServiceClient();
 
   const { data: userData, error: userError } =
@@ -72,6 +78,7 @@ export async function POST(request: Request) {
     user_metadata: {
       full_name: fullName,
       phone,
+      ...utmFields,
       ...accountFields,
       ...(photoUrl ? { photo_url: photoUrl } : {}),
     },
