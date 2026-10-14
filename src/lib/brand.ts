@@ -4,7 +4,7 @@
 export const BRAND_NAME = "Open Home Hero";
 
 /** Where people write to. Switch this one line once the new mailbox exists. */
-export const CONTACT_EMAIL = "contact@cueproperty.com.au";
+export const CONTACT_EMAIL = "contact@openhomehero.com.au";
 
 /** The site's public address when NEXT_PUBLIC_SITE_URL isn't set. */
 export const DEFAULT_SITE_URL = "https://openhomehero.com.au";
