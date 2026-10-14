@@ -171,15 +171,15 @@ export const AGENCY_BASE_PRICE = { month: 39, year: 390 } as const;
 
 export const AGENCY_DISCOUNT_TIERS: { minSeats: number; maxSeats: number; discount: number }[] = [
   { minSeats: 1, maxSeats: 2, discount: 0 },
-  { minSeats: 3, maxSeats: 6, discount: 0.1 },
-  { minSeats: 7, maxSeats: 19, discount: 0.15 },
-  { minSeats: 20, maxSeats: 20, discount: 0.2 },
+  { minSeats: 3, maxSeats: 10, discount: 0.05 },
+  { minSeats: 11, maxSeats: 15, discount: 0.1 },
+  { minSeats: 16, maxSeats: 20, discount: 0.15 },
 ];
 
 export function agencyDiscountForSeats(seats: number): number {
   const tier = AGENCY_DISCOUNT_TIERS.find((t) => seats >= t.minSeats && seats <= t.maxSeats);
   if (tier) return tier.discount;
-  return seats > AGENCY_MAX_SELF_SERVE_SEATS ? 0.2 : 0;
+  return seats > AGENCY_MAX_SELF_SERVE_SEATS ? 0.15 : 0;
 }
 
 export function agencyPricePerAgent(seats: number, interval: "month" | "year"): number {

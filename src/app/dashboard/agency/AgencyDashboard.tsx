@@ -12,9 +12,10 @@ import {
   agencyTotalPrice,
 } from "@/lib/types";
 import type { Agency, AgencyMember } from "@/lib/types";
+import { CONTACT_EMAIL } from "@/lib/brand";
 
 const CONTACT_HREF =
-  "mailto:contact@cueproperty.com.au?subject=" +
+  `mailto:${CONTACT_EMAIL}?subject=` +
   encodeURIComponent("Agency pricing for more than 20 agents");
 
 function daysLeft(iso: string): number {
@@ -227,9 +228,7 @@ export function AgencyDashboard({
   const [error, setError] = useState<string | null>(null);
   const [lastAdded, setLastAdded] = useState<{
     email: string;
-    isNewAccount: boolean;
     emailSent: boolean;
-    setupLink: string | null;
   } | null>(null);
 
   if (!agency) {
@@ -259,7 +258,8 @@ export function AgencyDashboard({
     );
   }
 
-  const activeSeats = memberList.filter((m) => m.status === "active").length;
+  // An open invitation holds a licence until it is accepted or expires.
+  const activeSeats = memberList.filter((m) => m.status === "active" || m.status === "invited").length;
   const freeSeats = Math.max(0, seats - activeSeats);
   const interval = agency.billing_interval ?? "month";
   const per = interval === "year" ? "year" : "month";
@@ -333,17 +333,15 @@ export function AgencyDashboard({
           agency_id: agency!.id,
           user_id: null,
           email: result.email,
-          status: "active",
+          status: "invited",
           invited_at: new Date().toISOString(),
-          joined_at: new Date().toISOString(),
+          joined_at: null,
           removed_at: null,
         },
       ]);
       setLastAdded({
         email: result.email,
-        isNewAccount: Boolean(result.isNewAccount),
         emailSent: Boolean(result.emailSent),
-        setupLink: result.setupLink ?? null,
       });
       setName("");
       setEmail("");
@@ -401,7 +399,7 @@ export function AgencyDashboard({
     return (
       <div className="mt-6 rounded-md border border-line bg-paper-card p-6">
         <p className="text-sm text-ink">
-          You&apos;re covered under {agency.name}&apos;s CueProperty agency
+          You&apos;re covered under {agency.name}&apos;s Open Home Hero agency
           plan. Billing and the agent roster are managed by the agency owner.
         </p>
       </div>
@@ -506,7 +504,7 @@ export function AgencyDashboard({
       </div>
 
       <div className="rounded-md border border-line bg-paper-card p-6">
-        <h2 className="mb-1 font-serif text-lg font-medium text-ink">Add an agent</h2>
+        <h2 className="mb-1 font-serif text-lg font-medium text-ink">Invite an agent</h2>
         <p className="mb-4 text-sm text-ink-soft">
           {freeSeats > 0
             ? `You have ${freeSeats} free ${freeSeats === 1 ? "licence" : "licences"}. Enter their name and email — we'll email them a link to set their password and log in.`
@@ -536,7 +534,7 @@ export function AgencyDashboard({
             />
           </div>
           <Button type="submit" variant="primary" disabled={adding || freeSeats === 0}>
-            {adding ? "Adding…" : "Add agent"}
+            {adding ? "Inviting…" : "Invite agent"}
           </Button>
         </form>
 
@@ -544,23 +542,13 @@ export function AgencyDashboard({
           <div className="mt-4 rounded-md border border-brass bg-brass/5 p-4 text-sm text-ink">
             {lastAdded.emailSent ? (
               <p>
-                Added {lastAdded.email}.{" "}
-                {lastAdded.isNewAccount
-                  ? "We've emailed them a link to set their password and log in."
-                  : "They already had an account, so we've emailed them to say they can keep using their existing login."}
+                Invited {lastAdded.email}. We&apos;ve emailed them. They join once they log in with
+                that email address and accept.
               </p>
-            ) : lastAdded.setupLink ? (
-              <>
-                <p className="font-medium">
-                  Added {lastAdded.email}, but we couldn&apos;t send the email. Send them this link
-                  to set their password:
-                </p>
-                <p className="mt-2 break-all font-mono text-xs">{lastAdded.setupLink}</p>
-              </>
             ) : (
               <p>
-                Added {lastAdded.email}. We couldn&apos;t send the email, so let them know they can
-                log in with their existing login.
+                Invited {lastAdded.email}, but we couldn&apos;t send the email. Ask them to log in
+                (or create a free account) with that email address and accept the invitation.
               </p>
             )}
           </div>
@@ -582,7 +570,9 @@ export function AgencyDashboard({
               >
                 <div>
                   <p className="text-sm text-ink">{member.email}</p>
-                  <p className="text-xs text-ink-soft">Active</p>
+                  <p className="text-xs text-ink-soft">
+                    {member.status === "invited" ? "Invited, waiting to accept" : "Active"}
+                  </p>
                 </div>
                 {member.user_id !== agency.owner_user_id ? (
                   <button

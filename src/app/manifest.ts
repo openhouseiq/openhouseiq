@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "CueProperty",
-    short_name: "CueProperty",
+    name: "Open Home Hero",
+    short_name: "Open Home Hero",
     description: "Open house feedback, offers, and listings for real estate agents.",
     start_url: "/dashboard",
     scope: "/",

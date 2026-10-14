@@ -1,9 +1,11 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { ImageResponse } from "next/og";
+import { BRAND_DOMAIN } from "@/lib/brand";
+import { LogoMarkImage } from "@/components/LogoMarkImage";
 
 // Branded square graphics for social posts. URLs are signed with
 // CONTENT_QUEUE_PUBLISH_SECRET so only the content task can mint them —
-// otherwise anyone could render arbitrary text under the CueProperty brand.
+// otherwise anyone could render arbitrary text under the Open Home Hero brand.
 
 const SIZE = 1080;
 
@@ -46,11 +48,12 @@ function headlineSize(text: string): number {
 function Wordmark({ theme }: { theme: Theme }) {
   const t = THEMES[theme];
   return (
-    <div style={{ display: "flex", fontSize: 40, fontWeight: 600 }}>
-      <span style={{ color: t.accent }}>C</span>
-      <span style={{ color: t.text }}>ue</span>
-      <span style={{ color: t.accent }}>P</span>
-      <span style={{ color: t.text }}>roperty</span>
+    <div style={{ display: "flex", alignItems: "center", fontSize: 40, fontWeight: 600 }}>
+      <div style={{ display: "flex", marginRight: 16 }}>
+        <LogoMarkImage height={52} hColor={t.text} roofColor={t.accent} />
+      </div>
+      <span style={{ color: t.text }}>Open Home</span>
+      <span style={{ color: t.accent, marginLeft: 12 }}>Hero</span>
     </div>
   );
 }
@@ -153,7 +156,7 @@ export async function GET(request: Request) {
         >
           <Wordmark theme={theme} />
           <div style={{ display: "flex", fontSize: 26, color: t.soft }}>
-            cueproperty.com.au
+            {BRAND_DOMAIN}
           </div>
         </div>
       </div>

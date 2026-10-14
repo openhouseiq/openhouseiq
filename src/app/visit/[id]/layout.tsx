@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import type { Listing } from "@/lib/types";
+import { getPublicListing } from "@/lib/publicListing";
 
 export async function generateMetadata({
   params,
@@ -8,14 +7,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const supabase = await createClient();
-
-  const { data: listing } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("id", id)
-    .returns<Listing[]>()
-    .maybeSingle();
+  const listing = await getPublicListing(id);
 
   if (!listing) {
     return { robots: { index: false, follow: false } };

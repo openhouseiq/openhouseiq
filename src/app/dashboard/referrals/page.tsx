@@ -97,7 +97,7 @@ export default async function ReferralsPage() {
           Share your link with other agents. When someone signs up through it and
           becomes a paying customer, you earn {Math.round(REFERRAL_RATE * 100)}% of
           everything they pay for their first {REFERRAL_MONTHS} months, taken off
-          your own CueProperty bill.
+          your own Open Home Hero bill.
         </p>
 
         <div className="mt-6 rounded-md border border-line bg-paper-card p-6">
@@ -168,7 +168,7 @@ export default async function ReferralsPage() {
         </div>
 
         <p className="mt-6 text-xs text-ink-soft">
-          Credits are applied to your CueProperty bills and have no cash value. They
+          Credits are applied to your Open Home Hero bills and have no cash value. They
           only apply to people who sign up as new customers through your link, and you
           can&apos;t refer yourself.
         </p>

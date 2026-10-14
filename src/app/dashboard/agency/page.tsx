@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { AgencyDashboard } from "./AgencyDashboard";
+import { inviteCutoffIso } from "@/lib/agencyInvites";
 import type { Agency, AgencyMember } from "@/lib/types";
 
 export default async function AgencyPage({
@@ -59,6 +60,12 @@ export default async function AgencyPage({
         .returns<AgencyMember[]>()
     : { data: null };
 
+  // Invitations that were never answered lapse after a while.
+  const cutoff = inviteCutoffIso();
+  const visibleMembers = (members ?? []).filter(
+    (m) => m.status !== "invited" || m.invited_at >= cutoff,
+  );
+
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
 
   return (
@@ -77,13 +84,13 @@ export default async function AgencyPage({
           <p className="mt-2 text-sm text-ink-soft">
             One subscription for your whole agency. Choose how many agents you
             need and see the price straight away — the bigger your team, the
-            cheaper each agent is (10% off from 3 agents, 15% from 7, 20% at 20).
+            cheaper each agent is (5% off from 3 agents, 10% from 11, 15% from 16).
           </p>
         ) : null}
 
         <AgencyDashboard
           agency={agency}
-          members={members ?? []}
+          members={visibleMembers}
           isOwner={isOwner}
           justPaid={billing === "success"}
         />

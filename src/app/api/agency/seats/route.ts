@@ -122,8 +122,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, seats: agency.seats, pendingSeats: target });
   } catch (error) {
     console.error("Could not change agency licences:", error);
-    const message =
-      error instanceof Error ? error.message : "Could not update your licences. Please try again.";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json(
+      { error: "Could not update your licences. Please try again." },
+      { status: 400 },
+    );
   }
 }

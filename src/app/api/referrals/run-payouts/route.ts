@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { secureEqual } from "@/lib/secureCompare";
 import { createServiceClient } from "@/lib/supabase/service";
 import { runReferralPayouts } from "@/lib/referrals";
 
@@ -6,7 +7,7 @@ import { runReferralPayouts } from "@/lib/referrals";
 // login; it does nothing unless REFERRAL_PAYOUT_SECRET is set and matches.
 export async function POST(request: Request) {
   const secret = process.env.REFERRAL_PAYOUT_SECRET;
-  if (!secret || request.headers.get("x-payout-secret") !== secret) {
+  if (!secret || !secureEqual(request.headers.get("x-payout-secret"), secret)) {
     return NextResponse.json({ error: "Not authorized." }, { status: 403 });
   }
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { MIN_PASSWORD_LENGTH, PASSWORD_HINT } from "@/lib/passwordPolicy";
 
 export function PasswordForm() {
   const [loading, setLoading] = useState(false);
@@ -46,15 +47,16 @@ export function PasswordForm() {
         id="password"
         type="password"
         autoComplete="new-password"
-        minLength={6}
+        minLength={MIN_PASSWORD_LENGTH}
         required
       />
+      <p className="text-xs text-ink-soft">{PASSWORD_HINT}</p>
       <Field
         label="Confirm new password"
         id="confirm_password"
         type="password"
         autoComplete="new-password"
-        minLength={6}
+        minLength={MIN_PASSWORD_LENGTH}
         required
       />
 

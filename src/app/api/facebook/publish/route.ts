@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
+import { hasBearer } from "@/lib/secureCompare";
 
 function isAuthorized(request: Request): boolean {
-  const secret = process.env.CONTENT_QUEUE_PUBLISH_SECRET;
-  if (!secret) return false;
-  const header = request.headers.get("authorization");
-  return header === `Bearer ${secret}`;
+  return hasBearer(request, process.env.CONTENT_QUEUE_PUBLISH_SECRET);
 }
 
 export async function POST(request: Request) {

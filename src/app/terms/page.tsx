@@ -1,16 +1,15 @@
 import Link from "next/link";
+import { Wordmark } from "@/components/Wordmark";
+import { CONTACT_EMAIL } from "@/lib/brand";
 
-export const metadata = { title: "Terms of Service — CueProperty" };
+export const metadata = { title: "Terms of Service — Open Home Hero" };
 
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-paper">
       <header className="mx-auto flex max-w-3xl items-center px-6 py-6">
         <Link href="/" className="font-serif text-xl tracking-tight">
-          <span className="text-brass">C</span>
-          <span className="text-ink">ue</span>
-          <span className="text-brass">P</span>
-          <span className="text-ink">roperty</span>
+          <Wordmark tone="dark" />
         </Link>
       </header>
 
@@ -23,7 +22,7 @@ export default function TermsPage() {
             <h2 className="font-serif text-lg font-medium text-ink">1. Agreement</h2>
             <p className="mt-2">
               These Terms of Service (&quot;Terms&quot;) govern your use of
-              CueProperty (the &quot;Service&quot;), operated by CueProperty
+              Open Home Hero (the &quot;Service&quot;), operated by Open Home Hero
               (&quot;we&quot;, &quot;us&quot;). By creating an account or using
               the Service, you agree to these Terms.
             </p>
@@ -34,7 +33,7 @@ export default function TermsPage() {
               2. The Service
             </h2>
             <p className="mt-2">
-              CueProperty lets real estate agents create property listings,
+              Open Home Hero lets real estate agents create property listings,
               generate a QR code for each listing, and collect visitor feedback
               and offers submitted through a public web form at an open house.
             </p>
@@ -115,7 +114,7 @@ export default function TermsPage() {
             <p className="mt-2">
               The Service is provided &quot;as is.&quot; We aim for high availability but
               do not guarantee uninterrupted access. To the maximum extent
-              permitted by law, CueProperty is not liable for indirect or
+              permitted by law, Open Home Hero is not liable for indirect or
               consequential losses, including lost leads or lost sales,
               arising from your use of the Service.
             </p>
@@ -147,8 +146,8 @@ export default function TermsPage() {
             <h2 className="font-serif text-lg font-medium text-ink">10. Contact</h2>
             <p className="mt-2">
               Questions about these Terms can be sent to{" "}
-              <a href="mailto:contact@cueproperty.com.au" className="text-brass underline">
-                contact@cueproperty.com.au
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-brass underline">
+                {CONTACT_EMAIL}
               </a>
               .
             </p>

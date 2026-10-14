@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
+import { siteOrigin } from "@/lib/siteUrl";
 import { stripe } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
@@ -111,10 +111,7 @@ export async function POST(request: Request) {
     });
   }
 
-  const headersList = await headers();
-  const host = headersList.get("host");
-  const protocol = host?.startsWith("localhost") ? "http" : "https";
-  const origin = `${protocol}://${host}`;
+  const origin = siteOrigin(request);
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -141,7 +138,7 @@ export async function POST(request: Request) {
       await service.from("agencies").delete().eq("id", agency.id);
     }
     console.error("Agency Stripe checkout session creation failed:", error);
-    const message = error instanceof Error ? error.message : "Could not start checkout.";
+    const message = "Could not start checkout.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 export function DeleteAccountSection() {
   const router = useRouter();
   const [confirmText, setConfirmText] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +17,11 @@ export function DeleteAccountSection() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/account/delete", { method: "POST" });
+      const res = await fetch("/api/account/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
       const result = await res.json();
 
       if (!res.ok) {
@@ -51,11 +56,20 @@ export function DeleteAccountSection() {
         className="w-full max-w-xs rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-error focus:outline-none focus:ring-1 focus:ring-error"
       />
 
+      <p className="text-sm text-ink-soft">Then enter your password.</p>
+      <input
+        type="password"
+        autoComplete="current-password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full max-w-xs rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-error focus:outline-none focus:ring-1 focus:ring-error"
+      />
+
       {error ? <p className="text-sm text-error">{error}</p> : null}
 
       <Button
         variant="danger"
-        disabled={confirmText !== "DELETE" || loading}
+        disabled={confirmText !== "DELETE" || !password || loading}
         onClick={handleDelete}
       >
         {loading ? "Deleting…" : "Delete my account"}

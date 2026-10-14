@@ -15,7 +15,7 @@ export function MonthlyStatementExportButton({
 }) {
   function handleExport() {
     const summarySection = toCsv([
-      ["CueProperty Monthly Statement"],
+      ["Open Home Hero Monthly Statement"],
       ["Period", statement.label],
       [],
       ["New signups", statement.newSignups],
@@ -65,7 +65,7 @@ export function MonthlyStatementExportButton({
     const agentSection = toCsv([agentHeader, ...agentRowsCsv]);
 
     downloadCsv(
-      `cueproperty-statement-${statement.monthKey}.csv`,
+      `open-home-hero-statement-${statement.monthKey}.csv`,
       `${summarySection}\n${agentSection}`,
     );
   }

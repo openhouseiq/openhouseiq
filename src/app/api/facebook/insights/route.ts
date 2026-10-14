@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { hasBearer } from "@/lib/secureCompare";
 
 // Read-only performance stats for posts the Content Queue has published.
 // Uses the same shared secret as /api/facebook/publish.
@@ -11,10 +12,7 @@ const POST_ID_PATTERN = /^\d+_\d+$/;
 const INSIGHT_METRICS = ["post_impressions_unique", "post_clicks"] as const;
 
 function isAuthorized(request: Request): boolean {
-  const secret = process.env.CONTENT_QUEUE_PUBLISH_SECRET;
-  if (!secret) return false;
-  const header = request.headers.get("authorization");
-  return header === `Bearer ${secret}`;
+  return hasBearer(request, process.env.CONTENT_QUEUE_PUBLISH_SECRET);
 }
 
 async function graphGet(path: string, params: Record<string, string>) {

@@ -9,6 +9,7 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { Turnstile, TURNSTILE_SITE_KEY } from "@/components/auth/Turnstile";
+import { MIN_PASSWORD_LENGTH, PASSWORD_HINT } from "@/lib/passwordPolicy";
 
 const fileInputClasses =
   "w-full text-sm text-[#3b4657] file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink";
@@ -69,14 +70,13 @@ function SignUpForm() {
       return;
     }
 
-    if (data.user) {
-      formData.set("userId", data.user.id);
-      for (const [key, value] of Object.entries(utm)) {
-        formData.set(key, value);
-      }
-      await fetch("/api/signup-profile", { method: "POST", body: formData }).catch(
-        () => {},
-      );
+    // The profile details were sent with the signup itself. A headshot can
+    // only be uploaded once there's a signed-in session, which exists right
+    // away only when email confirmation is off; otherwise it can be added in
+    // Settings after confirming.
+    const photo = formData.get("photo");
+    if (data.session && data.user && photo instanceof File && photo.size > 0) {
+      await uploadSignupHeadshot(supabase, data.user.id, photo).catch(() => {});
     }
 
     setLoading(false);
@@ -92,8 +92,8 @@ function SignUpForm() {
   return (
     <AuthLayout
       headline="List more homes, faster."
-      description="CueProperty helps real estate agents run open houses and follow up with leads in one place."
-      footer="© 2026 CueProperty"
+      description="Open Home Hero helps real estate agents run open houses and follow up with leads in one place."
+      footer="© 2026 Open Home Hero"
     >
       <h2 className="font-serif text-2xl font-medium text-ink">
         Create your account
@@ -175,9 +175,10 @@ function SignUpForm() {
             id="password"
             type="password"
             autoComplete="new-password"
-            minLength={6}
+            minLength={MIN_PASSWORD_LENGTH}
             required
           />
+          <p className="mt-1.5 text-xs text-[#3b4657]">{PASSWORD_HINT}</p>
 
           <div className="border-t border-line pt-4">
             <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-ink">
@@ -217,6 +218,22 @@ function SignUpForm() {
       )}
     </AuthLayout>
   );
+}
+
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+
+async function uploadSignupHeadshot(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  file: File,
+) {
+  if (!file.type.startsWith("image/") || file.size > MAX_PHOTO_BYTES) return;
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80);
+  const path = `${userId}/photo-${crypto.randomUUID()}-${safeName}`;
+  const { error } = await supabase.storage.from("agent-assets").upload(path, file);
+  if (error) return;
+  const { publicUrl } = supabase.storage.from("agent-assets").getPublicUrl(path).data;
+  await supabase.auth.updateUser({ data: { photo_url: publicUrl } });
 }
 
 export default function SignUpPage() {

@@ -5,23 +5,14 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { checkInfrastructureCheckpoint } from "@/lib/infraCheckpoints";
 import { applyPendingReferralCredits, processReferralInvoice } from "@/lib/referrals";
 
-export async function POST(request: Request) {
-  const signature = request.headers.get("stripe-signature");
-  const rawBody = await request.text();
+type Db = ReturnType<typeof createServiceClient>;
 
-  let event: Stripe.Event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      rawBody,
-      signature!,
-      process.env.STRIPE_WEBHOOK_SECRET!,
-    );
-  } catch {
-    return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
-  }
+/** Throws when a database write failed, so the webhook answers with an error and Stripe retries. */
+function check(result: { error: { message: string } | null }) {
+  if (result.error) throw new Error(result.error.message);
+}
 
-  const supabase = createServiceClient();
-
+async function processEvent(event: Stripe.Event, supabase: Db) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
@@ -33,7 +24,7 @@ export async function POST(request: Request) {
         if (subscription.metadata?.type === "agency") {
           const agencyId = subscription.metadata.agency_id;
           if (agencyId) {
-            await supabase
+            check(await supabase
               .from("agencies")
               .update({
                 stripe_customer_id: session.customer as string,
@@ -49,7 +40,7 @@ export async function POST(request: Request) {
                 ).toISOString(),
                 updated_at: new Date().toISOString(),
               })
-              .eq("id", agencyId);
+              .eq("id", agencyId));
 
             const { data: ownerRow } = await supabase
               .from("agencies")
@@ -92,7 +83,7 @@ export async function POST(request: Request) {
 
         const userId = session.client_reference_id;
         if (userId) {
-          await supabase
+          check(await supabase
             .from("subscriptions")
             .update({
               stripe_customer_id: session.customer as string,
@@ -107,7 +98,7 @@ export async function POST(request: Request) {
               ).toISOString(),
               updated_at: new Date().toISOString(),
             })
-            .eq("user_id", userId);
+            .eq("user_id", userId));
 
           await applyPendingReferralCredits(supabase, userId).catch(() => {});
           await checkInfrastructureCheckpoint();
@@ -138,7 +129,7 @@ export async function POST(request: Request) {
             newPeriodEnd.getTime() > new Date(current.current_period_end).getTime();
           const applyPending = Boolean(renewed) && current?.pending_seats != null;
 
-          await supabase
+          check(await supabase
             .from("agencies")
             .update({
               status: subscription.status,
@@ -151,7 +142,7 @@ export async function POST(request: Request) {
               updated_at: new Date().toISOString(),
             })
             .eq("id", agencyId)
-            .eq("stripe_subscription_id", subscription.id);
+            .eq("stripe_subscription_id", subscription.id));
         }
         break;
       }
@@ -176,17 +167,17 @@ export async function POST(request: Request) {
       // (e.g. an old plan replaced by a newer checkout) must never clobber
       // the row's current one.
       if (userId) {
-        await supabase
+        check(await supabase
           .from("subscriptions")
           .update(update)
           .eq("user_id", userId)
-          .eq("stripe_subscription_id", subscription.id);
+          .eq("stripe_subscription_id", subscription.id));
       } else {
-        await supabase
+        check(await supabase
           .from("subscriptions")
           .update(update)
           .eq("stripe_customer_id", subscription.customer as string)
-          .eq("stripe_subscription_id", subscription.id);
+          .eq("stripe_subscription_id", subscription.id));
       }
       break;
     }
@@ -203,6 +194,51 @@ export async function POST(request: Request) {
 
     default:
       break;
+  }
+}
+
+export async function POST(request: Request) {
+  const signature = request.headers.get("stripe-signature");
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  const rawBody = await request.text();
+
+  if (!signature || !secret) {
+    return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
+  }
+
+  let event: Stripe.Event;
+  try {
+    event = stripe.webhooks.constructEvent(rawBody, signature, secret);
+  } catch {
+    return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
+  }
+
+  const supabase = createServiceClient();
+
+  // Stripe can deliver the same event more than once. Record each event id
+  // first; a repeat hits the unique key and is acknowledged without being
+  // processed again. If the table doesn't exist yet we carry on without it.
+  const { error: dedupeError } = await supabase
+    .from("stripe_events")
+    .insert({ id: event.id, type: event.type });
+
+  if (dedupeError?.code === "23505") {
+    return NextResponse.json({ received: true, duplicate: true });
+  }
+  const dedupeActive = !dedupeError;
+  if (dedupeError) {
+    console.error("Stripe event de-duplication unavailable:", dedupeError.message);
+  }
+
+  try {
+    await processEvent(event, supabase);
+  } catch (error) {
+    console.error(`Stripe event ${event.type} failed:`, error);
+    // Release the event so Stripe's retry is processed rather than skipped.
+    if (dedupeActive) {
+      await supabase.from("stripe_events").delete().eq("id", event.id);
+    }
+    return NextResponse.json({ error: "Processing failed." }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });

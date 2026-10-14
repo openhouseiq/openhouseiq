@@ -79,7 +79,7 @@ export function BillingSection({
     <div className="space-y-4">
       {isActive ? (
         <p className="text-sm text-ink">
-          You&apos;re on the CueProperty Pro plan.
+          You&apos;re on the Open Home Hero Pro plan.
           {subscription?.current_period_end
             ? ` Renews ${new Date(subscription.current_period_end).toLocaleDateString()}.`
             : ""}

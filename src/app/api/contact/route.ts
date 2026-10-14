@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { siteOrigin } from "@/lib/siteUrl";
+import { ValidationError, readJsonObject, requiredText } from "@/lib/validate";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
@@ -19,11 +21,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = await request.json();
-  const message = String(body.message ?? "").trim();
-
-  if (!message) {
-    return NextResponse.json({ error: "Message can't be empty." }, { status: 400 });
+  let message: string;
+  try {
+    const body = await readJsonObject(request);
+    message = requiredText(body.message, "message", 4000);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { error: "Please enter a message of up to 4000 characters." },
+        { status: 400 },
+      );
+    }
+    throw error;
   }
 
   const supabase = createServiceClient();
@@ -33,18 +42,17 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Contact message insert failed:", error.message);
+    return NextResponse.json({ error: "Could not send your message. Please try again." }, { status: 500 });
   }
 
-  const host = request.headers.get("host");
-  const protocol = host?.startsWith("localhost") ? "http" : "https";
   const agentName = (user.user_metadata?.full_name as string | undefined) ?? "";
 
   await notifyAdminOfContactMessage({
     agentName,
     agentEmail: user.email ?? "",
     message,
-    baseUrl: `${protocol}://${host}`,
+    baseUrl: siteOrigin(request),
   });
 
   return NextResponse.json({ success: true });

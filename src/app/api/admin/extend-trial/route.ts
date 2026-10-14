@@ -1,19 +1,11 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/supabase/current-user";
+import { getAdminUser } from "@/lib/admin";
 import { createServiceClient } from "@/lib/supabase/service";
 
-function isAdmin(email: string | null | undefined): boolean {
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return Boolean(email && adminEmails.includes(email.toLowerCase()));
-}
-
 export async function POST(request: Request) {
-  const user = await getCurrentUser();
+  const user = await getAdminUser();
 
-  if (!user || !isAdmin(user.email)) {
+  if (!user) {
     return NextResponse.json({ error: "Not authorized." }, { status: 403 });
   }
 

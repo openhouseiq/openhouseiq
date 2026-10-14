@@ -6,6 +6,8 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
 import { ListingsList, type ListingWithCounts } from "./ListingsList";
 import { getUserCurrentAgencyId } from "@/lib/agency";
+import { getPendingInvites } from "@/lib/agencyInvites";
+import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import type { Listing } from "@/lib/types";
 
 function accountAgeDays(createdAt: string): number {
@@ -54,6 +56,8 @@ export default async function DashboardPage() {
       redirect("/dashboard/welcome");
     }
   }
+
+  const invites = await getPendingInvites(user);
 
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const firstName = fullName.split(" ")[0] || user.email || "there";
@@ -134,10 +138,12 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
+        <PendingInvites invites={invites} />
+
         {showFeedbackPrompt ? (
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-md border border-brass bg-brass/10 px-6 py-4">
             <p className="text-sm text-ink">
-              You&apos;ve been using CueProperty for a month — we&apos;d love
+              You&apos;ve been using Open Home Hero for a month — we&apos;d love
               your feedback.
             </p>
             <Link href="/dashboard/product-feedback">

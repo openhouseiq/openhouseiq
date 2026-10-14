@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/supabase/current-user";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { AgentProfileForm } from "./AgentProfileForm";
 import { PasswordSection } from "./PasswordSection";
+import { TwoStepSection } from "./TwoStepSection";
 import { BillingSection } from "./BillingSection";
 import { AgencySection } from "./AgencySection";
 import { ContactSection } from "./ContactSection";
@@ -100,6 +101,11 @@ export default async function SettingsPage() {
           <section className="rounded-md border border-line bg-paper-card p-6">
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">Password</h2>
             <PasswordSection />
+          </section>
+
+          <section className="rounded-md border border-line bg-paper-card p-6">
+            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Two-step login</h2>
+            <TwoStepSection />
           </section>
 
           <section className="rounded-md border border-line bg-paper-card p-6">

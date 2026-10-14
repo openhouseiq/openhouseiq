@@ -1,6 +1,7 @@
+import { DEFAULT_SITE_URL } from "@/lib/brand";
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.cueproperty.com.au";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
 
 export default function robots(): MetadataRoute.Robots {
   return {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/supabase/current-user";
+import { getAdminUser, isAdminUser } from "@/lib/admin";
 import { createServiceClient } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe";
 import { MonthlyStatementExportButton } from "./MonthlyStatementExportButton";
@@ -8,6 +9,7 @@ import { ExtendTrialButton } from "./ExtendTrialButton";
 import { DeleteUserButton } from "./DeleteUserButton";
 import { AdminContactMessages } from "./AdminContactMessages";
 import type { ProductFeedback, ContactMessage } from "@/lib/types";
+import { Wordmark } from "@/components/Wordmark";
 
 export type PeriodSummary = {
   label: string;
@@ -163,13 +165,13 @@ export default async function AdminPage({
     redirect("/login");
   }
 
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-
-  if (!user.email || !adminEmails.includes(user.email.toLowerCase())) {
+  if (!isAdminUser(user)) {
     notFound();
+  }
+
+  // Admin needs a two-step login: send admins without one to set it up.
+  if (!(await getAdminUser())) {
+    redirect("/dashboard/settings#two-step");
   }
 
   const service = createServiceClient();
@@ -345,10 +347,7 @@ export default async function AdminPage({
     <div className="min-h-screen bg-paper">
       <header className="bg-navy px-6 py-4">
         <span className="font-serif text-xl tracking-tight">
-          <span className="text-brass">C</span>
-          <span className="text-paper">ue</span>
-          <span className="text-brass">P</span>
-          <span className="text-paper">roperty</span>
+          <Wordmark tone="light" />
           <span className="ml-2 text-sm font-sans font-normal text-navy-soft">Admin</span>
         </span>
       </header>

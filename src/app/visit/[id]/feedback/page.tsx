@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getPublicListing } from "@/lib/publicListing";
 import { getAgentPhotoUrl } from "@/lib/agent-photo";
 import { VisitLayout } from "@/components/visit/VisitLayout";
 import { FeedbackForm } from "./FeedbackForm";
-import type { Listing } from "@/lib/types";
 
 export default async function FeedbackPage({
   params,
@@ -11,14 +10,7 @@ export default async function FeedbackPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
-
-  const { data: listing } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("id", id)
-    .returns<Listing[]>()
-    .maybeSingle();
+  const listing = await getPublicListing(id);
 
   if (!listing) {
     notFound();

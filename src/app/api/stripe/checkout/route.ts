@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
+import { siteOrigin } from "@/lib/siteUrl";
 import { stripe } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
@@ -17,10 +17,7 @@ export async function POST(request: Request) {
   const priceId =
     plan === "yearly" ? process.env.STRIPE_PRICE_YEARLY! : process.env.STRIPE_PRICE_MONTHLY!;
 
-  const headersList = await headers();
-  const host = headersList.get("host");
-  const protocol = host?.startsWith("localhost") ? "http" : "https";
-  const origin = `${protocol}://${host}`;
+  const origin = siteOrigin(request);
 
   const service = createServiceClient();
   await attributeReferral(service, user, request.headers.get("cookie")).catch(() => {});
@@ -61,7 +58,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Stripe checkout session creation failed:", error);
-    const message = error instanceof Error ? error.message : "Could not start checkout.";
+    const message = "Could not start checkout.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

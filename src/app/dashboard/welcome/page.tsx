@@ -8,6 +8,8 @@ import { BillingSection } from "../settings/BillingSection";
 import { StartTrialSection } from "./StartTrialSection";
 import { CreateAgencyForm } from "../agency/AgencyDashboard";
 import { getUserCurrentAgencyId } from "@/lib/agency";
+import { getPendingInvites } from "@/lib/agencyInvites";
+import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import type { Subscription } from "@/lib/types";
 
 export default async function WelcomePage() {
@@ -29,6 +31,7 @@ export default async function WelcomePage() {
     .maybeSingle();
 
   const needsCard = subscription?.status === "incomplete";
+  const invites = await getPendingInvites(user);
 
   const [{ data: hasAccess }, agencyId] = await Promise.all([
     supabase.rpc("has_active_access", { uid: user.id }),
@@ -59,6 +62,8 @@ export default async function WelcomePage() {
         <h1 className="font-serif text-2xl font-medium text-ink">
           Welcome, {firstName}
         </h1>
+
+        <PendingInvites invites={invites} />
 
         {coveredByAgency ? (
           <>

@@ -78,7 +78,7 @@ export function AdminContactMessages({
             {agent?.email ? (
               <a
                 href={`mailto:${agent.email}?subject=${encodeURIComponent(
-                  "Re: your CueProperty message",
+                  "Re: your Open Home Hero message",
                 )}`}
                 className="text-xs text-brass underline"
               >

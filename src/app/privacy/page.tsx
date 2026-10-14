@@ -1,16 +1,15 @@
 import Link from "next/link";
+import { Wordmark } from "@/components/Wordmark";
+import { CONTACT_EMAIL } from "@/lib/brand";
 
-export const metadata = { title: "Privacy Policy — CueProperty" };
+export const metadata = { title: "Privacy Policy — Open Home Hero" };
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-paper">
       <header className="mx-auto flex max-w-3xl items-center px-6 py-6">
         <Link href="/" className="font-serif text-xl tracking-tight">
-          <span className="text-brass">C</span>
-          <span className="text-ink">ue</span>
-          <span className="text-brass">P</span>
-          <span className="text-ink">roperty</span>
+          <Wordmark tone="dark" />
         </Link>
       </header>
 
@@ -21,7 +20,7 @@ export default function PrivacyPage() {
         <div className="mt-8 space-y-6 text-sm leading-relaxed text-ink">
           <section>
             <p>
-              CueProperty (&quot;we&quot;, &quot;us&quot;) respects your
+              Open Home Hero (&quot;we&quot;, &quot;us&quot;) respects your
               privacy. This policy explains what information we collect, why,
               and how it&apos;s handled, consistent with the Australian
               Privacy Principles under the Privacy Act 1988 (Cth).
@@ -80,7 +79,7 @@ export default function PrivacyPage() {
               3. Who we share it with
             </h2>
             <p className="mt-2">
-              We use a small number of service providers to run CueProperty:
+              We use a small number of service providers to run Open Home Hero:
               Supabase (database, authentication, and file storage), Stripe
               (payments), Cloudflare (CAPTCHA/spam protection), and Netlify
               (hosting). Each processes data only as needed to provide their
@@ -138,8 +137,8 @@ export default function PrivacyPage() {
             <h2 className="font-serif text-lg font-medium text-ink">8. Contact</h2>
             <p className="mt-2">
               For privacy questions or requests, contact{" "}
-              <a href="mailto:contact@cueproperty.com.au" className="text-brass underline">
-                contact@cueproperty.com.au
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-brass underline">
+                {CONTACT_EMAIL}
               </a>
               .
             </p>

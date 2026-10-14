@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/supabase/current-user";
+import { getAdminUser, isAdminUser } from "@/lib/admin";
 import { createServiceClient } from "@/lib/supabase/service";
 import { PayoutRunner } from "./PayoutRunner";
 
@@ -14,13 +15,13 @@ export default async function AdminReferralsPage() {
     redirect("/login");
   }
 
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-
-  if (!user.email || !adminEmails.includes(user.email.toLowerCase())) {
+  if (!isAdminUser(user)) {
     notFound();
+  }
+
+  // Admin needs a two-step login: send admins without one to set it up.
+  if (!(await getAdminUser())) {
+    redirect("/dashboard/settings#two-step");
   }
 
   const service = createServiceClient();

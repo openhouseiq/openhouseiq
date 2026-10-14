@@ -196,7 +196,7 @@ async function allocateAndApply(service: SupabaseClient, credit: CreditRow): Pro
         {
           amount: -balancePortion,
           currency: credit.currency,
-          description: "CueProperty referral credit",
+          description: "Open Home Hero referral credit",
           metadata: { referral_credit_id: credit.id, invoice: credit.stripe_invoice_id },
         },
         { idempotencyKey: `referral-credit-${credit.id}` },
@@ -467,7 +467,7 @@ export async function runReferralPayouts(
           amount: claimedTotal,
           currency: group.currency,
           destination: account.stripe_account_id as string,
-          description: "CueProperty referral payout",
+          description: "Open Home Hero referral payout",
           metadata: { payout_id: payout.id as string, supabase_user_id: group.userId },
         },
         { idempotencyKey: `referral-payout-${payout.id}` },

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
+import { readJsonObject, uuid } from "@/lib/validate";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -9,8 +10,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }
 
-  const body = await request.json();
-  const memberId = String(body.memberId ?? "");
+  let memberId: string;
+  try {
+    const body = await readJsonObject(request);
+    memberId = uuid(body.memberId, "member");
+  } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
 
   const service = createServiceClient();
 

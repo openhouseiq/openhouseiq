@@ -1,14 +1,18 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
+import { Wordmark } from "@/components/Wordmark";
+import { DEFAULT_SITE_URL } from "@/lib/brand";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
 
 export const metadata: Metadata = {
-  title: "CueProperty — QR Code Feedback, Offers & Rental Applications for Agents",
+  title: "Open Home Hero — QR Code Feedback, Offers & Rental Applications for Agents",
   description:
     "Turn every open house or rental inspection into instant feedback, offers, and rental applications. One QR code, no paper sign-in sheets, no app for visitors to download. Built for real estate agents and property managers in Australia.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "CueProperty — QR Code Feedback, Offers & Rental Applications for Agents",
+    title: "Open Home Hero — QR Code Feedback, Offers & Rental Applications for Agents",
     description:
       "One QR code per listing. Visitors leave feedback, submit an offer, or apply to rent from their phone — agents see every lead ranked in one dashboard.",
     url: "/",
@@ -19,12 +23,12 @@ const FACEBOOK_PAGE_URL = "https://www.facebook.com/profile.php?id=6159437740769
 
 const FAQS = [
   {
-    question: "What is CueProperty?",
+    question: "What is Open Home Hero?",
     answer:
-      "CueProperty is software for real estate agents and property managers that turns a printed QR code into instant visitor feedback, offers, and rental applications at open houses and rental inspections — no app for visitors to download, no paper sign-in sheets.",
+      "Open Home Hero is software for real estate agents and property managers that turns a printed QR code into instant visitor feedback, offers, and rental applications at open houses and rental inspections — no app for visitors to download, no paper sign-in sheets.",
   },
   {
-    question: "Does CueProperty work for rental inspections as well as sales?",
+    question: "Does Open Home Hero work for rental inspections as well as sales?",
     answer:
       "Yes. Each listing is set up as either for sale or for rent. Sale listings collect feedback and offers; rental listings collect feedback and rental applications, ranked against what the landlord is looking for.",
   },
@@ -34,14 +38,14 @@ const FAQS = [
       "No. Visitors scan the listing's QR code and submit feedback, an offer, or a rental application directly from their phone's browser — no app, no account.",
   },
   {
-    question: "How much does CueProperty cost?",
+    question: "How much does Open Home Hero cost?",
     answer:
-      "CueProperty is one plan with every feature included: $39/month or $390/year (two months free). New accounts start with a 14-day free trial.",
+      "Open Home Hero is one plan with every feature included: $39/month or $390/year (two months free). New accounts start with a 14-day free trial.",
   },
   {
-    question: "Is CueProperty a replacement for my CRM?",
+    question: "Is Open Home Hero a replacement for my CRM?",
     answer:
-      "No. CueProperty isn't a CRM — it captures the moment someone walks into an open house or rental inspection, ranks the responses, and lets you export every lead as a CSV to import into whatever CRM you already use.",
+      "No. Open Home Hero isn't a CRM — it captures the moment someone walks into an open house or rental inspection, ranks the responses, and lets you export every lead as a CSV to import into whatever CRM you already use.",
   },
 ];
 
@@ -114,9 +118,9 @@ const INCLUDED = [
 
 const AGENCY_TIERS = [
   { range: "1-2 agents", discount: "Full price" },
-  { range: "3-6 agents", discount: "10% off per agent" },
-  { range: "7-19 agents", discount: "15% off per agent" },
-  { range: "20 agents", discount: "20% off per agent" },
+  { range: "3-10 agents", discount: "5% off per agent" },
+  { range: "11-15 agents", discount: "10% off per agent" },
+  { range: "16-20 agents", discount: "15% off per agent" },
   { range: "More than 20 agents", discount: "Contact us for pricing" },
 ];
 
@@ -125,11 +129,8 @@ export default function Home() {
     <div className="min-h-screen bg-paper">
       <header className="bg-navy px-6 py-6">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <span className="font-serif text-xl tracking-tight">
-            <span className="text-brass">C</span>
-            <span className="text-paper">ue</span>
-            <span className="text-brass">P</span>
-            <span className="text-paper">roperty</span>
+          <span className="whitespace-nowrap font-serif text-lg tracking-tight sm:text-xl">
+            <Wordmark tone="light" />
           </span>
           <div className="flex items-center gap-4">
             <Link href="/login" className="text-sm text-navy-soft hover:text-brass">
@@ -147,7 +148,7 @@ export default function Home() {
           Run better open houses.
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
-          CueProperty turns every open house or rental inspection into a
+          Open Home Hero turns every open house or rental inspection into a
           lead-generating machine — one QR code, instant visitor feedback,
           offers, and rental applications, no paper sign-in sheets.
         </p>
@@ -219,7 +220,7 @@ export default function Home() {
               Not another CRM
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-ink-soft">
-              CueProperty isn&apos;t trying to replace the CRM you already
+              Open Home Hero isn&apos;t trying to replace the CRM you already
               use — it&apos;s built for one moment your CRM was never
               designed for.
             </p>
@@ -229,7 +230,7 @@ export default function Home() {
             <div className="grid grid-cols-2 border-b border-line bg-paper-card text-sm font-medium">
               <div className="px-6 py-3 text-ink-soft">Your CRM</div>
               <div className="border-l border-line px-6 py-3 text-brass">
-                CueProperty
+                Open Home Hero
               </div>
             </div>
             {COMPARISON.map((row, i) => (
@@ -249,7 +250,7 @@ export default function Home() {
 
           <p className="mt-8 text-center text-sm text-ink-soft">
             Export every lead to CSV and drop it into whatever you already
-            use — CueProperty was never trying to replace it.
+            use — Open Home Hero was never trying to replace it.
           </p>
         </div>
       </section>
@@ -356,7 +357,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-line px-6 py-6 text-center text-xs text-ink-soft">
-        <p>© 2026 CueProperty</p>
+        <p>© 2026 Open Home Hero</p>
         <p className="mt-2">
           <Link href="/terms" className="underline hover:text-brass">
             Terms
@@ -389,7 +390,7 @@ export default function Home() {
             {
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              name: "CueProperty",
+              name: "Open Home Hero",
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
               description:
@@ -399,7 +400,7 @@ export default function Home() {
                 price: "39",
                 priceCurrency: "AUD",
                 priceValidUntil: "2026-12-31",
-                url: "https://www.cueproperty.com.au/signup",
+                url: `${SITE_URL}/signup`,
               },
               audience: {
                 "@type": "Audience",
@@ -409,8 +410,8 @@ export default function Home() {
             {
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "CueProperty",
-              url: "https://www.cueproperty.com.au",
+              name: "Open Home Hero",
+              url: SITE_URL,
               sameAs: [FACEBOOK_PAGE_URL],
             },
             {

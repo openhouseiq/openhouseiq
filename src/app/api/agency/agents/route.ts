@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { stripe } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendEmailChecked } from "@/lib/notificationEmail";
+import { siteOrigin } from "@/lib/siteUrl";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { INVITE_DAYS } from "@/lib/agencyInvites";
+import { ValidationError, email as parseEmail, readJsonObject, requiredText, uuid } from "@/lib/validate";
 
-function generateTempPassword(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(12));
-  return Array.from(bytes, (b) => b.toString(36).padStart(2, "0")).join("").slice(0, 16);
-}
-
+// Invites an agent to the owner's agency. Nothing about the invited person's
+// account changes here: no account is created and no subscription is touched.
+// They get an email, sign in with their own login, and choose to accept (see
+// /api/agency/accept).
 export async function POST(request: Request) {
   const user = await getCurrentUser();
 
@@ -17,13 +18,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }
 
-  const body = await request.json();
-  const agencyId = String(body.agencyId ?? "");
-  const name = String(body.name ?? "").trim();
-  const email = String(body.email ?? "").trim().toLowerCase();
+  if (!(await checkRateLimit("agency-invite", user.id))) {
+    return NextResponse.json(
+      { error: "Too many invitations. Please try again shortly." },
+      { status: 429 },
+    );
+  }
 
-  if (!agencyId || !name || !email || !email.includes("@")) {
-    return NextResponse.json({ error: "A name and valid email are required." }, { status: 400 });
+  let agencyId: string;
+  let name: string;
+  let email: string;
+  try {
+    const body = await readJsonObject(request);
+    agencyId = uuid(body.agencyId, "agency");
+    name = requiredText(body.name, "name", 100).replace(/[\r\n]+/g, " ");
+    email = parseEmail(body.email);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: "A name and valid email are required." }, { status: 400 });
+    }
+    throw error;
   }
 
   const service = createServiceClient();
@@ -45,30 +59,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const { count: activeCount } = await service
-    .from("agency_members")
-    .select("id", { count: "exact", head: true })
-    .eq("agency_id", agencyId)
-    .eq("status", "active");
-
-  if ((activeCount ?? 0) >= agency.seats) {
-    return NextResponse.json(
-      { error: "All your licences are in use. Add a licence first, then add this agent." },
-      { status: 400 },
-    );
-  }
-
-  const { data: existingMember } = await service
-    .from("agency_members")
-    .select("id, status")
-    .eq("agency_id", agencyId)
-    .eq("email", email)
-    .maybeSingle();
-
-  if (existingMember && existingMember.status === "active") {
-    return NextResponse.json({ error: "Already a member." }, { status: 400 });
-  }
-
   if (user.email && email === user.email.toLowerCase()) {
     return NextResponse.json(
       { error: "You're already the owner of this agency." },
@@ -76,145 +66,78 @@ export async function POST(request: Request) {
     );
   }
 
-  // Look up whether this email already belongs to an OpenHouseIQ account.
-  let existingUserId: string | null = null;
-  let page = 1;
-  while (!existingUserId) {
-    const { data, error } = await service.auth.admin.listUsers({ page, perPage: 200 });
-    if (error) break;
-    const match = data.users.find((u) => u.email?.toLowerCase() === email);
-    if (match) existingUserId = match.id;
-    if (match || data.users.length < 200) break;
-    page += 1;
+  // Open invitations hold a licence until they're accepted or expire, so the
+  // owner can never invite more people than they've paid for.
+  const cutoff = new Date(Date.now() - INVITE_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const [{ count: activeCount }, { count: openInvites }, { data: existingMember }] = await Promise.all([
+    service
+      .from("agency_members")
+      .select("id", { count: "exact", head: true })
+      .eq("agency_id", agencyId)
+      .eq("status", "active"),
+    service
+      .from("agency_members")
+      .select("id", { count: "exact", head: true })
+      .eq("agency_id", agencyId)
+      .eq("status", "invited")
+      .gt("invited_at", cutoff),
+    service
+      .from("agency_members")
+      .select("id, status")
+      .eq("agency_id", agencyId)
+      .eq("email", email)
+      .maybeSingle(),
+  ]);
+
+  if (existingMember?.status === "active") {
+    return NextResponse.json({ error: "Already a member." }, { status: 400 });
   }
 
-  let isNewAccount = false;
-
-  if (existingUserId) {
-    // A person can belong to only one agency at a time — it decides whose
-    // listings they can see and manage.
-    const [{ data: ownsAgency }, { data: otherMembership }] = await Promise.all([
-      service.from("agencies").select("id").eq("owner_user_id", existingUserId).maybeSingle(),
-      service
-        .from("agency_members")
-        .select("id")
-        .eq("user_id", existingUserId)
-        .eq("status", "active")
-        .neq("agency_id", agencyId)
-        .maybeSingle(),
-    ]);
-
-    if (ownsAgency || otherMembership) {
-      return NextResponse.json(
-        { error: "That person already belongs to another agency." },
-        { status: 400 },
-      );
-    }
-
-    // Already has an account — if it has its own paid subscription, cancel
-    // it; they're now covered by the agency's seat instead.
-    const { data: ownSubscription } = await service
-      .from("subscriptions")
-      .select("stripe_subscription_id, status")
-      .eq("user_id", existingUserId)
-      .maybeSingle();
-
-    if (
-      ownSubscription?.stripe_subscription_id &&
-      (ownSubscription.status === "active" || ownSubscription.status === "trialing")
-    ) {
-      try {
-        await stripe.subscriptions.cancel(ownSubscription.stripe_subscription_id);
-      } catch (error) {
-        console.error("Could not cancel individual subscription on agency add:", error);
-      }
-    }
-  } else {
-    isNewAccount = true;
-    const { data: created, error: createError } = await service.auth.admin.createUser({
-      email,
-      password: generateTempPassword(),
-      email_confirm: true,
-      user_metadata: { full_name: name },
-    });
-
-    if (createError || !created.user) {
-      return NextResponse.json(
-        { error: createError?.message ?? "Could not create the agent's account." },
-        { status: 400 },
-      );
-    }
-
-    existingUserId = created.user.id;
+  const alreadyHoldingASeat = existingMember?.status === "invited" ? 1 : 0;
+  if ((activeCount ?? 0) + (openInvites ?? 0) - alreadyHoldingASeat >= agency.seats) {
+    return NextResponse.json(
+      { error: "All your licences are in use or reserved by open invitations. Add a licence first." },
+      { status: 400 },
+    );
   }
 
   const memberData = {
     agency_id: agencyId,
-    user_id: existingUserId,
+    user_id: null,
     email,
-    status: "active" as const,
-    joined_at: new Date().toISOString(),
+    status: "invited" as const,
+    invited_at: new Date().toISOString(),
+    joined_at: null,
+    removed_at: null,
   };
 
   let memberId: string;
   if (existingMember) {
-    await service.from("agency_members").update(memberData).eq("id", existingMember.id);
+    const { error } = await service.from("agency_members").update(memberData).eq("id", existingMember.id);
+    if (error) {
+      console.error("Agency invite update failed:", error.message);
+      return NextResponse.json({ error: "Could not send the invitation." }, { status: 500 });
+    }
     memberId = existingMember.id;
   } else {
-    const { data: inserted, error: insertError } = await service
+    const { data: inserted, error } = await service
       .from("agency_members")
       .insert(memberData)
       .select("id")
       .single();
-    if (insertError || !inserted) {
-      return NextResponse.json(
-        { error: insertError?.message ?? "Could not add the agent." },
-        { status: 400 },
-      );
+    if (error || !inserted) {
+      console.error("Agency invite insert failed:", error?.message);
+      return NextResponse.json({ error: "Could not send the invitation." }, { status: 500 });
     }
     memberId = inserted.id;
   }
 
-  // Tell the agent they've been added. New accounts get a link to choose
-  // their own password; nobody is ever sent or shown a password.
-  const headersList = await headers();
-  const host = headersList.get("host");
-  const protocol = host?.startsWith("localhost") ? "http" : "https";
-  const origin = `${protocol}://${host}`;
-  const ownerName = (user.user_metadata?.full_name as string | undefined) || user.email || "Your agency";
-
-  let setupLink: string | null = null;
-  let emailSent = false;
-
-  if (isNewAccount) {
-    const { data: linkData } = await service.auth.admin.generateLink({
-      type: "recovery",
-      email,
-      options: { redirectTo: `${origin}/reset-password` },
-    });
-    setupLink = linkData?.properties?.action_link ?? null;
-    if (setupLink) {
-      emailSent = await sendEmailChecked(
-        email,
-        `${agency.name} has added you to CueProperty`,
-        `Hi ${name},\n\n${ownerName} has added you to ${agency.name} on CueProperty. Your licence is already paid for by your agency.\n\nSet your password and log in here:\n${setupLink}\n\nAfter that you can log in any time at ${origin}/login.\n\n— CueProperty`,
-      );
-    }
-  } else {
-    emailSent = await sendEmailChecked(
-      email,
-      `${agency.name} has added you to CueProperty`,
-      `Hi ${name},\n\n${ownerName} has added you to ${agency.name} on CueProperty. Your licence is now covered by your agency, so any personal subscription you had has been cancelled.\n\nLog in with your existing details at ${origin}/login.\n\n— CueProperty`,
-    );
-  }
-
-  return NextResponse.json({
-    success: true,
-    memberId,
+  const origin = siteOrigin(request);
+  const emailSent = await sendEmailChecked(
     email,
-    isNewAccount,
-    emailSent,
-    // Only returned when the email couldn't be sent, so the owner can pass it on.
-    setupLink: emailSent ? null : setupLink,
-  });
+    `You've been invited to join ${agency.name}`,
+    `Hi ${name},\n\n${user.email ?? "An agency owner"} has invited you to join "${agency.name}" so your licence is covered by their agency plan.\n\nTo accept, log in with this email address (or create a free account with it) and choose Accept on your dashboard:\n${origin}/login\n\nIf you already pay for your own subscription, it is only cancelled if you accept. If you don't know this person, ignore this email and nothing will change. The invitation expires in ${INVITE_DAYS} days.`,
+  );
+
+  return NextResponse.json({ success: true, memberId, email, emailSent });
 }

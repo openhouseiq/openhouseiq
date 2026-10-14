@@ -2,12 +2,45 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createServiceClient } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe";
+import { createClient } from "@supabase/supabase-js";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { readJsonObject, requiredText } from "@/lib/validate";
 
-export async function POST() {
+export async function POST(request: Request) {
   const user = await getCurrentUser();
 
-  if (!user) {
+  if (!user || !user.email) {
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
+  }
+
+  if (!(await checkRateLimit("account-delete", user.id))) {
+    return NextResponse.json(
+      { error: "Too many attempts. Please try again shortly." },
+      { status: 429 },
+    );
+  }
+
+  // Deleting an account can't be undone, so a signed-in session alone isn't
+  // enough: the account's password must be entered again.
+  let password: string;
+  try {
+    const body = await readJsonObject(request);
+    password = requiredText(body.password, "password", 1024);
+  } catch {
+    return NextResponse.json({ error: "Enter your password to confirm." }, { status: 400 });
+  }
+
+  const verifier = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false } },
+  );
+  const { error: passwordError } = await verifier.auth.signInWithPassword({
+    email: user.email,
+    password,
+  });
+  if (passwordError) {
+    return NextResponse.json({ error: "That password is incorrect." }, { status: 403 });
   }
 
   const service = createServiceClient();
@@ -54,7 +87,8 @@ export async function POST() {
   const { error } = await service.auth.admin.deleteUser(user.id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Account deletion failed:", error.message);
+    return NextResponse.json({ error: "Could not delete the account. Please contact support." }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });

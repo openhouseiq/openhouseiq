@@ -8,9 +8,18 @@ import { Button } from "@/components/ui/Button";
 const fileInputClasses =
   "w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-brass file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink";
 
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+
 async function uploadHeadshot(userId: string, file: File) {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Please choose an image file.");
+  }
+  if (file.size > MAX_PHOTO_BYTES) {
+    throw new Error("That photo is too large. Please choose one under 5 MB.");
+  }
   const supabase = createClient();
-  const path = `${userId}/photo-${crypto.randomUUID()}-${file.name}`;
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80);
+  const path = `${userId}/photo-${crypto.randomUUID()}-${safeName}`;
   const { error } = await supabase.storage.from("agent-assets").upload(path, file);
 
   if (error) {

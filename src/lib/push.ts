@@ -9,6 +9,31 @@ if (publicKey && privateKey && subject) {
   webpush.setVapidDetails(subject, publicKey, privateKey);
 }
 
+
+// Push notifications are only ever sent to the browser makers' own push
+// services. An agent registers the address themselves, so anything else
+// (for example an internal address) must never be contacted.
+const PUSH_HOST_SUFFIXES = [
+  "fcm.googleapis.com",
+  "updates.push.services.mozilla.com",
+  "push.services.mozilla.com",
+  "web.push.apple.com",
+  "push.apple.com",
+  "notify.windows.com",
+];
+
+function isTrustedPushEndpoint(endpoint: string): boolean {
+  try {
+    const url = new URL(endpoint);
+    if (url.protocol !== "https:" || url.port) return false;
+    return PUSH_HOST_SUFFIXES.some(
+      (suffix) => url.hostname === suffix || url.hostname.endsWith(`.${suffix}`),
+    );
+  } catch {
+    return false;
+  }
+}
+
 export type PushPayload = {
   title: string;
   body: string;
@@ -31,6 +56,10 @@ export async function sendPushToAgent(
 
   await Promise.all(
     subscriptions.map(async (sub) => {
+      if (!isTrustedPushEndpoint(sub.endpoint)) {
+        await supabase.from("push_subscriptions").delete().eq("id", sub.id);
+        return;
+      }
       try {
         await webpush.sendNotification(
           {

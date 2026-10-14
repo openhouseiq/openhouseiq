@@ -1,22 +1,15 @@
 import { ImageResponse } from "next/og";
-import { createClient } from "@/lib/supabase/server";
+import { getPublicListing } from "@/lib/publicListing";
 import { getAgentPhotoUrl } from "@/lib/agent-photo";
-import type { Listing } from "@/lib/types";
+import { LogoMarkImage } from "@/components/LogoMarkImage";
 
-export const alt = "CueProperty listing";
+export const alt = "Open Home Hero listing";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
-
-  const { data: listing } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("id", id)
-    .returns<Listing[]>()
-    .maybeSingle();
+  const listing = await getPublicListing(id);
 
   const agentPhotoUrl = listing ? await getAgentPhotoUrl(listing.agent_id) : null;
 
@@ -58,7 +51,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
             textAlign: "center",
           }}
         >
-          {listing?.address ?? "CueProperty"}
+          {listing?.address ?? "Open Home Hero"}
         </div>
 
         {listing?.agent_name ? (
@@ -70,13 +63,17 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         <div
           style={{
             display: "flex",
+            alignItems: "center",
             marginTop: 48,
-            fontSize: 24,
+            fontSize: 26,
             color: "#EFEAE0",
-            opacity: 0.6,
+            opacity: 0.8,
           }}
         >
-          CueProperty
+          <div style={{ display: "flex", marginRight: 14 }}>
+            <LogoMarkImage height={34} />
+          </div>
+          Open Home Hero
         </div>
       </div>
     ),
