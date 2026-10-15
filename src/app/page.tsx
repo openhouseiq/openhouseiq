@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/Wordmark";
 import { PhoneMockups } from "@/components/landing/PhoneMockups";
 import { DashboardMockup } from "@/components/landing/DashboardMockup";
+import { HeroShowcase } from "@/components/landing/HeroShowcase";
 import { DEFAULT_SITE_URL } from "@/lib/brand";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
@@ -145,23 +146,29 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-6 py-20 text-center">
-        <h1 className="font-serif text-4xl font-medium leading-tight text-ink sm:text-5xl">
-          Run better open homes.
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
-          Open Home Hero turns every open home or rental inspection into a
-          lead-generating machine — one QR code, instant visitor feedback,
-          offers, and rental applications, no paper sign-in sheets.
-        </p>
-        <div className="mt-8 flex justify-center gap-3">
-          <Link href="/signup">
-            <Button variant="primary">Get started free</Button>
-          </Link>
-          <Link href="/login">
-            <Button variant="secondary">Log in</Button>
-          </Link>
+      <main className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-10 lg:grid-cols-[1fr_540px] lg:gap-12 lg:py-14">
+        <div className="text-center lg:text-left">
+          <h1 className="font-serif text-4xl font-medium leading-tight text-ink sm:text-5xl">
+            Run better open homes.
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft lg:mx-0">
+            One QR code on the sign. Visitors give feedback, make an offer or
+            apply to rent from their phone, and every offer lands in your
+            dashboard ranked against what your seller wants.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+            <Link href="/signup">
+              <Button variant="primary">Get started free</Button>
+            </Link>
+            <Link href="/login">
+              <Button variant="secondary">Log in</Button>
+            </Link>
+          </div>
+          <p className="mt-4 text-sm text-ink-soft">
+            14-day free trial · No app for visitors · No paper sign-in sheets
+          </p>
         </div>
+        <HeroShowcase />
       </main>
 
       <section className="mx-auto max-w-5xl px-6 pb-20">

@@ -2,7 +2,7 @@
 // mirrors the real report in src/app/dashboard/listings/[id]/FeedbackOffersReport.tsx
 // so prospective agents can see how offers arrive ranked. Nothing here is live.
 
-const OFFERS = [
+export const OFFERS = [
   {
     name: "Alex T.",
     amount: "$1,285,000",
@@ -26,6 +26,34 @@ const OFFERS = [
     warn: true,
   },
 ];
+
+export type SampleOffer = (typeof OFFERS)[number];
+
+export function OfferCard({ offer }: { offer: SampleOffer }) {
+  return (
+    <div className="rounded-md border border-line bg-paper-card p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-medium text-ink">{offer.name}</p>
+          {offer.top ? (
+            <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
+              New
+            </span>
+          ) : null}
+        </div>
+        <span
+          className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+            "warn" in offer && offer.warn ? "bg-error/10 text-error" : "bg-brass text-ink"
+          }`}
+        >
+          {offer.match}
+        </span>
+      </div>
+      <p className="mt-1 font-serif text-lg text-ink">{offer.amount}</p>
+      <p className="mt-0.5 text-xs text-ink-soft">{offer.detail}</p>
+    </div>
+  );
+}
 
 export function DashboardMockup() {
   return (
@@ -64,30 +92,7 @@ export function DashboardMockup() {
 
               <div className="mt-4 space-y-3">
                 {OFFERS.map((offer) => (
-                  <div
-                    key={offer.name}
-                    className="rounded-md border border-line bg-paper-card p-4"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-ink">{offer.name}</p>
-                        {offer.top ? (
-                          <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
-                            New
-                          </span>
-                        ) : null}
-                      </div>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                          offer.warn ? "bg-error/10 text-error" : "bg-brass text-ink"
-                        }`}
-                      >
-                        {offer.match}
-                      </span>
-                    </div>
-                    <p className="mt-1 font-serif text-lg text-ink">{offer.amount}</p>
-                    <p className="mt-0.5 text-xs text-ink-soft">{offer.detail}</p>
-                  </div>
+                  <OfferCard key={offer.name} offer={offer} />
                 ))}
               </div>
             </div>

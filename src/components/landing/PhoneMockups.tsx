@@ -40,7 +40,7 @@ function Phone({
   );
 }
 
-function FieldMock({ label, value }: { label: string; value?: string }) {
+export function FieldMock({ label, value }: { label: string; value?: string }) {
   return (
     <div>
       <p className="mb-0.5 font-medium text-ink">{label}</p>
@@ -51,7 +51,7 @@ function FieldMock({ label, value }: { label: string; value?: string }) {
   );
 }
 
-function Choice({ label, selected }: { label: string; selected?: boolean }) {
+export function Choice({ label, selected }: { label: string; selected?: boolean }) {
   return (
     <div
       className={`rounded border px-2 py-1.5 ${
@@ -63,7 +63,7 @@ function Choice({ label, selected }: { label: string; selected?: boolean }) {
   );
 }
 
-function Stars({ label, filled }: { label: string; filled: number }) {
+export function Stars({ label, filled }: { label: string; filled: number }) {
   return (
     <div className="flex items-center justify-between">
       <span className="font-medium text-ink">{label}</span>
@@ -78,7 +78,7 @@ function Stars({ label, filled }: { label: string; filled: number }) {
   );
 }
 
-function Check({ label, checked }: { label: string; checked?: boolean }) {
+export function Check({ label, checked }: { label: string; checked?: boolean }) {
   return (
     <div className="flex items-center gap-1.5 text-ink">
       <span
