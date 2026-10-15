@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
+import { CopyQrButtons } from "./CopyQrButtons";
 import { DeleteListingButton } from "./DeleteListingButton";
 import { FeedbackOffersReport } from "./FeedbackOffersReport";
 import { FeedbackApplicantsReport } from "./FeedbackApplicantsReport";
@@ -165,8 +166,8 @@ export default async function ListingDetailPage({
             Open home QR code
           </h2>
           <p className="mt-1 text-sm text-ink-soft">
-            Download it and attach it to your open home flyer, or add it to
-            your listing online. Visitors scan it to leave feedback or{" "}
+            Copy it onto your open home flyer, or attach the link to your
+            listing online. Visitors scan it to leave feedback or{" "}
             {isRental ? "apply to rent" : "submit an offer"}.
           </p>
           <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
@@ -178,13 +179,11 @@ export default async function ListingDetailPage({
             />
             <div className="text-center sm:text-left">
               <p className="break-all text-sm text-ink-soft">{visitUrl}</p>
-              <a
-                href={qrDataUrl}
-                download={`${listing.address.replace(/[^a-z0-9]+/gi, "-")}-qr-code.png`}
-                className="mt-3 inline-block rounded-md border border-line bg-white px-4 py-2.5 text-sm font-medium text-ink transition-opacity hover:opacity-90"
-              >
-                Download QR code
-              </a>
+              <CopyQrButtons
+                qrDataUrl={qrDataUrl}
+                visitUrl={visitUrl}
+                downloadName={`${listing.address.replace(/[^a-z0-9]+/gi, "-")}-qr-code.png`}
+              />
             </div>
           </div>
         </div>

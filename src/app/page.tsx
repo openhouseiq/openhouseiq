@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What is Open Home Hero?",
     answer:
-      "Open Home Hero is software for real estate agents and property managers that turns a printed QR code into instant visitor feedback, offers, and rental applications at open homes and rental inspections — no app for visitors to download, no paper sign-in sheets.",
+      "Open Home Hero is software for real estate agents and property managers that turns a QR code on your flyer or online listing into instant visitor feedback, offers, and rental applications at open homes and rental inspections — no app for visitors to download, no paper sign-in sheets.",
   },
   {
     question: "Does Open Home Hero work for rental inspections as well as sales?",
@@ -56,7 +56,7 @@ const FEATURES = [
   {
     title: "A QR code for every listing",
     description:
-      "Generated automatically the moment you create a listing. Download it and add it to your open home flyer or signage.",
+      "Generated automatically the moment you create a listing. Copy it onto your open home flyer, or attach the link to your online listing.",
   },
   {
     title: "Instant feedback, offers & applications",
@@ -78,13 +78,13 @@ const STEPS = [
   },
   {
     number: "2",
-    title: "Print your QR code",
+    title: "Copy your QR code",
     description:
-      "Every listing gets its own QR code, ready to download and print for the open home.",
+      "Every listing gets its own QR code and link. Paste the code onto your flyer, or attach the link to your online listing.",
   },
   {
     number: "3",
-    title: "Visitors scan and respond",
+    title: "Visitors scan or tap and respond",
     description:
       "No app to download, no account to create. Feedback, an offer, or a rental application in under a minute.",
   },
@@ -103,7 +103,7 @@ const COMPARISON = [
   },
   {
     crm: "Needs setup, custom fields, and training before it's useful",
-    us: "Print a QR code and go",
+    us: "Copy a QR code and go",
   },
   {
     crm: "Doesn't know what your seller or landlord actually cares about",
@@ -152,7 +152,7 @@ export default function Home() {
             Run better open homes.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft lg:mx-0">
-            One QR code on the sign. Visitors give feedback, make an offer or
+            One QR code on your flyer, or one link in your listing. Visitors give feedback, make an offer or
             apply to rent from their phone, and every offer lands in your
             dashboard ranked against what your seller wants.
           </p>

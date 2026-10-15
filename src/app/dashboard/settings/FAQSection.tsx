@@ -6,7 +6,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "How do visitors submit feedback, offers, or rental applications?",
     answer:
-      "Each listing gets its own QR code from its detail page. Print it and display it at the open home or rental inspection — visitors scan it with their phone camera, no app or account needed.",
+      "Each listing gets its own QR code from its detail page. Copy it onto your flyer, or attach the link to your online listing — visitors scan or tap it on their phone, no app or account needed.",
   },
   {
     question: "How is the match percentage on offers and applicants calculated?",
