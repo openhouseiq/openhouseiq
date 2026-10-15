@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/Wordmark";
 import { CONTACT_EMAIL } from "@/lib/brand";
+import { BusinessDetails } from "@/components/BusinessDetails";
 
 export const metadata = { title: "Privacy Policy — Open Home Hero" };
 
@@ -37,7 +38,7 @@ export default function PrivacyPage() {
               text), plus listing details you create.
             </p>
             <p className="mt-2">
-              <span className="font-medium">Open house visitors:</span> when
+              <span className="font-medium">Open home visitors:</span> when
               someone submits feedback or an offer through a listing&apos;s public
               page, we collect the information they enter — typically name,
               email, phone, and their comments or offer details — and share it
@@ -143,6 +144,10 @@ export default function PrivacyPage() {
               .
             </p>
           </section>
+        </div>
+
+        <div className="mt-10 border-t border-line pt-6 text-xs text-ink-soft">
+          <BusinessDetails className="space-y-0.5" />
         </div>
       </main>
     </div>

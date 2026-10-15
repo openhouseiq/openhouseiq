@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/Wordmark";
 import { CONTACT_EMAIL } from "@/lib/brand";
+import { BusinessDetails } from "@/components/BusinessDetails";
 
 export const metadata = { title: "Terms of Service — Open Home Hero" };
 
@@ -35,7 +36,7 @@ export default function TermsPage() {
             <p className="mt-2">
               Open Home Hero lets real estate agents create property listings,
               generate a QR code for each listing, and collect visitor feedback
-              and offers submitted through a public web form at an open house.
+              and offers submitted through a public web form at an open home.
             </p>
           </section>
 
@@ -78,7 +79,7 @@ export default function TermsPage() {
               5. Visitor-submitted content
             </h2>
             <p className="mt-2">
-              Feedback and offers submitted by open house visitors are provided
+              Feedback and offers submitted by open home visitors are provided
               by those visitors, not by you, and are made available to you as
               the agent for the relevant listing. You are responsible for how
               you use that information, including complying with any
@@ -152,6 +153,10 @@ export default function TermsPage() {
               .
             </p>
           </section>
+        </div>
+
+        <div className="mt-10 border-t border-line pt-6 text-xs text-ink-soft">
+          <BusinessDetails className="space-y-0.5" />
         </div>
       </main>
     </div>

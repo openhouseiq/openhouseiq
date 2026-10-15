@@ -92,7 +92,7 @@ function SignUpForm() {
   return (
     <AuthLayout
       headline="List more homes, faster."
-      description="Open Home Hero helps real estate agents run open houses and follow up with leads in one place."
+      description="Open Home Hero helps real estate agents run open homes and follow up with leads in one place."
       footer="© 2026 Open Home Hero"
     >
       <h2 className="font-serif text-2xl font-medium text-ink">

@@ -16,6 +16,7 @@ const PUBLIC_PREFIXES = [
   "/terms",
   "/privacy",
   "/security",
+  "/contact",
 ];
 
 const AUTH_PREFIXES = ["/login", "/signup", "/forgot-password"];

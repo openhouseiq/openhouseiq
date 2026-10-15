@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Open Home Hero",
     short_name: "Open Home Hero",
-    description: "Open house feedback, offers, and listings for real estate agents.",
+    description: "Open home feedback, offers, and listings for real estate agents.",
     start_url: "/dashboard",
     scope: "/",
     display: "standalone",

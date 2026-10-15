@@ -162,7 +162,7 @@ export default async function ListingDetailPage({
 
         <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
           <h2 className="font-serif text-xl font-medium text-ink">
-            Open house QR code
+            Open home QR code
           </h2>
           <p className="mt-1 text-sm text-ink-soft">
             Download it and attach it to your open home flyer, or add it to

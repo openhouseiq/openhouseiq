@@ -106,7 +106,7 @@ export default function LoginPage() {
   return (
     <AuthLayout
       headline="Welcome back."
-      description="Log in to manage your open houses and follow up with your leads."
+      description="Log in to manage your open homes and follow up with your leads."
       footer="© 2026 Open Home Hero"
     >
       <h2 className="font-serif text-2xl font-medium text-ink">Log in</h2>

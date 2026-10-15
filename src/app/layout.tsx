@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Open Home Hero",
-    description: "Open house feedback, offers, and listings for real estate agents.",
+    description: "Open home feedback, offers, and listings for real estate agents.",
     siteName: "Open Home Hero",
     type: "website",
   },

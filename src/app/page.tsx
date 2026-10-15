@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/Wordmark";
 import { PhoneMockups } from "@/components/landing/PhoneMockups";
+import { DashboardMockup } from "@/components/landing/DashboardMockup";
 import { DEFAULT_SITE_URL } from "@/lib/brand";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
@@ -10,7 +11,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
 export const metadata: Metadata = {
   title: "Open Home Hero — QR Code Feedback, Offers & Rental Applications for Agents",
   description:
-    "Turn every open house or rental inspection into instant feedback, offers, and rental applications. One QR code, no paper sign-in sheets, no app for visitors to download. Built for real estate agents and property managers in Australia.",
+    "Turn every open home or rental inspection into instant feedback, offers, and rental applications. One QR code, no paper sign-in sheets, no app for visitors to download. Built for real estate agents and property managers in Australia.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Open Home Hero — QR Code Feedback, Offers & Rental Applications for Agents",
@@ -26,7 +27,7 @@ const FAQS = [
   {
     question: "What is Open Home Hero?",
     answer:
-      "Open Home Hero is software for real estate agents and property managers that turns a printed QR code into instant visitor feedback, offers, and rental applications at open houses and rental inspections — no app for visitors to download, no paper sign-in sheets.",
+      "Open Home Hero is software for real estate agents and property managers that turns a printed QR code into instant visitor feedback, offers, and rental applications at open homes and rental inspections — no app for visitors to download, no paper sign-in sheets.",
   },
   {
     question: "Does Open Home Hero work for rental inspections as well as sales?",
@@ -46,7 +47,7 @@ const FAQS = [
   {
     question: "Is Open Home Hero a replacement for my CRM?",
     answer:
-      "No. Open Home Hero isn't a CRM — it captures the moment someone walks into an open house or rental inspection, ranks the responses, and lets you export every lead as a CSV to import into whatever CRM you already use.",
+      "No. Open Home Hero isn't a CRM — it captures the moment someone walks into an open home or rental inspection, ranks the responses, and lets you export every lead as a CSV to import into whatever CRM you already use.",
   },
 ];
 
@@ -78,7 +79,7 @@ const STEPS = [
     number: "2",
     title: "Print your QR code",
     description:
-      "Every listing gets its own QR code, ready to download and print for the open house.",
+      "Every listing gets its own QR code, ready to download and print for the open home.",
   },
   {
     number: "3",
@@ -97,7 +98,7 @@ const STEPS = [
 const COMPARISON = [
   {
     crm: "Manages your whole pipeline, every contact, for months or years",
-    us: "Captures the moment someone walks into an open house or rental inspection",
+    us: "Captures the moment someone walks into an open home or rental inspection",
   },
   {
     crm: "Needs setup, custom fields, and training before it's useful",
@@ -146,10 +147,10 @@ export default function Home() {
 
       <main className="mx-auto max-w-3xl px-6 py-20 text-center">
         <h1 className="font-serif text-4xl font-medium leading-tight text-ink sm:text-5xl">
-          Run better open houses.
+          Run better open homes.
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
-          Open Home Hero turns every open house or rental inspection into a
+          Open Home Hero turns every open home or rental inspection into a
           lead-generating machine — one QR code, instant visitor feedback,
           offers, and rental applications, no paper sign-in sheets.
         </p>
@@ -182,6 +183,8 @@ export default function Home() {
       </section>
 
       <PhoneMockups />
+
+      <DashboardMockup />
 
       <section className="border-t border-line bg-paper-card px-6 py-20">
         <div className="mx-auto max-w-4xl">
@@ -372,6 +375,10 @@ export default function Home() {
           <span className="mx-2">·</span>
           <Link href="/security" className="underline hover:text-brass">
             Security
+          </Link>
+          <span className="mx-2">·</span>
+          <Link href="/contact" className="underline hover:text-brass">
+            Contact
           </Link>
           <span className="mx-2">·</span>
           <a
