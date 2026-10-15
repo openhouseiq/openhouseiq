@@ -1,6 +1,6 @@
 import { Wordmark } from "@/components/Wordmark";
 import { OFFERS, OfferCard } from "@/components/landing/DashboardMockup";
-import { Check, Choice, Stars } from "@/components/landing/PhoneMockups";
+import { Check, FieldMock } from "@/components/landing/PhoneMockups";
 
 // The first thing an agent sees: a visitor's phone on one side, the ranked
 // offers it produces on the other, and a "new offer" alert tying them together.
@@ -24,7 +24,7 @@ export function HeroShowcase() {
       <div className="absolute left-1/2 top-0 w-[225px] -translate-x-1/2 sm:left-0 sm:translate-x-0">
         <div className="relative overflow-hidden rounded-[2.25rem] border-[10px] border-navy bg-paper shadow-2xl">
           <div className="mx-auto mt-1 h-1.5 w-16 rounded-full bg-navy/30" />
-          <div className="h-[400px] px-3 pb-6 pt-2">
+          <div className="h-[392px] px-3 pb-4 pt-2">
             <p className="mb-2 text-center font-serif text-sm tracking-tight">
               <Wordmark tone="dark" />
             </p>
@@ -34,25 +34,25 @@ export function HeroShowcase() {
                 24 Grandview Terrace
               </p>
               <h3 className="mb-2 mt-2 text-center text-xs font-semibold text-ink">
-                Provide feedback
+                Submit an offer
               </h3>
               <div className="space-y-2 text-[11px]">
-                <p className="font-medium text-ink">How interested are you?</p>
-                <div className="space-y-1">
-                  <Choice label="Considering" />
-                  <Choice label="Very interested" selected />
-                  <Choice label="Ready to make an offer" />
+                <FieldMock label="Name" value="Alex T." />
+                <FieldMock label="Offer amount" value="$ 1,285,000" />
+                <div>
+                  <p className="mb-0.5 font-medium text-ink">Finance</p>
+                  <div className="rounded border border-line bg-white px-2 py-1.5 text-ink">
+                    Pre-approved financing
+                  </div>
                 </div>
-                <div className="space-y-1.5 rounded border border-line p-2">
-                  <Stars label="Price" filled={4} />
-                  <Stars label="Condition" filled={5} />
-                  <Stars label="Location" filled={5} />
+                <FieldMock label="Preferred settlement term" value="45 days" />
+                <Check label="Willing to waive inspection" checked />
+                <div className="rounded-md bg-brass px-3 py-2 text-center text-xs font-medium text-ink">
+                  Submit offer
                 </div>
-                <Check label="I'm pre-approved for finance" checked />
               </div>
             </div>
           </div>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-paper to-transparent" />
         </div>
       </div>
 
