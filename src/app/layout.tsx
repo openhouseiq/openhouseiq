@@ -1,3 +1,4 @@
+import { SiteFooter } from "@/components/SiteFooter";
 import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { PwaRegister } from "@/components/PwaRegister";
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <PwaRegister />
         <UtmCapture />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

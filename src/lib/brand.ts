@@ -18,3 +18,18 @@ export const BRAND_DOMAIN = "openhomehero.com.au";
  * ever reaches the live site. Fill it in before deploying.
  */
 export const BUSINESS_ABN = "";
+
+/** The Open Home Hero Facebook page. */
+export const FACEBOOK_PAGE_URL = "https://www.facebook.com/profile.php?id=61594377407694";
+
+/**
+ * Social channels shown in the site-wide footer. Paste a channel's full page
+ * address (https://...) to show its icon; leave it empty and it stays hidden,
+ * so no dead link ever goes live.
+ */
+export const SOCIAL_LINKS = {
+  facebook: FACEBOOK_PAGE_URL,
+  linkedin: "",
+  x: "",
+  instagram: "",
+};

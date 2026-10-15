@@ -5,7 +5,7 @@ import { Wordmark } from "@/components/Wordmark";
 import { PhoneMockups } from "@/components/landing/PhoneMockups";
 import { DashboardMockup } from "@/components/landing/DashboardMockup";
 import { HeroShowcase } from "@/components/landing/HeroShowcase";
-import { DEFAULT_SITE_URL } from "@/lib/brand";
+import { DEFAULT_SITE_URL, FACEBOOK_PAGE_URL } from "@/lib/brand";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
 
@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   },
 };
 
-const FACEBOOK_PAGE_URL = "https://www.facebook.com/profile.php?id=61594377407694";
 
 const FAQS = [
   {
@@ -425,15 +424,6 @@ export default function Home() {
           <Link href="/contact" className="underline hover:text-brass">
             Contact
           </Link>
-          <span className="mx-2">·</span>
-          <a
-            href={FACEBOOK_PAGE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-brass"
-          >
-            Follow us on Facebook
-          </a>
         </p>
       </footer>
 
