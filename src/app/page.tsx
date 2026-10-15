@@ -308,12 +308,9 @@ export default function Home() {
                 htmlFor="agency-pricing-toggle"
                 className="flex cursor-pointer flex-col justify-center rounded-md border-2 border-navy bg-navy p-8 text-left shadow-md transition hover:border-brass sm:text-center group-has-[:checked]:border-brass group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-brass"
               >
-                <p className="text-sm font-medium text-brass">Agency · teams of 2+</p>
+                <p className="text-sm font-medium text-brass">Agency · 3+ agents</p>
                 <p className="mt-2 font-serif text-4xl font-medium text-paper">
-                  <span className="text-base font-sans font-normal text-navy-soft">
-                    from{" "}
-                  </span>
-                  $33.15
+                  $37.05
                   <span className="text-base font-sans font-normal text-navy-soft">
                     /agent/month
                   </span>
