@@ -312,40 +312,51 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="mx-auto mt-16 max-w-xl rounded-md border border-line bg-paper-card p-8 text-left">
-            <h3 className="font-serif text-xl font-medium text-ink">
-              Running a team? Save with an agency plan
-            </h3>
-            <p className="mt-2 text-sm text-ink-soft">
-              Choose how many agents you need and pay one bill, monthly or
-              yearly. The more agents, the cheaper each one is — the discount
-              applies to every agent. Add or remove licences any time.
-            </p>
-            <div className="mt-6 overflow-hidden rounded-md border border-line">
-              <table className="w-full text-sm">
-                <tbody>
-                  {AGENCY_TIERS.map((tier, i) => (
-                    <tr
-                      key={tier.range}
-                      className={i > 0 ? "border-t border-line" : ""}
-                    >
-                      <td className="px-4 py-2.5 text-ink">{tier.range}</td>
-                      <td className="px-4 py-2.5 text-ink-soft">{tier.discount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <details className="group mx-auto mt-12 max-w-xl text-left">
+            <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-2 rounded-full border border-line bg-paper-card px-5 py-2.5 text-sm font-medium text-ink hover:border-brass [&::-webkit-details-marker]:hidden">
+              Running a team? Click here for agency pricing
+              <span
+                aria-hidden="true"
+                className="text-brass transition-transform group-open:rotate-180"
+              >
+                ▾
+              </span>
+            </summary>
+            <div className="mt-4 rounded-md border border-line bg-paper-card p-6">
+              <h3 className="font-serif text-xl font-medium text-ink">
+                Save with an agency plan
+              </h3>
+              <p className="mt-2 text-sm text-ink-soft">
+                Choose how many agents you need and pay one bill, monthly or
+                yearly. The more agents, the cheaper each one is — the discount
+                applies to every agent. Add or remove licences any time.
+              </p>
+              <div className="mt-5 overflow-hidden rounded-md border border-line">
+                <table className="w-full text-sm">
+                  <tbody>
+                    {AGENCY_TIERS.map((tier, i) => (
+                      <tr
+                        key={tier.range}
+                        className={i > 0 ? "border-t border-line" : ""}
+                      >
+                        <td className="px-4 py-2.5 text-ink">{tier.range}</td>
+                        <td className="px-4 py-2.5 text-ink-soft">{tier.discount}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-5">
+                <Link href="/signup?type=agency">
+                  <Button variant="primary">Sign up as an agency</Button>
+                </Link>
+              </div>
+              <p className="mt-3 text-xs text-ink-soft">
+                Create the agency account, then add each agent&apos;s name and
+                email from the Manage page — they get their own login.
+              </p>
             </div>
-            <div className="mt-6">
-              <Link href="/signup?type=agency">
-                <Button variant="primary">Sign up as an agency</Button>
-              </Link>
-            </div>
-            <p className="mt-3 text-xs text-ink-soft">
-              Create the agency account, then add each agent&apos;s name and
-              email from the Manage page — they get their own login.
-            </p>
-          </div>
+          </details>
         </div>
       </section>
 
