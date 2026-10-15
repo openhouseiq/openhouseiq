@@ -318,8 +318,9 @@ export default function Home() {
                     /agent/month
                   </span>
                 </p>
-                <p className="mt-3 flex items-center justify-center gap-1.5 text-xs font-medium text-brass">
-                  Save up to 15% · see agency pricing
+                <p className="mt-3 text-xs font-medium text-paper">Save up to 15%</p>
+                <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-brass sm:justify-center">
+                  Click here for pricing
                   <span
                     aria-hidden="true"
                     className="transition-transform group-has-[:checked]:rotate-180"
