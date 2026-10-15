@@ -365,16 +365,22 @@ export default function Home() {
           <h2 className="text-center font-serif text-3xl font-medium text-ink">
             Frequently asked questions
           </h2>
-          <div className="mt-10 space-y-8">
+          <div className="mt-10 divide-y divide-line rounded-md border border-line bg-paper">
             {FAQS.map((faq) => (
-              <div key={faq.question}>
-                <h3 className="font-serif text-lg font-medium text-ink">
+              <details key={faq.question} className="group">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-serif text-lg font-medium text-ink hover:text-brass [&::-webkit-details-marker]:hidden">
                   {faq.question}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  <span
+                    aria-hidden="true"
+                    className="shrink-0 text-brass transition-transform group-open:rotate-180"
+                  >
+                    ▾
+                  </span>
+                </summary>
+                <p className="px-5 pb-5 text-sm leading-relaxed text-ink-soft">
                   {faq.answer}
                 </p>
-              </div>
+              </details>
             ))}
           </div>
         </div>
