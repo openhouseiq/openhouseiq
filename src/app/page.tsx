@@ -269,60 +269,68 @@ export default function Home() {
       </section>
 
       <section className="border-t border-line px-6 py-20">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-center">
           <h2 className="font-serif text-3xl font-medium text-ink">
             Simple pricing
           </h2>
           <p className="mt-3 text-ink-soft">
             One plan, every feature. Start with a 14-day free trial.
           </p>
-          <div className="mx-auto mt-10 grid max-w-xl gap-6 sm:grid-cols-2">
-            <div className="rounded-md border border-line bg-paper-card p-8">
-              <p className="text-sm font-medium text-ink-soft">Monthly</p>
-              <p className="mt-2 font-serif text-4xl font-medium text-ink">
-                $39
-                <span className="text-base font-sans font-normal text-ink-soft">
-                  /month
-                </span>
-              </p>
-            </div>
-            <div className="rounded-md border-2 border-brass bg-paper-card p-8">
-              <p className="text-sm font-medium text-brass">Yearly · save 2 months</p>
-              <p className="mt-2 font-serif text-4xl font-medium text-ink">
-                $390
-                <span className="text-base font-sans font-normal text-ink-soft">
-                  /year
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <ul className="mx-auto mt-10 max-w-md space-y-2 text-left">
-            {INCLUDED.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm text-ink">
-                <span className="mt-0.5 text-brass">✓</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-10">
-            <Link href="/signup">
-              <Button variant="primary">Start your free trial</Button>
-            </Link>
-          </div>
-
-          <details className="group mx-auto mt-12 max-w-xl text-left">
-            <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-2 rounded-full border border-line bg-paper-card px-5 py-2.5 text-sm font-medium text-ink hover:border-brass [&::-webkit-details-marker]:hidden">
-              Running a team? Click here for agency pricing
-              <span
-                aria-hidden="true"
-                className="text-brass transition-transform group-open:rotate-180"
+          <div className="group mx-auto mt-10 max-w-4xl">
+            <input
+              type="checkbox"
+              id="agency-pricing-toggle"
+              className="peer sr-only"
+              aria-label="Show agency pricing"
+            />
+            <div className="grid gap-6 sm:grid-cols-3">
+              <div className="flex flex-col justify-center rounded-md border border-line bg-paper-card p-8">
+                <p className="text-sm font-medium text-ink-soft">Monthly</p>
+                <p className="mt-2 font-serif text-4xl font-medium text-ink">
+                  $39
+                  <span className="text-base font-sans font-normal text-ink-soft">
+                    /month
+                  </span>
+                </p>
+                <p className="mt-3 text-xs text-ink-soft">For one agent</p>
+              </div>
+              <div className="flex flex-col justify-center rounded-md border-2 border-brass bg-paper-card p-8">
+                <p className="text-sm font-medium text-brass">Yearly · save 2 months</p>
+                <p className="mt-2 font-serif text-4xl font-medium text-ink">
+                  $390
+                  <span className="text-base font-sans font-normal text-ink-soft">
+                    /year
+                  </span>
+                </p>
+                <p className="mt-3 text-xs text-ink-soft">For one agent</p>
+              </div>
+              <label
+                htmlFor="agency-pricing-toggle"
+                className="flex cursor-pointer flex-col justify-center rounded-md border-2 border-navy bg-navy p-8 text-left shadow-md transition hover:border-brass sm:text-center group-has-[:checked]:border-brass group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-brass"
               >
-                ▾
-              </span>
-            </summary>
-            <div className="mt-4 rounded-md border border-line bg-paper-card p-6">
+                <p className="text-sm font-medium text-brass">Agency · teams of 2+</p>
+                <p className="mt-2 font-serif text-4xl font-medium text-paper">
+                  <span className="text-base font-sans font-normal text-navy-soft">
+                    from{" "}
+                  </span>
+                  $33.15
+                  <span className="text-base font-sans font-normal text-navy-soft">
+                    /agent/month
+                  </span>
+                </p>
+                <p className="mt-3 flex items-center justify-center gap-1.5 text-xs font-medium text-brass">
+                  Save up to 15% · see agency pricing
+                  <span
+                    aria-hidden="true"
+                    className="transition-transform group-has-[:checked]:rotate-180"
+                  >
+                    ▾
+                  </span>
+                </p>
+              </label>
+            </div>
+
+            <div className="mt-6 hidden rounded-md border border-line bg-paper-card p-6 text-left peer-checked:block">
               <h3 className="font-serif text-xl font-medium text-ink">
                 Save with an agency plan
               </h3>
@@ -356,7 +364,22 @@ export default function Home() {
                 email from the Manage page — they get their own login.
               </p>
             </div>
-          </details>
+          </div>
+
+          <ul className="mx-auto mt-10 max-w-md space-y-2 text-left">
+            {INCLUDED.map((item) => (
+              <li key={item} className="flex items-start gap-2 text-sm text-ink">
+                <span className="mt-0.5 text-brass">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-10">
+            <Link href="/signup">
+              <Button variant="primary">Start your free trial</Button>
+            </Link>
+          </div>
         </div>
       </section>
 
