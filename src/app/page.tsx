@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/Wordmark";
+import { PhoneMockups } from "@/components/landing/PhoneMockups";
 import { DEFAULT_SITE_URL } from "@/lib/brand";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
@@ -179,6 +180,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <PhoneMockups />
 
       <section className="border-t border-line bg-paper-card px-6 py-20">
         <div className="mx-auto max-w-4xl">
