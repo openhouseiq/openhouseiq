@@ -5,7 +5,7 @@ import { Wordmark } from "@/components/Wordmark";
 import { PhoneMockups } from "@/components/landing/PhoneMockups";
 import { DashboardMockup } from "@/components/landing/DashboardMockup";
 import { HeroShowcase } from "@/components/landing/HeroShowcase";
-import { DEFAULT_SITE_URL, FACEBOOK_PAGE_URL } from "@/lib/brand";
+import { DEFAULT_SITE_URL, SOCIAL_LINKS } from "@/lib/brand";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
 
@@ -444,7 +444,7 @@ export default function Home() {
                 "@type": "Offer",
                 price: "39",
                 priceCurrency: "AUD",
-                priceValidUntil: "2026-12-31",
+                priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
                 url: `${SITE_URL}/signup`,
               },
               audience: {
@@ -457,7 +457,7 @@ export default function Home() {
               "@type": "Organization",
               name: "Open Home Hero",
               url: SITE_URL,
-              sameAs: [FACEBOOK_PAGE_URL],
+              sameAs: Object.values(SOCIAL_LINKS).filter(Boolean),
             },
             {
               "@context": "https://schema.org",

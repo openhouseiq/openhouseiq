@@ -1,0 +1,35 @@
+# Open Home Hero
+
+> Open Home Hero is software for real estate agents and property managers in Australia. Each listing gets one QR code and link. Visitors scan it at an open home or rental inspection and leave feedback, submit an offer or apply to rent from their phone, with no app and no account. Every response lands in the agent's dashboard, ranked against what the seller or landlord wants.
+
+Open Home Hero is not a CRM. Agents can export every lead as a CSV to import into the CRM they already use.
+
+## Who it is for
+- Real estate agents running open homes for sale listings
+- Property managers running rental inspections
+- Agencies with several agents (one bill, volume discounts per agent)
+
+## What it does
+- Creates a QR code and a shareable link for every listing
+- Collects visitor feedback with interest level, star ratings and contact details
+- Collects offers: amount, finance, settlement term and conditions
+- Collects rental applications: income, employment, references, move-in date and household details
+- Ranks offers and applications against the seller's or landlord's stated preferences
+- Exports leads and reports as CSV or PDF
+
+## Pricing (Australian dollars, one plan with every feature)
+- Monthly: $39 per month
+- Yearly: $390 per year (two months free)
+- Agency plans: discounts per agent from 3 agents (5%), 11 agents (10%) and 16 agents (15%)
+- 14-day free trial
+
+## Key pages
+- [Home](https://openhomehero.com.au/): product overview, example forms, pricing and FAQ
+- [Sign up](https://openhomehero.com.au/signup): start the 14-day free trial
+- [Contact](https://openhomehero.com.au/contact): email and business details
+- [Security](https://openhomehero.com.au/security): how visitor and agent data is protected
+- [Privacy policy](https://openhomehero.com.au/privacy)
+- [Terms of service](https://openhomehero.com.au/terms)
+
+## Contact
+contact@openhomehero.com.au
