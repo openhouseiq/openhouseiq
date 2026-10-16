@@ -20,7 +20,7 @@ export const BRAND_DOMAIN = "openhomehero.com.au";
 export const BUSINESS_ABN = "";
 
 /** The Open Home Hero Facebook page. */
-export const FACEBOOK_PAGE_URL = "https://www.facebook.com/profile.php?id=61594377407694";
+export const FACEBOOK_PAGE_URL = "https://www.facebook.com/openhomehero";
 
 /**
  * Social channels shown in the site-wide footer. Paste a channel's full page
