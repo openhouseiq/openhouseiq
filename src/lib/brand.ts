@@ -31,5 +31,5 @@ export const SOCIAL_LINKS = {
   facebook: FACEBOOK_PAGE_URL,
   linkedin: "",
   x: "https://x.com/OpenHomeHero",
-  instagram: "",
+  instagram: "https://www.instagram.com/openhomehero/",
 };
