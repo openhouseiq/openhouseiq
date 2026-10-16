@@ -30,6 +30,6 @@ export const FACEBOOK_PAGE_URL = "https://www.facebook.com/profile.php?id=615943
 export const SOCIAL_LINKS = {
   facebook: FACEBOOK_PAGE_URL,
   linkedin: "",
-  x: "",
+  x: "https://x.com/OpenHomeHero",
   instagram: "",
 };
