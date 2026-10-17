@@ -29,7 +29,7 @@ export const FACEBOOK_PAGE_URL = "https://www.facebook.com/openhomehero";
  */
 export const SOCIAL_LINKS = {
   facebook: FACEBOOK_PAGE_URL,
-  linkedin: "",
+  linkedin: "https://www.linkedin.com/company/143921147/",
   x: "https://x.com/OpenHomeHero",
   instagram: "https://www.instagram.com/openhomehero/",
 };
