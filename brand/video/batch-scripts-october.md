@@ -36,7 +36,7 @@ Rules: no statistics or customer claims, no prices, no promises about features n
 ## 6. The property manager's Monday
 **A.** Property managers. How many hours do rental applications take after an open home?
 **B.** Photos of forms. Half-finished emails. A spreadsheet that grows every Sunday night.
-**C.** With Open Home Hero, applicants apply from their phone: employer, income, move-in date and a reference.
+**C.** With Open Home Hero, applicants apply from their phone, and the form collects the relevant information for you.
 **D.** Every application is organised by property, in one list.
 **E.** Spend your Sunday night on something else. openhomehero dot com dot au.
 

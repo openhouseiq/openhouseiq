@@ -14,6 +14,7 @@ const PUBLIC_PREFIXES = [
   "/api/facebook/insights",
   "/api/social-image",
   "/terms",
+  "/preview",
   "/privacy",
   "/security",
   "/contact",

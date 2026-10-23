@@ -95,7 +95,7 @@ export function Check({ label, checked }: { label: string; checked?: boolean }) 
 
 export function PhoneMockups() {
   return (
-    <section className="border-t border-line px-6 py-20">
+    <section id="visitors" className="border-t border-line px-6 py-20">
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
           <h2 className="font-serif text-3xl font-medium text-ink">

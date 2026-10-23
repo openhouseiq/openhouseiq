@@ -81,7 +81,7 @@ Everyone says they'll send an application. Not everyone does. And the ones who d
 
 Then it's Sunday night. You're at the kitchen table, with a laptop, a cold cup of tea, and a spreadsheet that gets a little more tangled every time you add a row.
 
-There is a much easier way to do it. The applicant scans the QR code, or taps the link, and the application opens on their phone. Their name. Their email. Where they work, what they do, roughly what the household earns, when they'd like to move in, and who can speak for them as a reference. They tick a box to say they can provide proof of income if asked. They tap submit. That's it.
+There is a much easier way to do it. The applicant scans the QR code, or taps the link, and the application opens on their phone. The form collects the relevant information from each applicant, so you get what you need to assess the application. They tap submit. That's it.
 
 Nothing to print. Nothing to scan. Nothing to download. And nothing for you to re-type.
 
@@ -256,7 +256,7 @@ There's a small box where you can say whether you're pre-approved for finance. A
 
 If it's an offer, the form asks a little more. Your name and your email. The amount you'd like to offer. How you'll be financing the purchase. How long you'd like for settlement. Whether you'd be willing to waive the building and pest inspection. And a place for notes, if there's something else the agent should know.
 
-And if it's a rental application, you'll see fields for your employer and your occupation, your household income, and the date you'd like to move in. There's a tick box to say you can provide proof of income if asked, and a space for the name of a reference.
+And if it's a rental application, the form collects the relevant information from each applicant, so you have what you need to assess the application.
 
 At the bottom, there's one button. Submit. You tap it, and you're done.
 
@@ -278,7 +278,7 @@ Below that, the responses start to appear. For feedback, you'll see each visitor
 
 For offers, they appear as a ranked list. The strongest match for what the seller wants sits at the top, with a match score beside it. If a buyer hasn't confirmed their finance, that's flagged clearly, so you don't have to hunt for it.
 
-For rental applications, they appear in a tidy list for the property. Name, employer, income, move-in date, reference. Everything in the same place, in the same format, every time.
+For rental applications, they appear in a tidy list for the property. Every applicant's relevant information, together. Everything in the same place, in the same format, every time.
 
 When a new offer arrives, you get an alert. You don't need to refresh the page, and you don't need to remember to check.
 

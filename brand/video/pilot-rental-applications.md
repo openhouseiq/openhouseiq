@@ -12,7 +12,7 @@ Twenty groups through your rental on Saturday. By Sunday night, you're sorting p
 With Open Home Hero, every visitor scans the QR code on your flyer, or taps the link in your listing. The application opens on their phone. No app. No account.
 
 **Scene 3 (22 to 34 s)**
-They fill in who they are, where they work, their income and when they want to move in. Then they hit submit.
+The form collects all the relevant information from each applicant. Then they hit submit.
 
 **Scene 4 (34 to 44 s)**
 Back at your desk, every application is in one place, organised by property. No chasing. No re-typing.

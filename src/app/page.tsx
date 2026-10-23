@@ -5,6 +5,7 @@ import { Wordmark } from "@/components/Wordmark";
 import { PhoneMockups } from "@/components/landing/PhoneMockups";
 import { DashboardMockup } from "@/components/landing/DashboardMockup";
 import { HeroShowcase } from "@/components/landing/HeroShowcase";
+import { VideoPreview } from "@/components/landing/VideoPreview";
 import { DEFAULT_SITE_URL, SOCIAL_LINKS } from "@/lib/brand";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
@@ -187,6 +188,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <VideoPreview />
 
       <PhoneMockups />
 
