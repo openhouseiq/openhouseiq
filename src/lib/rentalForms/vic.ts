@@ -158,5 +158,8 @@ export const vicForm: RentalFormDefinition = {
     { title: "How long it is kept", body: "If you are unsuccessful, it must be destroyed or de-identified within 30 days after the property is leased, or within 6 months if you give written consent for it to be used for other premises." },
     { title: "Tenancy databases", body: "Any tenancy database used to check your history must be named on the form, and you must be told in writing within 7 days if you are listed." },
   ],
+  basis: "prescribed",
+  rankingInputs: { income: true, history: true, references: true, pets: false },
+  reviewNotes: ["Is an electronic copy of the standard form acceptable, including Part B?", "Is a typed name and tick a valid signature?"],
   consent: "I understand that my application may not be processed unless all required documents are submitted.",
 };

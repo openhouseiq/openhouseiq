@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { RentalFormSections } from "@/components/rentalForms/RentalFormView";
-import { RENTAL_FORMS, type RentalState } from "@/lib/rentalForms";
+import { RENTAL_FORMS, UNBUILT_STATES, type RentalState } from "@/lib/rentalForms";
 import {
   rankApplicants,
   type RankableApplicant,
@@ -35,6 +35,14 @@ const TABS = [
   { id: "shortlist", label: "4. Ranked shortlist" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
+
+const BASIS_TEXT = {
+  prescribed: "This state sets one official form. Ours copies it field for field.",
+  "approved-list":
+    "This state publishes a list of what may be asked, not a form. Ours asks only for items on that list.",
+  guidance:
+    "This state has no prescribed form or list. Ours follows the regulator's guidance, so it carries the most legal uncertainty.",
+} as const;
 
 const selectClasses =
   "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass";
@@ -115,10 +123,16 @@ export function RentalFormsPreview() {
                   value={listingState}
                   onChange={(e) => setListingState(e.target.value)}
                 >
-                  <option value="QLD">Queensland</option>
-                  <option value="VIC">Victoria</option>
-                  <option value="NSW">New South Wales</option>
-                  <option value="WA">Western Australia</option>
+                  {(Object.keys(RENTAL_FORMS) as RentalState[]).map((s) => (
+                    <option key={s} value={s}>
+                      {RENTAL_FORMS[s].stateName}
+                    </option>
+                  ))}
+                  {UNBUILT_STATES.map((u) => (
+                    <option key={u.value} value={u.value}>
+                      {u.label} (not built yet)
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -155,6 +169,7 @@ export function RentalFormsPreview() {
             <p className="mt-1 text-sm text-ink-soft">
               Version: {form.version} · For 12 Example Street, Sample Suburb
             </p>
+            <p className="mt-2 text-xs text-ink-soft">{BASIS_TEXT[form.basis]}</p>
           </div>
           <div className="mt-4 rounded-md border border-line bg-paper-card p-5">
             <h3 className="font-serif text-lg font-medium text-ink">Before you apply</h3>
@@ -183,6 +198,14 @@ export function RentalFormsPreview() {
               Submit application (preview only)
             </button>
           </div>
+          <div className="mt-4 rounded-md border border-line bg-white p-4 text-xs text-ink-soft">
+            <strong className="text-ink">Questions for the tenancy lawyer ({form.stateName}):</strong>
+            <ul className="mt-1 list-disc pl-4">
+              {form.reviewNotes.map((n) => (
+                <li key={n}>{n}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : null}
 
@@ -192,6 +215,35 @@ export function RentalFormsPreview() {
             Applicants for 12 Example Street at ${WEEKLY_RENT} a week, ranked for the landlord. The
             agent decides, and the ranking is a guide.
           </p>
+          <div className="mt-3 rounded-md border border-brass bg-brass/10 p-4 text-xs text-ink">
+            <strong>What the {form.stateName} form lets us rank on:</strong>{" "}
+            {[
+              form.rankingInputs.income ? "income" : null,
+              form.rankingInputs.history ? "rental history" : null,
+              form.rankingInputs.references ? "referees" : null,
+              form.rankingInputs.pets ? "pets" : null,
+              "move-in date and lease term",
+              "documents provided",
+            ]
+              .filter(Boolean)
+              .join(", ")}
+            .
+            {!form.rankingInputs.income || !form.rankingInputs.history || !form.rankingInputs.pets ? (
+              <>
+                {" "}
+                Not on this form, so not used:{" "}
+                {[
+                  !form.rankingInputs.income ? "income" : null,
+                  !form.rankingInputs.history ? "rental history" : null,
+                  !form.rankingInputs.pets ? "pets" : null,
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+                . The sample list below uses all of them, so real {form.stateName} results will be
+                simpler.
+              </>
+            ) : null}
+          </div>
           <div className="mt-3 rounded-md border border-line bg-paper-card p-4 text-xs text-ink-soft">
             Landlord settings used: rent up to {Math.round(CONTEXT.maxRentShare * 100)}% of weekly
             income · move in around 1 Dec 2026 · lease of {CONTEXT.minLeaseMonths}+ months · no pets.

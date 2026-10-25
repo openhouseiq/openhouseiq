@@ -1,4 +1,4 @@
-export type RentalState = "QLD" | "VIC";
+export type RentalState = "QLD" | "VIC" | "SA" | "WA" | "NT" | "NSW";
 
 export type FieldType =
   | "text"
@@ -50,4 +50,14 @@ export type RentalFormDefinition = {
   applicantSections: FormSection[];
   notices: FormNotice[];
   consent: string;
+  /**
+   * "prescribed": the state sets one official form we copy field for field.
+   * "approved-list": the state publishes what may be asked, not a form.
+   * "guidance": only regulator guidance exists; lowest certainty.
+   */
+  basis: "prescribed" | "approved-list" | "guidance";
+  /** Which ranking inputs this state's form actually collects. */
+  rankingInputs: { income: boolean; history: boolean; references: boolean; pets: boolean };
+  /** Points a lawyer must confirm before this state goes live. */
+  reviewNotes: string[];
 };

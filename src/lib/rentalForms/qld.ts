@@ -218,6 +218,12 @@ export const qldForm: RentalFormDefinition = {
     { title: "Two ways to apply", body: "You must be offered at least two ways to apply, one of which does not use someone else's online platform. Open Home Hero is one of them. See the agent's other way above." },
     { title: "Discrimination", body: "If you think you have been unlawfully discriminated against, you can contact the Queensland Human Rights Commission." },
   ],
+  basis: "prescribed",
+  rankingInputs: { income: true, history: true, references: true, pets: true },
+  reviewNotes: [
+    "Is Open Home Hero a restricted way under the two-methods rule?",
+    "Is a typed name and tick a valid signature?",
+  ],
   consent:
     "By signing and submitting this rental application, the applicant confirms that the property manager/owner may contact the applicant's current employer, current or previous property manager/owner and referees listed in this form for the purpose of assessing the rental application. Your application will not be processed unless all required documents are submitted.",
 };
