@@ -48,13 +48,11 @@ const selectClasses =
   "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass";
 
 export function RentalFormsPreview() {
-  const [state, setState] = useState<RentalState>("QLD");
+  const [selected, setSelected] = useState<string>("QLD");
   const [tab, setTab] = useState<TabId>("listing");
-  const [listingState, setListingState] = useState<string>("QLD");
   const [shortlisted, setShortlisted] = useState<Record<string, boolean>>({});
-  const form = RENTAL_FORMS[state];
   const ranked = useMemo(() => rankApplicants(SAMPLE, CONTEXT), []);
-  const listingForm = RENTAL_FORMS[listingState as RentalState] ?? null;
+  const form = RENTAL_FORMS[selected as RentalState] ?? null;
 
   return (
     <div>
@@ -63,20 +61,27 @@ export function RentalFormsPreview() {
         is touched. Not live for customers.
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
-        <span className="text-sm font-medium text-ink">State:</span>
-        {(Object.keys(RENTAL_FORMS) as RentalState[]).map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setState(s)}
-            className={`rounded-md border px-3 py-1.5 text-sm ${
-              state === s ? "border-brass bg-brass text-ink" : "border-line bg-white text-ink-soft"
-            }`}
-          >
-            {RENTAL_FORMS[s].stateName}
-          </button>
-        ))}
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <label htmlFor="state-select" className="text-sm font-medium text-ink">
+          State or territory:
+        </label>
+        <select
+          id="state-select"
+          className={`${selectClasses} !w-auto min-w-64`}
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+        >
+          {(Object.keys(RENTAL_FORMS) as RentalState[]).map((s) => (
+            <option key={s} value={s}>
+              {RENTAL_FORMS[s].stateName}
+            </option>
+          ))}
+          {UNBUILT_STATES.map((u) => (
+            <option key={u.value} value={u.value}>
+              {u.label} (not built yet)
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2 border-b border-line pb-2">
@@ -120,8 +125,8 @@ export function RentalFormsPreview() {
                 </label>
                 <select
                   className={selectClasses}
-                  value={listingState}
-                  onChange={(e) => setListingState(e.target.value)}
+                  value={selected}
+                  onChange={(e) => setSelected(e.target.value)}
                 >
                   {(Object.keys(RENTAL_FORMS) as RentalState[]).map((s) => (
                     <option key={s} value={s}>
@@ -137,9 +142,9 @@ export function RentalFormsPreview() {
               </div>
             </div>
           </div>
-          {listingForm ? (
+          {form ? (
             <p className="rounded-md border border-line bg-white p-3 text-sm text-ink">
-              Visitors will see the <strong>{listingForm.formName}</strong> ({listingForm.version}).
+              Visitors will see the <strong>{form.formName}</strong> ({form.version}).
               Next, complete the agent settings before applications switch on.
             </p>
           ) : (
@@ -151,7 +156,14 @@ export function RentalFormsPreview() {
         </div>
       ) : null}
 
-      {tab === "agent" ? (
+      {tab !== "listing" && !form ? (
+        <p className="mt-6 max-w-xl rounded-md border border-error bg-error/5 p-3 text-sm text-ink">
+          Rental applications are <strong>switched off</strong> for this state while its rules are
+          being researched. Visitors can leave their contact details only.
+        </p>
+      ) : null}
+
+      {tab === "agent" && form ? (
         <div className="mt-6 max-w-3xl">
           <p className="mb-4 text-sm text-ink-soft">
             Items the official {form.stateName} form says the property manager, owner or agent
@@ -161,7 +173,7 @@ export function RentalFormsPreview() {
         </div>
       ) : null}
 
-      {tab === "applicant" ? (
+      {tab === "applicant" && form ? (
         <div className="mt-6 max-w-3xl">
           <div className="rounded-md border border-line bg-paper-card p-5">
             <p className="text-xs uppercase tracking-wide text-ink-soft">{form.authority}</p>
@@ -209,7 +221,7 @@ export function RentalFormsPreview() {
         </div>
       ) : null}
 
-      {tab === "shortlist" ? (
+      {tab === "shortlist" && form ? (
         <div className="mt-6 max-w-3xl">
           <p className="text-sm text-ink-soft">
             Applicants for 12 Example Street at ${WEEKLY_RENT} a week, ranked for the landlord. The
