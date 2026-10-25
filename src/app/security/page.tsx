@@ -89,8 +89,7 @@ export default function SecurityPage() {
               Abuse and spam protection
             </h2>
             <p className="mt-2">
-              Public visitor forms (feedback, offers and rental
-              applications) are protected by Cloudflare Turnstile, a
+              Public visitor forms (feedback and offers) are protected by Cloudflare Turnstile, a
               privacy-friendly CAPTCHA, plus server-side rate limiting and
               strict checking of every field to prevent automated abuse.
             </p>

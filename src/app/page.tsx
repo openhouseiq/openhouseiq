@@ -5,20 +5,19 @@ import { Wordmark } from "@/components/Wordmark";
 import { PhoneMockups } from "@/components/landing/PhoneMockups";
 import { DashboardMockup } from "@/components/landing/DashboardMockup";
 import { HeroShowcase } from "@/components/landing/HeroShowcase";
-import { VideoPreview } from "@/components/landing/VideoPreview";
 import { DEFAULT_SITE_URL, SOCIAL_LINKS } from "@/lib/brand";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
 
 export const metadata: Metadata = {
-  title: "Open Home Hero — QR Code Feedback, Offers & Rental Applications for Agents",
+  title: "Open Home Hero — QR Code Feedback & Offers for Agents",
   description:
-    "Turn every open home or rental inspection into instant feedback, offers, and rental applications. One QR code, no paper sign-in sheets, no app for visitors to download. Built for real estate agents and property managers in Australia.",
+    "Turn every open home into instant visitor feedback and organised offers. One QR code, no paper sign-in sheets, no app for visitors to download. Built for real estate agents in Australia.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Open Home Hero — QR Code Feedback, Offers & Rental Applications for Agents",
+    title: "Open Home Hero — QR Code Feedback & Offers for Agents",
     description:
-      "One QR code per listing. Visitors leave feedback, submit an offer, or apply to rent from their phone — agents see every lead ranked in one dashboard.",
+      "One QR code per listing. Visitors leave feedback or submit an offer from their phone — agents see every offer ranked in one dashboard.",
     url: "/",
   },
 };
@@ -28,17 +27,17 @@ const FAQS = [
   {
     question: "What is Open Home Hero?",
     answer:
-      "Open Home Hero is software for real estate agents and property managers that turns a QR code on your flyer or online listing into instant visitor feedback, offers, and rental applications at open homes and rental inspections — no app for visitors to download, no paper sign-in sheets.",
+      "Open Home Hero is software for real estate agents and property managers that turns a QR code on your flyer or online listing into instant visitor feedback and organised offers at open homes — no app for visitors to download, no paper sign-in sheets.",
   },
   {
-    question: "Does Open Home Hero work for rental inspections as well as sales?",
+    question: "Does Open Home Hero work for rentals?",
     answer:
-      "Yes. Each listing is set up as either for sale or for rent. Sale listings collect feedback and offers; rental listings collect feedback and rental applications, ranked against what the landlord is looking for.",
+      "Open Home Hero is built for open homes and sales today. We are rebuilding rental applications so that each state gets its own form that follows that state's rules, with applicants ranked into a shortlist for the landlord. We will start with Queensland and Victoria, and we will announce it when it is ready.",
   },
   {
     question: "Do visitors need to download an app or create an account?",
     answer:
-      "No. Visitors scan the listing's QR code and submit feedback, an offer, or a rental application directly from their phone's browser — no app, no account.",
+      "No. Visitors scan the listing's QR code and submit feedback or an offer directly from their phone's browser — no app, no account.",
   },
   {
     question: "How much does Open Home Hero cost?",
@@ -59,9 +58,9 @@ const FEATURES = [
       "Generated automatically the moment you create a listing. Copy it onto your open home flyer, or attach the link to your online listing.",
   },
   {
-    title: "Instant feedback, offers & applications",
+    title: "Instant feedback & offers",
     description:
-      "Visitors leave feedback, submit an offer, or apply to rent — right from their phone. No app to download, no login required.",
+      "Visitors leave feedback or submit an offer — right from their phone. No app to download, no login required.",
   },
   {
     title: "Every lead, one dashboard",
@@ -86,7 +85,7 @@ const STEPS = [
     number: "3",
     title: "Visitors scan or tap and respond",
     description:
-      "No app to download, no account to create. Feedback, an offer, or a rental application in under a minute.",
+      "No app to download, no account to create. Feedback or an offer in under a minute.",
   },
   {
     number: "4",
@@ -113,7 +112,7 @@ const COMPARISON = [
 
 const INCLUDED = [
   "Unlimited listings and QR codes",
-  "Structured visitor feedback, offers & rental applications",
+  "Structured visitor feedback & offers",
   "CSV export reports by date range",
   "CAPTCHA-protected public forms",
   "14-day free trial",
@@ -152,8 +151,8 @@ export default function Home() {
             Run better open homes.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft lg:mx-0">
-            One QR code on your flyer, or one link in your listing. Visitors give feedback, make an offer or
-            apply to rent from their phone, and every offer lands in your
+            One QR code on your flyer, or one link in your listing. Visitors give feedback or make an
+            offer from their phone, and every offer lands in your
             dashboard ranked against what your seller wants.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
@@ -188,8 +187,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      <VideoPreview />
 
       <PhoneMockups />
 
@@ -442,7 +439,7 @@ export default function Home() {
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
               description:
-                "QR code feedback, offers, and rental applications for real estate agents. One QR code per listing — visitors respond from their phone, agents see every lead ranked in one dashboard.",
+                "QR code feedback and offers for real estate agents. One QR code per listing — visitors respond from their phone, agents see every offer ranked in one dashboard.",
               offers: {
                 "@type": "Offer",
                 price: "39",

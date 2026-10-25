@@ -103,11 +103,11 @@ export function PhoneMockups() {
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-ink-soft">
             Scan the QR code and the form opens on their phone, with no app and no
-            account. Here are the three forms, using a sample listing.
+            account. Here are the two forms, using a sample listing.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-12 sm:grid-cols-3 sm:gap-6">
+        <div className="mx-auto mt-12 grid max-w-3xl gap-12 sm:grid-cols-2 sm:gap-6">
           <Phone
             title="Provide feedback"
             caption="Feedback: interest level, star ratings and contact details"
@@ -143,27 +143,6 @@ export function PhoneMockups() {
             <FieldMock label="Preferred settlement term" value="45 days" />
             <Check label="Willing to waive building & pest inspection" />
             <FieldMock label="Notes (optional)" />
-          </Phone>
-
-          <Phone
-            title="Apply to rent"
-            caption="Rental applications: income, references and move-in date"
-          >
-            <FieldMock label="Name" />
-            <FieldMock label="Email" />
-            <div className="grid grid-cols-2 gap-2">
-              <FieldMock label="Employer" />
-              <FieldMock label="Occupation" />
-            </div>
-            <div>
-              <p className="mb-0.5 font-medium text-ink">Household income</p>
-              <div className="rounded border border-line bg-white px-2 py-1.5 text-ink-soft">
-                $100k–$150k
-              </div>
-            </div>
-            <FieldMock label="Desired move-in date" value="1 Nov 2026" />
-            <Check label="Can provide proof of income if asked" checked />
-            <FieldMock label="Reference name" />
           </Phone>
         </div>
 
