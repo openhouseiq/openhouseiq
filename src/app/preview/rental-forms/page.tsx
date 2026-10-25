@@ -19,8 +19,8 @@ export default function RentalFormsPreviewPage() {
       <main className="mx-auto max-w-5xl px-6 pb-20">
         <h1 className="font-serif text-3xl font-medium text-ink">State rental forms and shortlist</h1>
         <p className="mt-2 max-w-2xl text-ink-soft">
-          A first look at how agents choose a state, what applicants see for Queensland and
-          Victoria, and how the best-suited applicants are ranked.
+          A first look at how agents choose a state, what applicants see in each state
+          built so far, and how the best-suited applicants are ranked.
         </p>
         <div className="mt-6">
           <RentalFormsPreview />
