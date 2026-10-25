@@ -13,9 +13,13 @@ export type PublicListing = {
   address: string;
   agent_name: string | null;
   agent_email: string | null;
+  state: string | null;
 };
 
-const PUBLIC_COLUMNS = "id, agent_id, listing_type, address, agent_name, agent_email";
+/** Visitor-safe rental settings: only what the applicant is shown on the form. */
+export type PublicRentalConfig = Record<string, unknown>;
+
+const PUBLIC_COLUMNS = "id, agent_id, listing_type, address, agent_name, agent_email, state";
 
 export async function getPublicListing(id: string): Promise<PublicListing | null> {
   if (!isUuid(id)) return null;
@@ -25,4 +29,17 @@ export async function getPublicListing(id: string): Promise<PublicListing | null
     .eq("id", id)
     .maybeSingle<PublicListing>();
   return data ?? null;
+}
+
+/** The agent's saved rental items for a listing, for the apply page. Service role only, never sent in bulk. */
+export async function getRentalConfig(id: string): Promise<PublicRentalConfig> {
+  if (!isUuid(id)) return {};
+  const { data } = await createServiceClient()
+    .from("listings")
+    .select("rental_config")
+    .eq("id", id)
+    .maybeSingle<{ rental_config: PublicRentalConfig | null }>();
+  const { ranking: _ranking, ...visible } = (data?.rental_config ?? {}) as PublicRentalConfig;
+  void _ranking;
+  return visible;
 }

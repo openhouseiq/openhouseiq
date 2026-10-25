@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
+import { StateSelect } from "@/components/rentalForms/StateSelect";
+import { getRentalForm } from "@/lib/rentalForms";
 import { LandlordPreferenceFields } from "@/components/listings/LandlordPreferenceFields";
 import { LandSizeField } from "@/components/listings/LandSizeField";
 import type { Listing } from "@/lib/types";
@@ -40,10 +42,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
     const landlordPrefPets = String(formData.get("landlordPrefPets") ?? "") || null;
     const landlordPrefMinLeaseTerm =
       String(formData.get("landlordPrefMinLeaseTerm") ?? "") || null;
-    const landlordPrefSmoking =
-      String(formData.get("landlordPrefSmoking") ?? "") || null;
-    const landlordPrefEmploymentVerification =
-      String(formData.get("landlordPrefEmploymentVerification") ?? "") || null;
+    const rentalState = getRentalForm(String(formData.get("rentalState") ?? ""))?.state ?? null;
 
     const { error: updateError } = await supabase
       .from("listings")
@@ -66,8 +65,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           : {
               landlord_pref_pets: landlordPrefPets,
               landlord_pref_min_lease_term: landlordPrefMinLeaseTerm,
-              landlord_pref_smoking: landlordPrefSmoking,
-              landlord_pref_employment_verification: landlordPrefEmploymentVerification,
+              state: rentalState,
             }),
         updated_at: new Date().toISOString(),
       })
@@ -151,15 +149,15 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           }}
         />
       ) : (
-        <LandlordPreferenceFields
-          defaults={{
-            landlordPrefPets: listing.landlord_pref_pets,
-            landlordPrefMinLeaseTerm: listing.landlord_pref_min_lease_term,
-            landlordPrefSmoking: listing.landlord_pref_smoking,
-            landlordPrefEmploymentVerification:
-              listing.landlord_pref_employment_verification,
-          }}
-        />
+        <>
+          <StateSelect defaultValue={listing.state} />
+          <LandlordPreferenceFields
+            defaults={{
+              landlordPrefPets: listing.landlord_pref_pets,
+              landlordPrefMinLeaseTerm: listing.landlord_pref_min_lease_term,
+            }}
+          />
+        </>
       )}
 
       {error ? <p className="text-sm text-error">{error}</p> : null}

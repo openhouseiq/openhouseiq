@@ -10,6 +10,9 @@ import { CopyQrButtons } from "./CopyQrButtons";
 import { DeleteListingButton } from "./DeleteListingButton";
 import { FeedbackOffersReport } from "./FeedbackOffersReport";
 import { FeedbackApplicantsReport } from "./FeedbackApplicantsReport";
+import { RentalApplicationsPanel } from "./RentalApplicationsPanel";
+import type { RankedItem } from "@/lib/rentalForms/rankListing";
+import { rankListingApplications } from "@/lib/rentalForms/rankListing";
 import { getUserCurrentAgencyId, canAccessListing } from "@/lib/agency";
 import {
   PRICE_LABELS,
@@ -17,13 +20,8 @@ import {
   LEVEL_LABELS,
   FINANCE_LABELS,
 } from "@/components/listings/sellerPreferences";
-import {
-  PETS_LABELS,
-  LEASE_TERM_LABELS,
-  SMOKING_LABELS,
-  EMPLOYMENT_VERIFICATION_LABELS,
-} from "@/components/listings/landlordPreferences";
-import type { Listing, Feedback, Offer, Applicant } from "@/lib/types";
+import { PETS_LABELS, LEASE_TERM_LABELS } from "@/components/listings/landlordPreferences";
+import type { Listing, Feedback, Offer, Applicant, RentalApplication } from "@/lib/types";
 
 export default async function ListingDetailPage({
   params,
@@ -53,7 +51,7 @@ export default async function ListingDetailPage({
 
   const isRental = listing.listing_type === "rental";
 
-  const [{ data: feedback }, { data: offers }, { data: applicants }] = await Promise.all([
+  const [{ data: feedback }, { data: offers }, { data: applicants }, { data: rentalApps }] = await Promise.all([
     supabase
       .from("feedback")
       .select("*")
@@ -76,6 +74,14 @@ export default async function ListingDetailPage({
           .order("created_at", { ascending: false })
           .returns<Applicant[]>()
       : Promise.resolve({ data: [] as Applicant[] }),
+    isRental
+      ? supabase
+          .from("rental_applications")
+          .select("*")
+          .eq("listing_id", id)
+          .order("created_at", { ascending: false })
+          .returns<RentalApplication[]>()
+      : Promise.resolve({ data: [] as RentalApplication[] }),
   ]);
 
   const unreadFeedbackIds = (feedback ?? [])
@@ -100,12 +106,27 @@ export default async function ListingDetailPage({
       .update({ read_at: new Date().toISOString() })
       .in("id", unreadOfferIds);
   }
+  const unreadRentalIds = (rentalApps ?? []).filter((item) => !item.read_at).map((item) => item.id);
+  if (unreadRentalIds.length > 0) {
+    await supabase
+      .from("rental_applications")
+      .update({ read_at: new Date().toISOString() })
+      .in("id", unreadRentalIds);
+  }
   if (unreadApplicantIds.length > 0) {
     await supabase
       .from("applicants")
       .update({ read_at: new Date().toISOString() })
       .in("id", unreadApplicantIds);
   }
+
+  const rental = isRental
+    ? rankListingApplications(listing, rentalApps ?? [])
+    : { form: null, ready: false, items: [] as RankedItem[], notRanked: [] as string[] };
+  const rentalForm = rental.form;
+  const rentalReady = rental.ready;
+  const rankedItems = rental.items;
+  const notRanked = rental.notRanked;
 
   const headersList = await headers();
   const host = headersList.get("host");
@@ -228,26 +249,6 @@ export default async function ListingDetailPage({
                     </dd>
                   </div>
                 ) : null}
-                {listing.landlord_pref_smoking ? (
-                  <div>
-                    <dt className="text-xs text-ink-soft">Smoking</dt>
-                    <dd className="text-sm text-ink">
-                      {SMOKING_LABELS[listing.landlord_pref_smoking]}
-                    </dd>
-                  </div>
-                ) : null}
-                {listing.landlord_pref_employment_verification ? (
-                  <div>
-                    <dt className="text-xs text-ink-soft">Proof of income</dt>
-                    <dd className="text-sm text-ink">
-                      {
-                        EMPLOYMENT_VERIFICATION_LABELS[
-                          listing.landlord_pref_employment_verification
-                        ]
-                      }
-                    </dd>
-                  </div>
-                ) : null}
               </dl>
             ) : (
               <p className="mt-4 text-sm text-ink-soft">
@@ -319,6 +320,43 @@ export default async function ListingDetailPage({
             )}
           </div>
         )}
+
+        {isRental ? (
+          <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="font-serif text-xl font-medium text-ink">Rental application</h2>
+                {rentalForm ? (
+                  <p className="mt-1 text-sm text-ink-soft">
+                    {rentalForm.stateName}: {rentalForm.formName} ({rentalForm.version}).{" "}
+                    {rentalReady
+                      ? "Applications are open."
+                      : "Applications open once you complete the required settings."}
+                  </p>
+                ) : (
+                  <p className="mt-1 text-sm text-ink-soft">
+                    Applications are switched off. Choose a state with a built form under Edit
+                    listing.
+                  </p>
+                )}
+              </div>
+              <Link
+                href={
+                  rentalForm
+                    ? `/dashboard/listings/${listing.id}/rental-settings`
+                    : `/dashboard/listings/${listing.id}/edit`
+                }
+                className="shrink-0 text-sm text-brass underline"
+              >
+                {rentalForm ? "Rental settings" : "Edit listing"}
+              </Link>
+            </div>
+          </div>
+        ) : null}
+
+        {rentalForm ? (
+          <RentalApplicationsPanel state={rentalForm.state} items={rankedItems} notRanked={notRanked} />
+        ) : null}
 
         {isRental ? (
           <FeedbackApplicantsReport

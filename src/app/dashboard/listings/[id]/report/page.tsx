@@ -9,7 +9,9 @@ import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
 import { LEASE_TERM_LABELS, INCOME_RANGE_LABELS } from "@/components/listings/landlordPreferences";
 import { PrintButton } from "./PrintButton";
 import { getUserCurrentAgencyId, canAccessListing } from "@/lib/agency";
-import type { Listing, Feedback, Offer, Applicant } from "@/lib/types";
+import type { Listing, Feedback, Offer, Applicant, RentalApplication } from "@/lib/types";
+import { rankListingApplications } from "@/lib/rentalForms/rankListing";
+import { describeAnswers } from "@/lib/rentalForms/describe";
 
 const INTEREST_LEVEL_LABELS: Record<string, string> = {
   not_interested: "Not interested",
@@ -92,7 +94,7 @@ export default async function ListingReportPage({
 
   const isRental = listing.listing_type === "rental";
 
-  const [{ data: feedback }, { data: offers }, { data: applicants }] = await Promise.all([
+  const [{ data: feedback }, { data: offers }, { data: applicants }, { data: rentalApps }] = await Promise.all([
     supabase
       .from("feedback")
       .select("*")
@@ -115,6 +117,14 @@ export default async function ListingReportPage({
           .order("created_at", { ascending: false })
           .returns<Applicant[]>()
       : Promise.resolve({ data: [] as Applicant[] }),
+    isRental
+      ? supabase
+          .from("rental_applications")
+          .select("*")
+          .eq("listing_id", id)
+          .order("created_at", { ascending: false })
+          .returns<RentalApplication[]>()
+      : Promise.resolve({ data: [] as RentalApplication[] }),
   ]);
 
   const feedbackList = feedback ?? [];
@@ -154,6 +164,13 @@ export default async function ListingReportPage({
       if (aUnmet !== bUnmet) return aUnmet ? 1 : -1;
       return (b.score.matchPercent ?? -1) - (a.score.matchPercent ?? -1);
     });
+
+  const rental = isRental
+    ? rankListingApplications(listing, rentalApps ?? [])
+    : null;
+  const shortlist = (rental?.items ?? []).filter(
+    (i) => i.status === "shortlisted" || i.status === "successful",
+  );
 
   const agentPhotoUrl = await getAgentPhotoUrl(listing.agent_id);
   const agentName =
@@ -267,9 +284,58 @@ export default async function ListingReportPage({
 
           <div>
             <h2 className="font-serif text-lg font-semibold text-ink">
-              {isRental ? `Applicants (${rankedApplicants.length})` : `Offers (${rankedOffers.length})`}
+              {isRental ? `Applicants (${rental?.form ? rental.items.length : rankedApplicants.length})` : `Offers (${rankedOffers.length})`}
             </h2>
-            {isRental ? (
+            {isRental && rental?.form ? (
+              <div className="mt-3 space-y-3">
+                <p className="text-xs text-ink-soft">
+                  {rental.form.stateName}: {rental.form.formName}. The ranking is a guide only; the
+                  agent decides. Shortlisted applicants are shown first.
+                </p>
+                {[...shortlist, ...rental.items.filter((i) => !shortlist.includes(i))].map((a) => {
+                  const rows = describeAnswers(rental.form!, a.answers);
+                  return (
+                    <div key={a.id} className="break-inside-avoid rounded-md border border-line p-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-semibold text-ink">
+                          {a.name}
+                          {shortlist.includes(a) ? (
+                            <span className="ml-2 rounded-full bg-brass px-2 py-0.5 text-xs">Shortlisted</span>
+                          ) : null}
+                        </p>
+                        <p className="text-sm font-semibold text-brass">{a.score}% match</p>
+                      </div>
+                      <p className="mt-1 text-xs text-ink-soft">
+                        {[a.email, a.phone].filter(Boolean).join(" · ")}
+                      </p>
+                      {a.unmet.map((u) => (
+                        <p key={u} className="mt-1 text-xs text-error">
+                          Condition not met: {u}
+                        </p>
+                      ))}
+                      <p className="mt-2 text-xs text-ink-soft">
+                        {[...a.positives.slice(0, 3), ...a.concerns.map((c) => `Check: ${c}`)].join(" · ")}
+                      </p>
+                      {shortlist.includes(a)
+                        ? rows.map((s) => (
+                            <div key={s.title} className="mt-2 text-xs">
+                              <p className="font-medium text-ink">{s.title}</p>
+                              {s.rows.map((r) => (
+                                <p key={r.label} className="text-ink-soft">
+                                  {r.label}: {r.value}
+                                </p>
+                              ))}
+                            </div>
+                          ))
+                        : null}
+                    </div>
+                  );
+                })}
+                {rental.items.length === 0 ? (
+                  <p className="text-sm text-ink-soft">No applications yet.</p>
+                ) : null}
+              </div>
+            ) : isRental ? (
               <div className="mt-3 space-y-3">
                 {rankedApplicants.length === 0 ? (
                   <p className="text-sm text-ink-soft">No applicants yet.</p>

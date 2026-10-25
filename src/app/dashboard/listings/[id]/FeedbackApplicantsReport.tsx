@@ -313,7 +313,7 @@ export function FeedbackApplicantsReport({
         <div>
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-serif text-xl font-medium text-ink">
-              Applicants ({rankedApplicants.length})
+              Earlier applicants, old form ({rankedApplicants.length})
             </h2>
             <Button
               variant="secondary"

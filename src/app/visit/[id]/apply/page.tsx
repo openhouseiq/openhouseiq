@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
-import { getPublicListing } from "@/lib/publicListing";
+import { getPublicListing, getRentalConfig } from "@/lib/publicListing";
+import { getEnabledRentalForm } from "@/lib/rentalForms";
+import { agentConfigComplete } from "@/lib/rentalForms/answers";
+import { RentalApplicationForm } from "@/components/rentalForms/RentalApplicationForm";
 import { getAgentPhotoUrl } from "@/lib/agent-photo";
 import { VisitLayout } from "@/components/visit/VisitLayout";
-import { ApplicationForm } from "./ApplicationForm";
 
 export default async function ApplyPage({
   params,
@@ -16,7 +18,14 @@ export default async function ApplyPage({
     notFound();
   }
 
+  if (listing.listing_type !== "rental") {
+    notFound();
+  }
+
   const agentPhotoUrl = await getAgentPhotoUrl(listing.agent_id);
+  const form = getEnabledRentalForm(listing.state);
+  const config = form ? await getRentalConfig(listing.id) : {};
+  const open = form !== null && agentConfigComplete(form, config);
 
   return (
     <VisitLayout>
@@ -41,7 +50,21 @@ export default async function ApplyPage({
       ) : (
         <div className="mb-6" />
       )}
-      <ApplicationForm listingId={listing.id} />
+      {form && open ? (
+        <RentalApplicationForm
+          listingId={listing.id}
+          state={form.state}
+          config={config}
+        />
+      ) : (
+        <div className="rounded-md border border-line bg-paper-card p-5 text-center text-sm text-ink">
+          <p className="font-medium">Applications are not open for this property yet.</p>
+          <p className="mt-2 text-ink-soft">
+            Please speak to the agent
+            {listing.agent_email ? ` at ${listing.agent_email}` : ""} about how to apply.
+          </p>
+        </div>
+      )}
     </VisitLayout>
   );
 }

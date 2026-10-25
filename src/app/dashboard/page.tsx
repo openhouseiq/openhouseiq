@@ -77,6 +77,8 @@ export default async function DashboardPage() {
       { data: allFeedback },
       { data: allOffers },
       { data: allApplicants },
+      { data: unreadRental },
+      { data: allRental },
     ] = await Promise.all([
       supabase
         .from("feedback")
@@ -96,12 +98,19 @@ export default async function DashboardPage() {
       supabase.from("feedback").select("listing_id").in("listing_id", listingIds),
       supabase.from("offers").select("listing_id").in("listing_id", listingIds),
       supabase.from("applicants").select("listing_id").in("listing_id", listingIds),
+      supabase
+        .from("rental_applications")
+        .select("listing_id")
+        .in("listing_id", listingIds)
+        .is("read_at", null),
+      supabase.from("rental_applications").select("listing_id").in("listing_id", listingIds),
     ]);
 
     for (const row of [
       ...(unreadFeedback ?? []),
       ...(unreadOffers ?? []),
       ...(unreadApplicants ?? []),
+      ...(unreadRental ?? []),
     ]) {
       unreadCounts.set(row.listing_id, (unreadCounts.get(row.listing_id) ?? 0) + 1);
     }
@@ -111,7 +120,7 @@ export default async function DashboardPage() {
     for (const row of allOffers ?? []) {
       offerCounts.set(row.listing_id, (offerCounts.get(row.listing_id) ?? 0) + 1);
     }
-    for (const row of allApplicants ?? []) {
+    for (const row of [...(allApplicants ?? []), ...(allRental ?? [])]) {
       applicantCounts.set(row.listing_id, (applicantCounts.get(row.listing_id) ?? 0) + 1);
     }
   }

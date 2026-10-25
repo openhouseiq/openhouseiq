@@ -1,9 +1,4 @@
-import {
-  PETS_OPTIONS,
-  LEASE_TERM_OPTIONS,
-  SMOKING_OPTIONS,
-  EMPLOYMENT_VERIFICATION_OPTIONS,
-} from "./landlordPreferences";
+import { PETS_OPTIONS, LEASE_TERM_OPTIONS } from "./landlordPreferences";
 
 const selectClasses =
   "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass";
@@ -47,8 +42,6 @@ export function LandlordPreferenceFields({
   defaults?: {
     landlordPrefPets?: string | null;
     landlordPrefMinLeaseTerm?: string | null;
-    landlordPrefSmoking?: string | null;
-    landlordPrefEmploymentVerification?: string | null;
   };
 }) {
   return (
@@ -59,7 +52,7 @@ export function LandlordPreferenceFields({
       <div>
         <p className="text-sm font-medium text-ink">Landlord preferences</p>
         <p className="mt-1 text-xs text-ink-soft">
-          What matters most to the landlord, used to judge applicants against.
+          Used to rank applicants. Smoking and employer questions are not on the official forms, so they are not asked.
         </p>
       </div>
 
@@ -74,18 +67,6 @@ export function LandlordPreferenceFields({
         label="Minimum lease term"
         options={LEASE_TERM_OPTIONS}
         defaultValue={defaults?.landlordPrefMinLeaseTerm}
-      />
-      <PreferenceSelect
-        id="landlordPrefSmoking"
-        label="Smoking"
-        options={SMOKING_OPTIONS}
-        defaultValue={defaults?.landlordPrefSmoking}
-      />
-      <PreferenceSelect
-        id="landlordPrefEmploymentVerification"
-        label="Proof of income / employment verification"
-        options={EMPLOYMENT_VERIFICATION_OPTIONS}
-        defaultValue={defaults?.landlordPrefEmploymentVerification}
       />
     </div>
   );

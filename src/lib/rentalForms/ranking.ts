@@ -9,6 +9,12 @@ export type RankingContext = {
   preferredMoveIn: string | null;
   minLeaseMonths: number | null;
   petsAllowed: boolean | null;
+  /**
+   * Which inputs this state's form collects. A factor the form never asks
+   * about is skipped, not marked down: for example South Australia's form has
+   * no income or rental history.
+   */
+  available?: { income: boolean; history: boolean; references: boolean; pets: boolean };
 };
 
 export type RankableApplicant = {
@@ -50,20 +56,29 @@ export function rankApplicants(
     const concerns: string[] = [];
     const unmet: string[] = [];
     let score = 0;
+    let max = 0;
+    const has = ctx.available ?? { income: true, history: true, references: true, pets: true };
 
     // Affordability (40)
-    if (a.weeklyIncome && a.weeklyIncome > 0) {
+    if (!has.income) {
+      // Not on this state's form: not scored.
+    } else if (a.weeklyIncome && a.weeklyIncome > 0) {
+      max += 40;
       const share = ctx.weeklyRent / a.weeklyIncome;
       const pts = affordabilityPoints(share, ctx.maxRentShare);
       score += pts;
       const pct = Math.round(share * 100);
       (pts >= 30 ? positives : concerns).push(`Rent is ${pct}% of weekly income`);
     } else {
+      max += 40;
       concerns.push("No income stated");
     }
 
     // Rental history (25)
-    if (a.historyMonths >= 24) {
+    if (has.history) max += 25;
+    if (!has.history) {
+      // Not on this state's form: not scored.
+    } else if (a.historyMonths >= 24) {
       score += 25;
       positives.push(`${a.historyMonths} months of rental history`);
     } else if (a.historyMonths >= 12) {
@@ -77,7 +92,10 @@ export function rankApplicants(
     }
 
     // References (15)
-    if (a.referees >= 2) {
+    if (has.references) max += 15;
+    if (!has.references) {
+      // Not on this state's form: not scored.
+    } else if (a.referees >= 2) {
       score += 15;
       positives.push("Two referees given");
     } else if (a.referees === 1) {
@@ -89,6 +107,7 @@ export function rankApplicants(
 
     // Fit (10): move-in date 5, lease term 5
     if (ctx.preferredMoveIn && a.moveInDate) {
+      max += 5;
       const diff = Math.abs(new Date(a.moveInDate).getTime() - new Date(ctx.preferredMoveIn).getTime()) / DAY;
       if (diff <= 14) {
         score += 5;
@@ -100,6 +119,7 @@ export function rankApplicants(
       }
     }
     if (ctx.minLeaseMonths && a.leaseMonths) {
+      max += 5;
       if (a.leaseMonths >= ctx.minLeaseMonths) {
         score += 5;
         positives.push(`${a.leaseMonths}-month lease meets the minimum`);
@@ -110,6 +130,7 @@ export function rankApplicants(
 
     // Documents (10)
     if (a.documentsRequested > 0) {
+      max += 10;
       score += Math.round((a.documentsProvided / a.documentsRequested) * 10);
       if (a.documentsProvided < a.documentsRequested) {
         concerns.push(`${a.documentsRequested - a.documentsProvided} requested document(s) not yet covered`);
@@ -119,11 +140,13 @@ export function rankApplicants(
     }
 
     // Landlord condition (not scored): pets
-    if (ctx.petsAllowed === false && a.intendsPets) {
+    if (has.pets && ctx.petsAllowed === false && a.intendsPets) {
       unmet.push("Intends to keep pets (landlord policy: no pets)");
     }
 
-    return { ...a, score: Math.min(100, score), positives, concerns, unmet };
+    // Scale to the points that could be earned from what this form collects.
+    const pct = max > 0 ? Math.round((score / max) * 100) : 0;
+    return { ...a, score: Math.min(100, pct), positives, concerns, unmet };
   });
 
   return ranked.sort((x, y) => x.unmet.length - y.unmet.length || y.score - x.score);

@@ -63,8 +63,29 @@ export type Listing = {
   landlord_pref_min_lease_term: LeaseTermPreference | null;
   landlord_pref_smoking: SmokingPreference | null;
   landlord_pref_employment_verification: PreferenceLevel | null;
+  state: string | null;
+  rental_config: Record<string, unknown>;
+  leased_on: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type RentalApplicationStatus = "new" | "shortlisted" | "successful" | "unsuccessful";
+
+export type RentalApplication = {
+  id: string;
+  listing_id: string;
+  state: string;
+  form_version: string;
+  answers: Record<string, unknown>;
+  applicant_name: string | null;
+  email: string | null;
+  phone: string | null;
+  status: RentalApplicationStatus;
+  consent_name: string | null;
+  consent_at: string | null;
+  read_at: string | null;
+  created_at: string;
 };
 
 export type InterestLevel =

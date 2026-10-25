@@ -32,3 +32,23 @@ export const RENTAL_STATES = Object.values(RENTAL_FORMS).map((f) => ({
 export function getRentalForm(state: string | null | undefined): RentalFormDefinition | null {
   return state && state in RENTAL_FORMS ? RENTAL_FORMS[state as RentalState] : null;
 }
+
+/**
+ * States that may collect applications right now. Defaults to every built
+ * state; set RENTAL_STATES_ENABLED (comma separated, for example "QLD,VIC")
+ * to switch states off without a deploy of new code.
+ */
+export function enabledRentalStates(): RentalState[] {
+  const raw = process.env.RENTAL_STATES_ENABLED;
+  const all = Object.keys(RENTAL_FORMS) as RentalState[];
+  if (raw === undefined || raw.trim() === "") return all;
+  const wanted = raw.split(",").map((s) => s.trim().toUpperCase());
+  return all.filter((s) => wanted.includes(s));
+}
+
+export function getEnabledRentalForm(
+  state: string | null | undefined,
+): RentalFormDefinition | null {
+  const form = getRentalForm(state);
+  return form && enabledRentalStates().includes(form.state) ? form : null;
+}

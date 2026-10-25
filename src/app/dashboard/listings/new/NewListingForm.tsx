@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
 import { LandlordPreferenceFields } from "@/components/listings/LandlordPreferenceFields";
 import { LandSizeField } from "@/components/listings/LandSizeField";
+import { StateSelect } from "@/components/rentalForms/StateSelect";
+import { getRentalForm } from "@/lib/rentalForms";
 import { getUserCurrentAgencyId } from "@/lib/agency";
 import type { ListingType } from "@/lib/types";
 
@@ -52,10 +54,7 @@ export function NewListingForm() {
     const landlordPrefPets = String(formData.get("landlordPrefPets") ?? "") || null;
     const landlordPrefMinLeaseTerm =
       String(formData.get("landlordPrefMinLeaseTerm") ?? "") || null;
-    const landlordPrefSmoking =
-      String(formData.get("landlordPrefSmoking") ?? "") || null;
-    const landlordPrefEmploymentVerification =
-      String(formData.get("landlordPrefEmploymentVerification") ?? "") || null;
+    const rentalState = getRentalForm(String(formData.get("rentalState") ?? ""))?.state ?? null;
 
     const agentName = (user.user_metadata?.full_name as string | undefined) ?? "";
     const agencyId = await getUserCurrentAgencyId(supabase, user.id);
@@ -85,8 +84,7 @@ export function NewListingForm() {
           : {
               landlord_pref_pets: landlordPrefPets,
               landlord_pref_min_lease_term: landlordPrefMinLeaseTerm,
-              landlord_pref_smoking: landlordPrefSmoking,
-              landlord_pref_employment_verification: landlordPrefEmploymentVerification,
+              state: rentalState,
             }),
       })
       .select()
@@ -158,7 +156,10 @@ export function NewListingForm() {
       {listingType === "sale" ? (
         <SellerPreferenceFields />
       ) : (
-        <LandlordPreferenceFields />
+        <>
+          <StateSelect />
+          <LandlordPreferenceFields />
+        </>
       )}
 
       {error ? <p className="text-sm text-error">{error}</p> : null}

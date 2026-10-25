@@ -21,6 +21,15 @@ const INCOME_RANGES = ["under_50k", "50k_75k", "75k_100k", "100k_150k", "150k_pl
 const LEASE_TERMS = ["month_to_month", "6_months", "12_months", "24_months"] as const;
 
 export async function POST(request: Request) {
+  // Retired 25 Oct 2026: the old free-form rental application asked for things
+  // the Queensland and Victorian forms do not allow (smoking, free-text notes).
+  // New applications go to /api/rental-applications, which uses each state's form.
+  if (process.env.LEGACY_APPLICANTS_ENABLED !== "true") {
+    return NextResponse.json(
+      { error: "This form is no longer available. Please use the link from the agent again." },
+      { status: 410 },
+    );
+  }
   const ip = clientIp(request);
   if (!(await checkRateLimit("applicants", ip))) {
     return NextResponse.json(
