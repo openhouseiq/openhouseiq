@@ -1,3 +1,5 @@
+> **ON HOLD (25 Oct 2026):** This script describes the old rental application form and must not be published. Rental applications are being rebuilt state by state and need a tenancy lawyer's review first. Re-write and re-record after that.
+
 # Post text for the 10 videos (drafts, nothing scheduled)
 
 Rules: Australian English. No statistics, customer claims or prices. Every caption ends with the AI voice-over line. Instagram gets the hashtags; Facebook and LinkedIn do not. Video 1 first; schedule only after the owner approves the finished video and this text.

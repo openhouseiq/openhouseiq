@@ -1,3 +1,5 @@
+> **ON HOLD (25 Oct 2026):** This script describes the old rental application form and must not be published. Rental applications are being rebuilt state by state and need a tenancy lawyer's review first. Re-write and re-record after that.
+
 # Pilot video: rental applications (about 45 to 50 seconds)
 
 Format: vertical 9:16 for Reels and Shorts, or square 1:1 for Facebook and LinkedIn. Record once at the largest size; crop later.
