@@ -1,8 +1,14 @@
+"use client";
+
 import Script from "next/script";
+import { usePathname } from "next/navigation";
+import { MEASURED_PATHS } from "@/lib/measuredPaths";
 
 const META_PIXEL_ID = "2661894107603740";
 
 export function MetaPixel() {
+  const pathname = usePathname();
+  if (!MEASURED_PATHS.includes(pathname)) return null;
   return (
     <>
       <Script id="meta-pixel" strategy="afterInteractive">
