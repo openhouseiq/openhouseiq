@@ -56,6 +56,18 @@ export default function PrivacyPage() {
               keep the Service secure and prevent spam submissions, including
               through our CAPTCHA provider, Cloudflare Turnstile.
             </p>
+            <p className="mt-2">
+              <span className="font-medium">Website measurement:</span> we use
+              the Meta (Facebook) Pixel to count visits and measure our
+              advertising, and may use Google Analytics on our public pages
+              (home, preview, sign-up and similar) to understand how many
+              people visit and where they come from. These tools use cookies
+              or similar technologies and send page-view information, such as
+              the page visited and your browser type, to Meta or Google. We do
+              not use them to collect the details you enter in feedback,
+              offer or rental forms. You can block these cookies in your
+              browser settings.
+            </p>
           </section>
 
           <section>

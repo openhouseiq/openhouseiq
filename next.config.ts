@@ -20,11 +20,11 @@ const supabase = supabaseOrigins();
 // and form posts to other sites.
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"} https://challenges.cloudflare.com https://connect.facebook.net`,
+  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"} https://challenges.cloudflare.com https://connect.facebook.net https://www.googletagmanager.com`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${supabase.http} https://www.facebook.com`,
+  `img-src 'self' data: blob: ${supabase.http} https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com`,
   "font-src 'self' data:",
-  `connect-src 'self' ${supabase.http} ${supabase.ws} https://challenges.cloudflare.com https://www.facebook.com https://connect.facebook.net`,
+  `connect-src 'self' ${supabase.http} ${supabase.ws} https://challenges.cloudflare.com https://www.facebook.com https://connect.facebook.net https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com`,
   "frame-src https://challenges.cloudflare.com",
   "worker-src 'self'",
   "manifest-src 'self'",
