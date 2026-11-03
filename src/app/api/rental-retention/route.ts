@@ -8,8 +8,13 @@ import type { RentalState } from "@/lib/rentalForms/types";
 // rental applications on the timetables in lib/rentalForms/retention.ts.
 // Successful applications are kept; agents can delete them from the dashboard.
 
+// The job's own secret if one is set, otherwise the site's existing shared job
+// secret, so it runs without any extra Netlify setting.
+const jobSecret = () =>
+  process.env.RENTAL_RETENTION_SECRET || process.env.CONTENT_QUEUE_PUBLISH_SECRET;
+
 export async function POST(request: Request) {
-  if (!hasBearer(request, process.env.RENTAL_RETENTION_SECRET)) {
+  if (!hasBearer(request, jobSecret())) {
     return NextResponse.json({ error: "Not authorized." }, { status: 403 });
   }
 

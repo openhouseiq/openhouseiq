@@ -5,7 +5,7 @@ import { schedule } from "@netlify/functions";
 const SITE = (process.env.URL ?? "https://openhomehero.com.au").replace(/\/$/, "");
 
 export const handler = schedule("0 17 * * *", async () => {
-  const secret = process.env.RENTAL_RETENTION_SECRET;
+  const secret = process.env.RENTAL_RETENTION_SECRET || process.env.CONTENT_QUEUE_PUBLISH_SECRET;
   if (!secret) return { statusCode: 200 };
   const res = await fetch(`${SITE}/api/rental-retention`, {
     method: "POST",
