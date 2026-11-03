@@ -59,14 +59,15 @@ export default function PrivacyPage() {
             <p className="mt-2">
               <span className="font-medium">Website measurement:</span> we use
               the Meta (Facebook) Pixel to count visits and measure our
-              advertising, and may use Google Analytics on our public pages
+              advertising, and Cloudflare Web Analytics on our public pages
               (home, preview, sign-up and similar) to understand how many
-              people visit and where they come from. These tools use cookies
-              or similar technologies and send page-view information, such as
-              the page visited and your browser type, to Meta or Google. We do
-              not use them to collect the details you enter in feedback,
-              offer or rental forms. You can block these cookies in your
-              browser settings.
+              people visit and where they come from. The Meta Pixel uses
+              cookies and similar technologies and sends page-view
+              information, such as the page visited and your browser type, to
+              Meta. Cloudflare Web Analytics does not use cookies or track
+              individual visitors. We do not use either tool to collect the
+              details you enter in feedback, offer or rental forms. You can
+              block these technologies in your browser settings.
             </p>
           </section>
 
