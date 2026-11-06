@@ -1,13 +1,24 @@
 import Link from "next/link";
+import { JsonLd, webPage } from "@/components/JsonLd";
+import type { Metadata } from "next";
 import { Wordmark } from "@/components/Wordmark";
 import { CONTACT_EMAIL } from "@/lib/brand";
 import { BusinessDetails } from "@/components/BusinessDetails";
 
-export const metadata = { title: "Privacy Policy — Open Home Hero" };
+const PAGE_TITLE = "Privacy Policy — Open Home Hero";
+const PAGE_DESCRIPTION =
+  "How Open Home Hero collects, uses, stores and deletes agent and open home visitor information, and how to make a privacy request or delete your data.";
+
+export const metadata: Metadata = {
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  alternates: { canonical: "/privacy" },
+};
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-paper">
+      <JsonLd data={webPage("/privacy", PAGE_TITLE, PAGE_DESCRIPTION)} />
       <header className="mx-auto flex max-w-3xl items-center px-6 py-6">
         <Link href="/" className="font-serif text-xl tracking-tight">
           <Wordmark tone="dark" />

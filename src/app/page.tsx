@@ -12,7 +12,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
 export const metadata: Metadata = {
   title: "Open Home Hero — QR Code Feedback & Offers for Agents",
   description:
-    "Turn every open home into instant visitor feedback and organised offers. One QR code, no paper sign-in sheets, no app for visitors to download. Built for real estate agents in Australia.",
+    "Instant open home feedback and organised offers from one QR code. No paper sign-in sheets, no app for visitors. Built for Australian real estate agents.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Open Home Hero — QR Code Feedback & Offers for Agents",

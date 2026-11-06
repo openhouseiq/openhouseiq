@@ -1,12 +1,23 @@
 import Link from "next/link";
+import { JsonLd, webPage } from "@/components/JsonLd";
+import type { Metadata } from "next";
 import { Wordmark } from "@/components/Wordmark";
 import { CONTACT_EMAIL } from "@/lib/brand";
 
-export const metadata = { title: "Security — Open Home Hero" };
+const PAGE_TITLE = "Security — Open Home Hero";
+const PAGE_DESCRIPTION =
+  "How Open Home Hero protects agent and visitor data: encryption, access controls, spam protection on public forms, and how to report a security concern.";
+
+export const metadata: Metadata = {
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  alternates: { canonical: "/security" },
+};
 
 export default function SecurityPage() {
   return (
     <div className="min-h-screen bg-paper">
+      <JsonLd data={webPage("/security", PAGE_TITLE, PAGE_DESCRIPTION)} />
       <header className="mx-auto flex max-w-3xl items-center px-6 py-6">
         <Link href="/" className="font-serif text-xl tracking-tight">
           <Wordmark tone="dark" />

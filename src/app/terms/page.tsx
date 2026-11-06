@@ -1,13 +1,24 @@
 import Link from "next/link";
+import { JsonLd, webPage } from "@/components/JsonLd";
+import type { Metadata } from "next";
 import { Wordmark } from "@/components/Wordmark";
 import { CONTACT_EMAIL } from "@/lib/brand";
 import { BusinessDetails } from "@/components/BusinessDetails";
 
-export const metadata = { title: "Terms of Service — Open Home Hero" };
+const PAGE_TITLE = "Terms of Service — Open Home Hero";
+const PAGE_DESCRIPTION =
+  "The terms for using Open Home Hero, QR code feedback and offers for real estate agents: accounts, the free trial, billing, cancellation and acceptable use.";
+
+export const metadata: Metadata = {
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  alternates: { canonical: "/terms" },
+};
 
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-paper">
+      <JsonLd data={webPage("/terms", PAGE_TITLE, PAGE_DESCRIPTION)} />
       <header className="mx-auto flex max-w-3xl items-center px-6 py-6">
         <Link href="/" className="font-serif text-xl tracking-tight">
           <Wordmark tone="dark" />

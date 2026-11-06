@@ -109,7 +109,7 @@ export default function LoginPage() {
       description="Log in to manage your open homes and follow up with your leads."
       footer="© 2026 Open Home Hero"
     >
-      <h2 className="font-serif text-2xl font-medium text-ink">Log in</h2>
+      <h1 className="font-serif text-2xl font-medium text-ink">Log in</h1>
       <p className="mt-1.5 text-sm text-[#3b4657]">
         Don&apos;t have an account?{" "}
         <Link href="/signup" className="text-brass underline">

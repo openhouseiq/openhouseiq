@@ -16,13 +16,13 @@ export function AuthLayout({
     <div className="flex min-h-screen w-full">
       <div className="hidden md:flex md:w-[42%] flex-col bg-navy px-10 py-16">
         <div className="flex flex-col items-center pt-8">
-          <h1 className="font-serif text-3xl tracking-tight">
+          <div className="font-serif text-3xl tracking-tight">
             <Wordmark tone="light" />
-          </h1>
+          </div>
           <div className="mt-6 mb-10 h-px w-12 bg-brass" />
-          <h2 className="text-center font-serif text-2xl font-medium text-paper">
+          <p className="text-center font-serif text-2xl font-medium text-paper">
             {headline}
-          </h2>
+          </p>
           <p className="mt-4 max-w-xs text-center text-sm leading-relaxed text-paper/70">
             {description}
           </p>
@@ -36,9 +36,9 @@ export function AuthLayout({
 
       <div className="flex w-full flex-1 items-center justify-center bg-white px-6 py-12">
         <div className="w-full max-w-[380px]">
-          <h1 className="mb-8 font-serif text-2xl tracking-tight md:hidden">
+          <div className="mb-8 font-serif text-2xl tracking-tight md:hidden">
             <Wordmark tone="dark" />
-          </h1>
+          </div>
           {children}
         </div>
       </div>

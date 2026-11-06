@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/Wordmark";
 import { PhoneMockups } from "@/components/landing/PhoneMockups";
 import { DashboardMockup } from "@/components/landing/DashboardMockup";
+import { JsonLd, webPage } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "See Open Home Hero in action",
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
 export default function PreviewPage() {
   return (
     <div className="min-h-screen bg-paper">
+      <JsonLd data={webPage("/preview", "See Open Home Hero in action", "What open home visitors see when they scan an Open Home Hero QR code, and how their feedback and offers arrive in the agent's dashboard.")} />
       <header className="mx-auto flex max-w-3xl items-center px-6 py-6">
         <Link href="/" className="font-serif text-xl tracking-tight">
           <Wordmark tone="dark" />

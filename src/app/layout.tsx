@@ -22,7 +22,8 @@ const sourceSerif = Source_Serif_4({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "Open Home Hero",
-  description: "Sign up and log in to Open Home Hero",
+  description:
+    "Open Home Hero gives real estate agents one QR code per listing so open home visitors can leave feedback or make an offer from their phone.",
   appleWebApp: {
     title: "Open Home Hero",
     statusBarStyle: "black-translucent",

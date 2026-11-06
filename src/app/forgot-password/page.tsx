@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
       description="Enter your email and we'll send you a link to reset it."
       footer="© 2026 Open Home Hero"
     >
-      <h2 className="font-serif text-2xl font-medium text-ink">Reset password</h2>
+      <h1 className="font-serif text-2xl font-medium text-ink">Reset password</h1>
       <p className="mt-1.5 text-sm text-[#3b4657]">
         <Link href="/login" className="text-brass underline">
           Back to login

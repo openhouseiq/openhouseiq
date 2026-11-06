@@ -95,9 +95,9 @@ function SignUpForm() {
       description="Open Home Hero helps real estate agents run open homes and follow up with leads in one place."
       footer="© 2026 Open Home Hero"
     >
-      <h2 className="font-serif text-2xl font-medium text-ink">
+      <h1 className="font-serif text-2xl font-medium text-ink">
         Create your account
-      </h2>
+      </h1>
       <p className="mt-1.5 text-sm text-[#3b4657]">
         Already have an account?{" "}
         <Link href="/login" className="text-brass underline">

@@ -46,7 +46,7 @@ export default function ResetPasswordPage() {
       description="Enter a new password for your Open Home Hero account."
       footer="© 2026 Open Home Hero"
     >
-      <h2 className="font-serif text-2xl font-medium text-ink">Set new password</h2>
+      <h1 className="font-serif text-2xl font-medium text-ink">Set new password</h1>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
         <FormField
