@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -17,27 +17,52 @@ export default function LoginPage() {
   const [captchaReset, setCaptchaReset] = useState(0);
   // Set when the account has two-step login switched on and still needs its code.
   const [mfa, setMfa] = useState<{ factorId: string; destination: string } | null>(null);
+  // Set when Log in was pressed before the security check had finished. The
+  // login then carries on by itself as soon as the check passes, so nobody has
+  // to press the button twice.
+  const [waitingForCheck, setWaitingForCheck] = useState(false);
+  const pendingLogin = useRef<{ email: string; password: string } | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleToken(token: string | null) {
+    setCaptchaToken(token);
+    const pending = pendingLogin.current;
+    if (!pending) return;
+    pendingLogin.current = null;
+    setWaitingForCheck(false);
+    if (token) {
+      void signIn(pending.email, pending.password, token);
+    } else {
+      setError("The security check didn't finish. Tick the box above, then press Log in.");
+    }
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-
-    if (TURNSTILE_SITE_KEY && !captchaToken) {
-      setError("Please complete the security check.");
-      return;
-    }
-
-    setLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
 
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      // The check is still running (or needs its box ticked). Hold on to the
+      // details and finish logging in the moment it passes.
+      pendingLogin.current = { email, password };
+      setWaitingForCheck(true);
+      return;
+    }
+
+    void signIn(email, password, captchaToken);
+  }
+
+  async function signIn(email: string, password: string, token: string | null) {
+    setLoading(true);
+
     const supabase = createClient();
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options: { captchaToken: captchaToken ?? undefined },
+      options: { captchaToken: token ?? undefined },
     });
 
     setLoading(false);
@@ -118,7 +143,7 @@ export default function LoginPage() {
       </p>
 
       {mfa ? (
-        <form onSubmit={handleMfaSubmit} className="mt-8 space-y-4">
+        <form key="code-form" onSubmit={handleMfaSubmit} className="mt-8 space-y-4">
           <p className="text-sm text-[#3b4657]">
             Enter the 6-digit code from your authenticator app to finish logging in.
           </p>
@@ -126,6 +151,7 @@ export default function LoginPage() {
             label="Code"
             id="code"
             type="text"
+            defaultValue=""
             inputMode="numeric"
             autoComplete="one-time-code"
             pattern="[0-9]{6}"
@@ -139,7 +165,7 @@ export default function LoginPage() {
           </button>
         </form>
       ) : (
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <form key="password-form" onSubmit={handleSubmit} className="mt-8 space-y-4">
           <FormField
             label="Email"
             id="email"
@@ -160,11 +186,18 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          <Turnstile onToken={setCaptchaToken} resetKey={captchaReset} />
+          <Turnstile onToken={handleToken} resetKey={captchaReset} />
+
+          {waitingForCheck ? (
+            <p className="text-sm text-[#3b4657]">
+              Finishing the security check… If a tick box appears above, tick it and you&apos;ll be
+              logged in straight away.
+            </p>
+          ) : null}
 
           {error ? <p className="text-sm text-error">{error}</p> : null}
 
-          <SubmitButton loading={loading}>Log in</SubmitButton>
+          <SubmitButton loading={loading || waitingForCheck}>Log in</SubmitButton>
         </form>
       )}
     </AuthLayout>
