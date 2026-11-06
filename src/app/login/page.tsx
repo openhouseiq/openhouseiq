@@ -65,9 +65,8 @@ export default function LoginPage() {
       options: { captchaToken: token ?? undefined },
     });
 
-    setLoading(false);
-
     if (signInError) {
+      setLoading(false);
       setError(signInError.message);
       setCaptchaToken(null);
       setCaptchaReset((n) => n + 1);
@@ -87,13 +86,16 @@ export default function LoginPage() {
       const { data: factors } = await supabase.auth.mfa.listFactors();
       const factor = factors?.totp?.[0];
       if (factor) {
+        setLoading(false);
         setMfa({ factorId: factor.id, destination });
         return;
       }
     }
 
+    // Leave the button on "Please wait…" until the dashboard appears. The
+    // dashboard is fetched fresh by push alone; an extra refresh() made the
+    // server build it twice, which is what made logging in feel slow.
     router.push(destination);
-    router.refresh();
   }
 
   async function handleMfaSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -109,15 +111,13 @@ export default function LoginPage() {
       code,
     });
 
-    setLoading(false);
-
     if (verifyError) {
+      setLoading(false);
       setError("That code didn't work. Check your authenticator app and try again.");
       return;
     }
 
     router.push(mfa.destination);
-    router.refresh();
   }
 
   async function handleCancelMfa() {
