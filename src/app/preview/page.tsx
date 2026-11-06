@@ -9,12 +9,12 @@ import { JsonLd, webPage } from "@/components/JsonLd";
 export const metadata: Metadata = {
   title: "See Open Home Hero in action",
   description:
-    "See what your visitors see at an open home, and how every offer lands in one dashboard, ranked against what your seller wants.",
+    "See what your visitors see at an open home, and how every offer lands in one dashboard, side by side and sorted by what your seller wants.",
   alternates: { canonical: "/preview" },
   openGraph: {
     title: "See Open Home Hero in action",
     description:
-      "One QR code per listing. Visitors leave feedback or an offer from their phone, and every offer lands in one ranked dashboard.",
+      "One QR code per listing. Visitors leave feedback or an offer from their phone, and every offer lands side by side in one dashboard.",
     url: "/preview",
   },
 };

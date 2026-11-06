@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Open Home Hero — QR Code Feedback & Offers for Agents",
     description:
-      "One QR code per listing. Visitors leave feedback or submit an offer from their phone — agents see every offer ranked in one dashboard.",
+      "One QR code per listing. Visitors leave feedback or submit an offer from their phone — agents see every offer side by side in one dashboard.",
     url: "/",
   },
 };
@@ -32,7 +32,7 @@ const FAQS = [
   {
     question: "Does Open Home Hero work for rentals?",
     answer:
-      "Open Home Hero is built for open homes and sales today. We are rebuilding rental applications so that each state gets its own form that follows that state's rules, with applicants ranked into a shortlist for the landlord. We will start with Queensland and Victoria, and we will announce it when it is ready.",
+      "Open Home Hero is built for open homes and sales today. We are rebuilding rental applications so that each state gets its own form that follows that state's rules, with applicants sorted into a shortlist for the landlord. We will start with Queensland and Victoria, and we will announce it when it is ready.",
   },
   {
     question: "Do visitors need to download an app or create an account?",
@@ -47,7 +47,7 @@ const FAQS = [
   {
     question: "Is Open Home Hero a replacement for my CRM?",
     answer:
-      "No. Open Home Hero isn't a CRM — it captures the moment someone walks into an open home or rental inspection, ranks the responses, and lets you export every lead as a CSV to import into whatever CRM you already use.",
+      "No. Open Home Hero isn't a CRM — it captures the moment someone walks into an open home or rental inspection, organises the responses by listing, and lets you export every lead as a CSV to import into whatever CRM you already use.",
   },
 ];
 
@@ -106,7 +106,7 @@ const COMPARISON = [
   },
   {
     crm: "Doesn't know what your seller or landlord actually cares about",
-    us: "Ranks every offer or application against exactly that",
+    us: "Sorts every offer or application by how well it matches that, and you still decide",
   },
 ];
 
@@ -153,7 +153,7 @@ export default function Home() {
           <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft lg:mx-0">
             One QR code on your flyer, or one link in your listing. Visitors give feedback or make an
             offer from their phone, and every offer lands in your
-            dashboard ranked against what your seller wants.
+            dashboard side by side, sorted by what your seller wants.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
             <Link href="/signup">
@@ -439,7 +439,7 @@ export default function Home() {
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
               description:
-                "QR code feedback and offers for real estate agents. One QR code per listing — visitors respond from their phone, agents see every offer ranked in one dashboard.",
+                "QR code feedback and offers for real estate agents. One QR code per listing — visitors respond from their phone, agents see every offer side by side in one dashboard.",
               offers: {
                 "@type": "Offer",
                 price: "39",

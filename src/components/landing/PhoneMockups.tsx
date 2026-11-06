@@ -129,7 +129,7 @@ export function PhoneMockups() {
 
           <Phone
             title="Submit an offer"
-            caption="Offers: amount, finance and settlement, ranked for your seller"
+            caption="Offers: amount, finance and settlement, side by side"
           >
             <FieldMock label="Name" />
             <FieldMock label="Email" />

@@ -343,7 +343,7 @@ export function FeedbackOffersReport({
           </div>
           {hasSellerPreferences && rankedOffers.length > 1 ? (
             <p className="mt-1 text-xs text-ink-soft">
-              Ranked by match to the seller&apos;s preferences.
+              Sorted by match to the seller&apos;s preferences. You still make the call.
             </p>
           ) : null}
           <div className="mt-3 space-y-3">

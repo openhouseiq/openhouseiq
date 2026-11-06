@@ -1,6 +1,6 @@
 // A static preview of the agent's offers screen, using made-up sample data. It
 // mirrors the real report in src/app/dashboard/listings/[id]/FeedbackOffersReport.tsx
-// so prospective agents can see how offers arrive ranked. Nothing here is live.
+// so prospective agents can see how offers arrive side by side. Nothing here is live.
 
 export const OFFERS = [
   {
@@ -65,8 +65,8 @@ export function DashboardMockup() {
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-ink-soft">
             Every offer lands in your dashboard the moment it&apos;s submitted,
-            ranked against what your seller actually cares about, so the right
-            call is the first one you make.
+            side by side and sorted by what your seller told you matters. You
+            still make the call, with the whole picture in front of you.
           </p>
         </div>
 
@@ -87,7 +87,7 @@ export function DashboardMockup() {
                 <span className="text-xs text-ink-soft">Export CSV</span>
               </div>
               <p className="mt-1 text-xs text-ink-soft">
-                Ranked by match to the seller&apos;s preferences.
+                Sorted by match to the seller&apos;s preferences. You still make the call.
               </p>
 
               <div className="mt-4 space-y-3">

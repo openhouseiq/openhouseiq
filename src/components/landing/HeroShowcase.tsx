@@ -2,16 +2,16 @@ import { Wordmark } from "@/components/Wordmark";
 import { OFFERS, OfferCard } from "@/components/landing/DashboardMockup";
 import { Check, FieldMock } from "@/components/landing/PhoneMockups";
 
-// The first thing an agent sees: a visitor's phone on one side, the ranked
+// The first thing an agent sees: a visitor's phone on one side, the sorted
 // offers it produces on the other, and a "new offer" alert tying them together.
 // Static and non-interactive, with made-up sample data.
 export function HeroShowcase() {
   return (
     <div aria-hidden="true" className="relative mx-auto h-[430px] w-full max-w-[540px] select-none">
-      {/* Ranked offers: the payoff */}
+      {/* Offers side by side: the payoff */}
       <div className="absolute right-0 top-6 hidden w-[330px] rounded-lg border border-line bg-paper shadow-xl sm:block">
         <div className="rounded-t-lg border-b border-line bg-navy px-4 py-2 text-xs text-navy-soft">
-          Offers (3) · ranked by match
+          Offers (3) · side by side
         </div>
         <div className="space-y-2.5 p-3">
           {OFFERS.map((offer) => (

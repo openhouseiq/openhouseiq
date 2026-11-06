@@ -325,7 +325,7 @@ export function FeedbackApplicantsReport({
           </div>
           {hasLandlordPreferences && rankedApplicants.length > 1 ? (
             <p className="mt-1 text-xs text-ink-soft">
-              Ranked by match to the landlord&apos;s preferences.
+              Sorted by match to the landlord&apos;s preferences. You still decide.
             </p>
           ) : null}
           <div className="mt-3 space-y-3">
