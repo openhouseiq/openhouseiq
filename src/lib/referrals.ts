@@ -1,6 +1,9 @@
 import type Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { stripe } from "@/lib/stripe";
+import { isValidReferralCode } from "@/lib/referralCode";
+
+export { isValidReferralCode };
 
 // Referrers earn 10% of each payment a referred account makes during its
 // first 12 months of paying, credited against the referrer's own bills.
@@ -21,10 +24,6 @@ const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 function generateCode(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(8));
   return Array.from(bytes, (b) => ALPHABET[b % ALPHABET.length]).join("");
-}
-
-export function isValidReferralCode(code: string): boolean {
-  return /^[A-Z0-9]{6,12}$/.test(code);
 }
 
 export function readReferralCookie(cookieHeader: string | null): string | null {
@@ -65,15 +64,25 @@ export async function getOrCreateReferralCode(
   throw new Error("Could not create a referral code.");
 }
 
-// Records who referred this user, using the referral cookie set by /r/CODE.
+// The code the new agent entered (or had filled in) on the signup form.
+function signupReferralCode(metadata: Record<string, unknown> | undefined): string | null {
+  const raw = metadata?.referral_code;
+  if (typeof raw !== "string") return null;
+  const code = raw.replace(/\s+/g, "").toUpperCase();
+  return isValidReferralCode(code) ? code : null;
+}
+
+// Records who referred this user: the code from the signup form if there is
+// one, otherwise the referral cookie set by /r/CODE. This only links the two
+// accounts; rewards come later, and only from real payments.
 // Safe to call repeatedly: a user can only ever have one referrer, and the
 // first attribution wins.
 export async function attributeReferral(
   service: SupabaseClient,
-  user: { id: string; created_at: string },
+  user: { id: string; created_at: string; user_metadata?: Record<string, unknown> },
   cookieHeader: string | null,
 ): Promise<void> {
-  const code = readReferralCookie(cookieHeader);
+  const code = signupReferralCode(user.user_metadata) ?? readReferralCookie(cookieHeader);
   if (!code) return;
 
   const accountAgeDays = (Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24);
@@ -282,6 +291,101 @@ export async function processReferralInvoice(
   if (error || !inserted) return;
 
   await allocateAndApply(service, inserted as CreditRow);
+}
+
+// Called when a payment is refunded (fully or partly). The referrer's reward
+// is recalculated on what was actually kept, and the difference is taken
+// back: first from cash not yet paid out, then from bill credit (by adding the
+// amount back onto their next bill). Cash that has already been paid out
+// can't be recovered and is left alone.
+// Safe to retry: it works from the total refunded so far, so running it twice
+// for the same refund changes nothing the second time.
+export async function reverseReferralCreditForRefund(
+  service: SupabaseClient,
+  invoiceId: string,
+  totalRefundedCents: number,
+): Promise<{ reversedCents: number }> {
+  const { data } = await service
+    .from("referral_credits")
+    .select(`${CREDIT_COLUMNS}, invoice_amount_cents, payout_id`)
+    .eq("stripe_invoice_id", invoiceId)
+    .maybeSingle();
+  if (!data) return { reversedCents: 0 };
+  const credit = data as CreditRow & { invoice_amount_cents: number; payout_id: string | null };
+
+  const kept = Math.max(0, credit.invoice_amount_cents - totalRefundedCents);
+  const newCredit = Math.floor(kept * REFERRAL_RATE);
+  let toReverse = credit.credit_cents - newCredit;
+  if (toReverse <= 0) return { reversedCents: 0 };
+
+  let cash = credit.cash_cents;
+  let balance = credit.balance_cents;
+  const allocated = cash + balance > 0;
+
+  if (!allocated) {
+    // Not split into credit and cash yet: just lower the reward.
+    await service.from("referral_credits").update({ credit_cents: newCredit }).eq("id", credit.id);
+    return { reversedCents: toReverse };
+  }
+
+  let reversed = 0;
+  // 1. Cash that hasn't been paid out yet.
+  if (!credit.payout_id && cash > 0) {
+    const take = Math.min(cash, toReverse);
+    cash -= take;
+    toReverse -= take;
+    reversed += take;
+  }
+  // 2. Bill credit.
+  let debitFromBill = 0;
+  if (toReverse > 0 && balance > 0) {
+    const take = Math.min(balance, toReverse);
+    balance -= take;
+    toReverse -= take;
+    reversed += take;
+    if (credit.applied_at) debitFromBill = take;
+  }
+  if (reversed === 0) return { reversedCents: 0 };
+
+  if (debitFromBill > 0) {
+    const billing = await findReferrerBilling(service, credit.referrer_user_id);
+    if (!billing) {
+      console.error("Referral reversal: referrer has no billing account", credit.id);
+      return { reversedCents: 0 };
+    }
+    // A positive balance transaction adds the amount to their next bill.
+    await stripe.customers.createBalanceTransaction(
+      billing.customerId,
+      {
+        amount: debitFromBill,
+        currency: credit.currency,
+        description: "Open Home Hero referral credit reversed (refund)",
+        metadata: { referral_credit_id: credit.id, invoice: credit.stripe_invoice_id },
+      },
+      { idempotencyKey: `referral-reversal-${credit.id}-${newCredit}` },
+    );
+  }
+
+  await service
+    .from("referral_credits")
+    .update({ credit_cents: credit.credit_cents - reversed, cash_cents: cash, balance_cents: balance })
+    .eq("id", credit.id);
+  return { reversedCents: reversed };
+}
+
+// Finds which invoice a refunded charge paid, so its referral reward can be
+// adjusted.
+export async function invoiceIdForCharge(charge: Stripe.Charge): Promise<string | null> {
+  const paymentIntent =
+    typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
+  if (!paymentIntent) return null;
+  const payments = await stripe.invoicePayments.list({
+    payment: { type: "payment_intent", payment_intent: paymentIntent },
+    limit: 1,
+  });
+  const invoice = payments.data[0]?.invoice;
+  if (!invoice) return null;
+  return typeof invoice === "string" ? invoice : (invoice.id ?? null);
 }
 
 // Finishes any bonus that couldn't be applied earlier (for example after a

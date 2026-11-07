@@ -18,11 +18,17 @@ export async function GET(
   // visitor to a different domain from the one the cookie is set on.
   const host = request.headers.get("host");
   const protocol = host?.startsWith("localhost") ? "http" : "https";
-  const response = NextResponse.redirect(new URL("/signup", `${protocol}://${host}`));
+  const valid = isValidReferralCode(normalised);
+  const target = new URL("/signup", `${protocol}://${host}`);
+  // Also put the code on the signup form, so the new agent can see it (and
+  // so it is saved with their account even if they confirm their email on
+  // another device).
+  if (valid) target.searchParams.set("ref", normalised);
+  const response = NextResponse.redirect(target);
 
   // The code isn't checked against the database here, so this link can't be
   // used to find out which codes exist. It's validated when it's attributed.
-  if (isValidReferralCode(normalised)) {
+  if (valid) {
     response.cookies.set({
       name: REFERRAL_COOKIE,
       value: normalised,

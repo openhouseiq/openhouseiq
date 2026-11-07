@@ -131,6 +131,7 @@ const stripeMock = vi.hoisted(() => ({
   customers: { retrieve: vi.fn(), createBalanceTransaction: vi.fn() },
   invoices: { createPreview: vi.fn() },
   transfers: { create: vi.fn() },
+  invoicePayments: { list: vi.fn() },
   v2: { core: { accounts: { retrieve: vi.fn(), create: vi.fn() }, accountLinks: { create: vi.fn() } } },
 }));
 vi.mock("@/lib/stripe", () => ({ stripe: stripeMock }));
@@ -139,9 +140,11 @@ import {
   REFERRAL_COOKIE,
   attributeReferral,
   getOrCreateReferralCode,
+  invoiceIdForCharge,
   isValidReferralCode,
   processReferralInvoice,
   readReferralCookie,
+  reverseReferralCreditForRefund,
   runReferralPayouts,
 } from "@/lib/referrals";
 import { GET as referralLink } from "@/app/r/[code]/route";
@@ -172,10 +175,10 @@ async function visit(path: string, host = "openhomehero.com.au") {
 // ---------------------------------------------------------------------------
 
 describe("Clicking a referral link (/r/CODE)", () => {
-  it("sends the visitor to the signup page on the same domain", async () => {
+  it("sends the visitor to the signup page on the same domain, with the code filled in", async () => {
     const res = await visit("/r/ABCD2345");
     expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toBe("https://openhomehero.com.au/signup");
+    expect(res.headers.get("location")).toBe("https://openhomehero.com.au/signup?ref=ABCD2345");
   });
 
   it("remembers the referrer in a cookie for 60 days", async () => {
@@ -191,6 +194,7 @@ describe("Clicking a referral link (/r/CODE)", () => {
   it("works when someone types the code in lower case", async () => {
     const res = await visit("/r/abcd2345");
     expect(res.cookies.get(REFERRAL_COOKIE)?.value).toBe("ABCD2345");
+    expect(res.headers.get("location")).toContain("ref=ABCD2345");
   });
 
   it("still sends a broken or made-up link to signup, but remembers nothing", async () => {
@@ -203,7 +207,7 @@ describe("Clicking a referral link (/r/CODE)", () => {
 
   it("uses http on a local test machine", async () => {
     const res = await visit("/r/ABCD2345", "localhost:3000");
-    expect(res.headers.get("location")).toBe("http://localhost:3000/signup");
+    expect(res.headers.get("location")).toBe("http://localhost:3000/signup?ref=ABCD2345");
   });
 });
 
@@ -278,6 +282,35 @@ describe("Linking a new agent to whoever referred them", () => {
     const { db, cookie } = await setup();
     await attributeReferral(db, { id: NEW_AGENT, created_at: daysAgo(31) }, cookie);
     expect(tables.referrals ?? []).toHaveLength(0);
+  });
+
+  it("uses the code typed on the signup form, even on a different device (no cookie)", async () => {
+    const { db, code } = await setup();
+    const agent = { id: NEW_AGENT, created_at: daysAgo(0), user_metadata: { referral_code: code } };
+    await attributeReferral(db, agent, null);
+    expect(tables.referrals[0]).toMatchObject({ referrer_user_id: REFERRER, referred_user_id: NEW_AGENT });
+  });
+
+  it("accepts a typed code in lower case or with spaces", async () => {
+    const { db, code } = await setup();
+    const typed = ` ${code.slice(0, 4).toLowerCase()} ${code.slice(4)} `;
+    await attributeReferral(db, { id: NEW_AGENT, created_at: daysAgo(0), user_metadata: { referral_code: typed } }, null);
+    expect(tables.referrals).toHaveLength(1);
+  });
+
+  it("prefers the typed code over an older link cookie", async () => {
+    const { db, cookie } = await setup();
+    const otherCode = await getOrCreateReferralCode(db, "user-other-referrer");
+    const agent = { id: NEW_AGENT, created_at: daysAgo(0), user_metadata: { referral_code: otherCode } };
+    await attributeReferral(db, agent, cookie);
+    expect(tables.referrals[0].referrer_user_id).toBe("user-other-referrer");
+  });
+
+  it("falls back to the link cookie if the typed code is rubbish", async () => {
+    const { db, cookie } = await setup();
+    const agent = { id: NEW_AGENT, created_at: daysAgo(0), user_metadata: { referral_code: "??" } };
+    await attributeReferral(db, agent, cookie);
+    expect(tables.referrals[0].referrer_user_id).toBe(REFERRER);
   });
 
   it("keeps the first referrer if a second link is used later", async () => {
@@ -443,5 +476,97 @@ describe("Monthly cash payouts", () => {
     tables.referral_payout_accounts = [];
     const [result] = await runReferralPayouts(makeDb(), { dryRun: false });
     expect(result.status).toBe("no_payout_account");
+  });
+});
+
+describe("Refunds take the referral reward back", () => {
+  function credit(fields: Row) {
+    tables.subscriptions = [
+      { user_id: REFERRER, stripe_customer_id: "cus_referrer", stripe_subscription_id: "sub_referrer" },
+    ];
+    tables.referral_credits = [
+      {
+        id: "c1",
+        referral_id: "ref-1",
+        referrer_user_id: REFERRER,
+        stripe_invoice_id: "in_1",
+        invoice_amount_cents: 4900,
+        credit_cents: 490,
+        currency: "aud",
+        balance_cents: 0,
+        cash_cents: 0,
+        applied_at: null,
+        payout_id: null,
+        ...fields,
+      },
+    ];
+  }
+
+  it("full refund: credit already on the referrer's bill is added back onto their next bill", async () => {
+    credit({ balance_cents: 490, applied_at: daysAgo(1) });
+    const { reversedCents } = await reverseReferralCreditForRefund(makeDb(), "in_1", 4900);
+    expect(reversedCents).toBe(490);
+    expect(tables.referral_credits[0]).toMatchObject({ credit_cents: 0, balance_cents: 0 });
+    expect(stripeMock.customers.createBalanceTransaction).toHaveBeenCalledWith(
+      "cus_referrer",
+      expect.objectContaining({ amount: 490, currency: "aud" }),
+      expect.anything(),
+    );
+  });
+
+  it("half refund: only half the reward is taken back", async () => {
+    credit({ balance_cents: 490, applied_at: daysAgo(1) });
+    await reverseReferralCreditForRefund(makeDb(), "in_1", 2450);
+    expect(tables.referral_credits[0]).toMatchObject({ credit_cents: 245, balance_cents: 245 });
+    expect(stripeMock.customers.createBalanceTransaction).toHaveBeenCalledWith(
+      "cus_referrer",
+      expect.objectContaining({ amount: 245 }),
+      expect.anything(),
+    );
+  });
+
+  it("the same refund message arriving twice only takes it back once", async () => {
+    credit({ balance_cents: 490, applied_at: daysAgo(1) });
+    const db = makeDb();
+    await reverseReferralCreditForRefund(db, "in_1", 4900);
+    const second = await reverseReferralCreditForRefund(db, "in_1", 4900);
+    expect(second.reversedCents).toBe(0);
+    expect(stripeMock.customers.createBalanceTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it("cash not yet paid out is simply cancelled", async () => {
+    credit({ cash_cents: 490, applied_at: daysAgo(1) });
+    await reverseReferralCreditForRefund(makeDb(), "in_1", 4900);
+    expect(tables.referral_credits[0]).toMatchObject({ credit_cents: 0, cash_cents: 0 });
+    expect(stripeMock.customers.createBalanceTransaction).not.toHaveBeenCalled();
+  });
+
+  it("cash already paid out can't be taken back, so it's left alone", async () => {
+    credit({ cash_cents: 490, applied_at: daysAgo(1), payout_id: "payout-1" });
+    const { reversedCents } = await reverseReferralCreditForRefund(makeDb(), "in_1", 4900);
+    expect(reversedCents).toBe(0);
+    expect(tables.referral_credits[0]).toMatchObject({ credit_cents: 490, cash_cents: 490 });
+  });
+
+  it("a refund before the reward was handed out just lowers the reward", async () => {
+    credit({});
+    await reverseReferralCreditForRefund(makeDb(), "in_1", 4900);
+    expect(tables.referral_credits[0]).toMatchObject({ credit_cents: 0 });
+    expect(stripeMock.customers.createBalanceTransaction).not.toHaveBeenCalled();
+  });
+
+  it("finds which invoice a refunded card payment belonged to", async () => {
+    stripeMock.invoicePayments.list.mockResolvedValue({ data: [{ invoice: "in_1" }] });
+    const id = await invoiceIdForCharge({ payment_intent: "pi_1" } as never);
+    expect(id).toBe("in_1");
+    expect(stripeMock.invoicePayments.list).toHaveBeenCalledWith(
+      expect.objectContaining({ payment: { type: "payment_intent", payment_intent: "pi_1" } }),
+    );
+  });
+
+  it("refunds of payments that earned no reward are ignored", async () => {
+    credit({ balance_cents: 490, applied_at: daysAgo(1) });
+    const { reversedCents } = await reverseReferralCreditForRefund(makeDb(), "in_other", 4900);
+    expect(reversedCents).toBe(0);
   });
 });
