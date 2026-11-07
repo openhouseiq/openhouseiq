@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { readUtmCookie } from "@/lib/utm";
+import { isValidReferralCode } from "@/lib/referralCode";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
@@ -42,6 +43,14 @@ function SignUpForm() {
     const fullName = String(formData.get("fullName") ?? "");
     const agencyName = accountType === "agency" ? String(formData.get("agencyName") ?? "").trim() : "";
     const phone = String(formData.get("phone") ?? "");
+    const referralCode = String(formData.get("referralCode") ?? "")
+      .replace(/\s+/g, "")
+      .toUpperCase();
+    if (referralCode && !isValidReferralCode(referralCode)) {
+      setLoading(false);
+      setError("That referral code doesn't look right. Check it, or leave the box empty.");
+      return;
+    }
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
 
@@ -57,6 +66,7 @@ function SignUpForm() {
           full_name: fullName,
           phone,
           ...utm,
+          ...(referralCode ? { referral_code: referralCode } : {}),
           ...(agencyName ? { account_type: "agency", agency_name: agencyName } : {}),
         },
       },
@@ -179,6 +189,24 @@ function SignUpForm() {
             required
           />
           <p className="mt-1.5 text-xs text-[#3b4657]">{PASSWORD_HINT}</p>
+
+          <div>
+            <FormField
+              label="Referral code (optional)"
+              id="referralCode"
+              type="text"
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              maxLength={20}
+              defaultValue={searchParams.get("ref") ?? ""}
+              placeholder="e.g. ABCD2345"
+            />
+            <p className="mt-1.5 text-xs text-[#3b4657]">
+              If another agent sent you a link, their code goes here. It fills in by itself
+              when you use their link.
+            </p>
+          </div>
 
           <div className="border-t border-line pt-4">
             <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-ink">

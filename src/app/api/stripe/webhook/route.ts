@@ -3,7 +3,12 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkInfrastructureCheckpoint } from "@/lib/infraCheckpoints";
-import { applyPendingReferralCredits, processReferralInvoice } from "@/lib/referrals";
+import {
+  applyPendingReferralCredits,
+  invoiceIdForCharge,
+  processReferralInvoice,
+  reverseReferralCreditForRefund,
+} from "@/lib/referrals";
 
 type Db = ReturnType<typeof createServiceClient>;
 
@@ -188,6 +193,21 @@ async function processEvent(event: Stripe.Event, supabase: Db) {
         await processReferralInvoice(supabase, event.data.object as Stripe.Invoice);
       } catch (error) {
         console.error("Referral processing failed:", error);
+      }
+      break;
+    }
+
+    case "charge.refunded": {
+      // A refunded payment shouldn't earn a referral reward: take back the
+      // part of the reward that came from the refunded amount.
+      const charge = event.data.object as Stripe.Charge;
+      try {
+        const invoiceId = await invoiceIdForCharge(charge);
+        if (invoiceId) {
+          await reverseReferralCreditForRefund(supabase, invoiceId, charge.amount_refunded ?? 0);
+        }
+      } catch (error) {
+        console.error("Referral refund processing failed:", error);
       }
       break;
     }

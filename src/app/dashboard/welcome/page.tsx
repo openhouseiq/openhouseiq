@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
+import { attributeReferral } from "@/lib/referrals";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/Button";
@@ -19,6 +22,13 @@ export default async function WelcomePage() {
   if (!user) {
     redirect("/login");
   }
+
+  // Record who referred this agent as soon as they land here after signing
+  // up, rather than waiting until they start their trial. This only links the
+  // two accounts: the referrer is rewarded later, and only from real payments
+  // once the trial is over (see processReferralInvoice).
+  const cookieHeader = (await headers()).get("cookie");
+  await attributeReferral(createServiceClient(), user, cookieHeader).catch(() => {});
 
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const firstName = fullName.split(" ")[0] || "there";
