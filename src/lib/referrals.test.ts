@@ -365,6 +365,27 @@ describe("Rewarding the referrer when the new agent pays", () => {
     expect(tables.referrals[0].first_paid_at).toBeNull();
   });
 
+  it("rewards nothing during the free trial, then starts on the first real payment", async () => {
+    referredAccount(true);
+    const db = makeDb();
+    // Day 0: the 14-day trial starts with a $0 invoice.
+    await processReferralInvoice(db, invoice("in_trial", 0, 14));
+    expect(tables.referral_credits ?? []).toHaveLength(0);
+    expect(stripeMock.customers.createBalanceTransaction).not.toHaveBeenCalled();
+    // Day 14: the trial ends and the first real payment goes through.
+    await processReferralInvoice(db, invoice("in_first", 4900, 0));
+    expect(tables.referral_credits).toHaveLength(1);
+    expect(tables.referral_credits[0]).toMatchObject({ stripe_invoice_id: "in_first", credit_cents: 490 });
+    expect(stripeMock.customers.createBalanceTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it("rewards nothing if the referred agent cancels before their trial ends", async () => {
+    referredAccount(true);
+    await processReferralInvoice(makeDb(), invoice("in_trial", 0, 14));
+    expect(tables.referral_credits ?? []).toHaveLength(0);
+    expect(tables.referrals[0].first_paid_at).toBeNull();
+  });
+
   it("ignores payments from agents nobody referred", async () => {
     referredAccount(true);
     tables.subscriptions.push({ user_id: "someone-else", stripe_customer_id: "cus_other" });
