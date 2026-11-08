@@ -132,6 +132,30 @@ describe("Storing the agency's CRM token", () => {
   });
 });
 
+describe("Encryption key without any extra Netlify setting", () => {
+  it("falls back to a key derived from the existing Supabase secret", () => {
+    delete process.env.CRM_TOKEN_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-secret";
+    const stored = encryptToken("agency-token");
+    expect(decryptToken(stored)).toBe("agency-token");
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "rotated-secret";
+    expect(() => decryptToken(stored)).toThrow();
+  });
+
+  it("if the key changes, the agency is asked to reconnect and visitors are held", async () => {
+    delete process.env.CRM_TOKEN_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-secret";
+    seedOffer();
+    const d = db();
+    await saveConnection(d, { agencyId: "agency-1" }, "vaultre", "agency-token", "owner-1");
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "rotated-secret";
+    await sendSubmissionToCrm(d, "offer", "offer-1", LISTING);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(tables.crm_connections[0].status).toBe("error");
+    expect(tables.crm_sync_jobs[0].status).toBe("pending");
+  });
+});
+
 describe("What gets sent for each visitor", () => {
   it("an offer: name, email, phone, and a readable summary", () => {
     seedOffer();

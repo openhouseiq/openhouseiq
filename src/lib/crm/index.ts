@@ -193,8 +193,18 @@ export async function processJob(service: SupabaseClient, jobId: string): Promis
     return "skipped";
   }
 
+  let token: string;
   try {
-    const externalId = await provider.send(decryptToken(c.token_encrypted), record);
+    token = decryptToken(c.token_encrypted);
+  } catch {
+    // The encryption key changed, so the stored token is unreadable. Ask the
+    // agency to reconnect; visitors are held until they do.
+    token = "";
+  }
+
+  try {
+    if (!token) throw new CrmSendError("Stored access can't be read. Please reconnect.", false, true);
+    const externalId = await provider.send(token, record);
     await finish({ status: "sent", attempts: j.attempts + 1, external_id: externalId, last_error: null });
     await service.from("crm_connections").update({ last_sent_at: now.toISOString() }).eq("id", c.id);
     return "sent";

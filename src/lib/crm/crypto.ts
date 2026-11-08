@@ -1,15 +1,24 @@
-import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from "node:crypto";
 
-// CRM access tokens are stored encrypted (AES-256-GCM). The key lives only in
-// the CRM_TOKEN_KEY environment variable: 32 random bytes, base64 encoded.
-// Generate one with:  openssl rand -base64 32
+// CRM access tokens are stored encrypted (AES-256-GCM).
+//
+// The key comes from the CRM_TOKEN_KEY environment variable if one is set
+// (32 random bytes, base64: `openssl rand -base64 32`). Otherwise it is derived
+// from the site's existing Supabase service-role secret, so no extra Netlify
+// setting is needed. Note: if that Supabase secret is ever rotated (or
+// CRM_TOKEN_KEY is added later), stored tokens can't be read any more and
+// agencies will see "Reconnect" in Settings. Nothing else breaks.
 
 function key(): Buffer {
   const raw = process.env.CRM_TOKEN_KEY;
-  if (!raw) throw new Error("CRM_TOKEN_KEY is not set.");
-  const buf = Buffer.from(raw, "base64");
-  if (buf.length !== 32) throw new Error("CRM_TOKEN_KEY must be 32 bytes, base64 encoded.");
-  return buf;
+  if (raw) {
+    const buf = Buffer.from(raw, "base64");
+    if (buf.length !== 32) throw new Error("CRM_TOKEN_KEY must be 32 bytes, base64 encoded.");
+    return buf;
+  }
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) throw new Error("No CRM encryption key available.");
+  return Buffer.from(hkdfSync("sha256", secret, "open-home-hero", "crm-token-encryption-v1", 32));
 }
 
 export function crmEncryptionReady(): boolean {
