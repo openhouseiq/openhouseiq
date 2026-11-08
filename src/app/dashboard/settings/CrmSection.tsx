@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
 export type CrmProviderView = {
-  id: "vaultre" | "rex" | "agentbox";
+  id: "vaultre" | "rex" | "agentbox" | "boxdice" | "followupboss";
   name: string;
   available: boolean;
   oauth: boolean;
@@ -30,6 +30,8 @@ const NOTICES: Record<string, { text: string; good?: boolean }> = {
 const TOKEN_HELP: Record<string, string> = {
   vaultre:
     "In VaultRE, go to Office Integrations → Third-Party Access, choose Open Home Hero, click Create Token, then copy the token and paste it here.",
+  followupboss:
+    "In Follow Up Boss, go to Admin → API, click Create API Key, then copy the key and paste it here. (Only the account owner or an admin can do this.)",
 };
 
 export function CrmSection({

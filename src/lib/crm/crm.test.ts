@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { decryptToken, encryptToken } from "./crypto";
 import { feedbackRecord, offerRecord, type CrmFeedbackRow } from "./record";
 import { CrmSendError, sendToVaultre } from "./vaultre";
+import { sendToFollowUpBoss } from "./followupboss";
 import {
   disconnect,
   processDueJobs,
@@ -227,6 +228,65 @@ describe("Talking to VaultRE", () => {
     await expect(sendToVaultre("t", rec)).rejects.toMatchObject({ authFailed: false, retryable: true });
     fetchMock.mockResolvedValueOnce(new Response("bad field", { status: 400 }));
     await expect(sendToVaultre("t", rec)).rejects.toBeInstanceOf(CrmSendError);
+  });
+});
+
+describe("Talking to Follow Up Boss (US agents)", () => {
+  beforeEach(() => {
+    process.env.FUB_SYSTEM = "OpenHomeHero";
+    process.env.FUB_SYSTEM_KEY = "system-key-123";
+  });
+
+  it("sends an offer as a Property Inquiry event with the agent's key and our system headers", async () => {
+    seedOffer();
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ id: 9, person: { id: 555 } }), { status: 201 }));
+    const id = await sendToFollowUpBoss("agent-api-key", offerRecord(tables.offers[0] as never, LISTING));
+    expect(id).toBe("555");
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("https://api.followupboss.com/v1/events");
+    const h = (init as RequestInit).headers as Record<string, string>;
+    expect(h.Authorization).toBe(`Basic ${Buffer.from("agent-api-key:").toString("base64")}`);
+    expect(h["X-System"]).toBe("OpenHomeHero");
+    expect(h["X-System-Key"]).toBe("system-key-123");
+    const body = JSON.parse((init as RequestInit).body as string);
+    expect(body).toMatchObject({
+      source: "Open Home Hero",
+      type: "Property Inquiry",
+      person: {
+        firstName: "Jo",
+        lastName: "Simmons",
+        emails: [{ value: "jo@example.com" }],
+        phones: [{ value: "0412 000 381" }],
+        tags: ["Open Home Hero", "Offer"],
+      },
+      property: { street: "12 Smith St, Toowoomba" },
+    });
+  });
+
+  it("sends feedback as a Visited Open House event", async () => {
+    const row = { id: "fb-1", is_anonymous: false, name: "Maya", email: "maya@example.com", phone: null, comments: null,
+      interest_level: "considering", rating_price: null, rating_condition: null, rating_location: null, rating_layout: null,
+      pre_approved: null, working_with_agent: null, purchase_timeframe: null, wants_followup: null, created_at: "2026-11-08T00:00:00Z" };
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+    await sendToFollowUpBoss("k", feedbackRecord(row as CrmFeedbackRow, LISTING)!);
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.type).toBe("Visited Open House");
+    expect(body.person).toEqual({ firstName: "Maya", emails: [{ value: "maya@example.com" }], tags: ["Open Home Hero", "Open home feedback"] });
+  });
+
+  it("a revoked API key asks the agent to reconnect", async () => {
+    seedOffer();
+    fetchMock.mockResolvedValueOnce(new Response("no", { status: 401 }));
+    await expect(sendToFollowUpBoss("k", offerRecord(tables.offers[0] as never, LISTING))).rejects.toMatchObject({ authFailed: true });
+  });
+
+  it("a solo US agent's visitors go straight into Follow Up Boss", async () => {
+    seedOffer();
+    const d = db();
+    await saveConnection(d, { userId: "agent-1" }, "followupboss", "agent-api-key", "agent-1");
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ person: { id: 7 } }), { status: 201 }));
+    await sendSubmissionToCrm(d, "offer", "offer-1", { agent_id: "agent-1", agency_id: null });
+    expect(tables.crm_sync_jobs[0]).toMatchObject({ status: "sent", external_id: "7" });
   });
 });
 

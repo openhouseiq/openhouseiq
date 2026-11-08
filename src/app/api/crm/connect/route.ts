@@ -4,7 +4,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { PROVIDERS, isProviderId, saveConnection, testToken } from "@/lib/crm";
 import { crmManagerFor } from "@/lib/crm/owner";
 import { crmEncryptionReady } from "@/lib/crm/crypto";
-import { CrmSendError } from "@/lib/crm/vaultre";
+import { CrmSendError } from "@/lib/crm/errors";
 
 // Connect a CRM by pasting the access token the CRM gave the agency
 // (VaultRE: Office Integrations → Third-Party Access → Create Token).

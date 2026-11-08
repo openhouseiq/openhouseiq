@@ -1,4 +1,7 @@
 import type { CrmRecord } from "./record";
+import { CrmSendError } from "./errors";
+
+export { CrmSendError };
 
 // VaultRE (MRI Software). Built from VaultRE's published API docs:
 //   https://docs.api.vaultre.com.au/guide.html    (base URL, headers, limits)
@@ -22,17 +25,6 @@ export const vaultreOauthConfigured = () => vaultreConfigured() && Boolean(proce
 /** Which enquiry source to use. To be confirmed with VaultRE on approval. */
 const enquirySource = () => process.env.VAULTRE_ENQUIRY_SOURCE || "OFFICEWEBSITE";
 
-export class CrmSendError extends Error {
-  constructor(
-    message: string,
-    /** True when retrying later could work (rate limit, outage). */
-    readonly retryable: boolean,
-    /** True when the agency's access has been revoked or is invalid. */
-    readonly authFailed = false,
-  ) {
-    super(message);
-  }
-}
 
 type Fetch = typeof fetch;
 

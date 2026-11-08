@@ -8,9 +8,11 @@ import {
   type CrmOfferRow,
   type CrmRecord,
 } from "./record";
-import { CrmSendError, sendToVaultre, testVaultre, vaultreConfigured, vaultreOauthConfigured } from "./vaultre";
+import { CrmSendError } from "./errors";
+import { sendToVaultre, testVaultre, vaultreConfigured, vaultreOauthConfigured } from "./vaultre";
+import { followUpBossConfigured, sendToFollowUpBoss, testFollowUpBoss } from "./followupboss";
 
-export type ProviderId = "vaultre" | "rex" | "agentbox";
+export type ProviderId = "vaultre" | "rex" | "agentbox" | "boxdice" | "followupboss";
 
 type Provider = {
   name: string;
@@ -27,6 +29,16 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
   // Waiting on API access from Rex and Reapit. Shown as "coming soon".
   rex: { name: "Rex", available: () => false, oauth: () => false },
   agentbox: { name: "AgentBox", available: () => false, oauth: () => false },
+  // Owned by MRI (like VaultRE). Waiting to hear if our VaultRE access covers it.
+  boxdice: { name: "Box+Dice", available: () => false, oauth: () => false },
+  // Popular in the US. Agents paste their own Follow Up Boss API key.
+  followupboss: {
+    name: "Follow Up Boss",
+    available: followUpBossConfigured,
+    oauth: () => false,
+    send: sendToFollowUpBoss,
+    test: testFollowUpBoss,
+  },
 };
 
 export const isProviderId = (v: unknown): v is ProviderId =>
