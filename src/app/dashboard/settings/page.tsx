@@ -12,9 +12,16 @@ import { FAQSection } from "./FAQSection";
 import { InstallAppSection } from "./InstallAppSection";
 import { NotificationSettings } from "./NotificationSettings";
 import { DeleteAccountSection } from "./DeleteAccountSection";
+import { CrmSection, type CrmConnectionView, type CrmProviderView } from "./CrmSection";
+import { createServiceClient } from "@/lib/supabase/service";
+import { PROVIDERS, getConnection, type ProviderId } from "@/lib/crm";
+import { crmManagerFor } from "@/lib/crm/owner";
+import { crmEncryptionReady } from "@/lib/crm/crypto";
 import type { Subscription, ContactMessage } from "@/lib/types";
 
-export default async function SettingsPage() {
+export default async function SettingsPage(props: PageProps<"/dashboard/settings">) {
+  const searchParams = await props.searchParams;
+  const crmNotice = typeof searchParams.crm === "string" ? searchParams.crm : null;
   const supabase = await createClient();
   const user = await getCurrentUser();
 
@@ -63,6 +70,37 @@ export default async function SettingsPage() {
     }
   }
 
+  // CRM connection (VaultRE now; Rex and AgentBox once access is granted).
+  const service = createServiceClient();
+  const crmManager = await crmManagerFor(service, user.id);
+  const encryptionReady = crmEncryptionReady();
+  const crmProviders: CrmProviderView[] = (Object.keys(PROVIDERS) as ProviderId[]).map((id) => ({
+    id,
+    name: PROVIDERS[id].name,
+    available: encryptionReady && PROVIDERS[id].available(),
+    oauth: PROVIDERS[id].oauth(),
+  }));
+  let crmConnection: CrmConnectionView = null;
+  if (crmManager.canManage) {
+    const row = await getConnection(service, crmManager.owner);
+    if (row && row.status !== "disconnected") {
+      crmConnection = {
+        provider: row.provider,
+        status: row.status,
+        lastError: row.last_error,
+        lastSentAt: row.last_sent_at,
+      };
+    }
+  } else {
+    const { data: agencyId } = await service.rpc("user_current_agency_id", { uid: user.id });
+    if (agencyId) {
+      const row = await getConnection(service, { agencyId: agencyId as string });
+      if (row && row.status !== "disconnected") {
+        crmConnection = { provider: row.provider, status: row.status, lastError: null, lastSentAt: row.last_sent_at };
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen bg-paper">
       <DashboardHeader
@@ -83,6 +121,24 @@ export default async function SettingsPage() {
           <section className="rounded-md border border-line bg-paper-card p-6">
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">Agency</h2>
             <AgencySection membership={membership} />
+          </section>
+
+          <section id="crm" className="scroll-mt-6 rounded-md border border-line bg-paper-card p-6">
+            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Connect your CRM</h2>
+            <CrmSection
+              providers={crmProviders}
+              connection={crmConnection}
+              canManage={crmManager.canManage}
+              manageNote={crmManager.canManage ? null : crmManager.reason}
+              scopeLabel={
+                crmManager.canManage
+                  ? crmManager.scope === "agency"
+                    ? `This connects ${crmManager.agencyName ?? "your agency"}: every agency listing will use it.`
+                    : ""
+                  : `${crmManager.agencyName} manages this for all its listings.`
+              }
+              notice={crmNotice}
+            />
           </section>
 
           <section className="rounded-md border border-line bg-paper-card p-6">

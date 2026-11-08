@@ -10,6 +10,7 @@ const PUBLIC_PREFIXES = [
   "/api/applicants",
   "/api/rental-applications",
   "/api/rental-retention",
+  "/api/crm/retry",
   "/api/stripe/webhook",
   "/api/referrals/run-payouts",
   "/api/facebook/publish",

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { sendSubmissionToCrm } from "@/lib/crm";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
@@ -74,7 +75,7 @@ export async function POST(request: Request) {
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("agent_id, agent_email, address")
+    .select("agent_id, agency_id, agent_email, address")
     .eq("id", listingId)
     .maybeSingle();
 
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Listing not found." }, { status: 404 });
   }
 
-  const { error } = await supabase.from("offers").insert(row);
+  const { data: saved, error } = await supabase.from("offers").insert(row).select("id").single();
 
   if (error) {
     console.error("Offer insert failed:", error.message);
@@ -100,6 +101,13 @@ export async function POST(request: Request) {
     listingId,
     baseUrl: siteOrigin(request),
   });
+
+  // Send to the agency's CRM (if connected) after replying, so the visitor
+  // never waits on it.
+  if (saved?.id) {
+    const savedId = saved.id as string;
+    after(() => sendSubmissionToCrm(supabase, "offer", savedId, listing));
+  }
 
   return NextResponse.json({ success: true });
 }

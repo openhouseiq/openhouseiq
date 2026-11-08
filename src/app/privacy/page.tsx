@@ -27,7 +27,7 @@ export default function PrivacyPage() {
 
       <main className="mx-auto max-w-3xl px-6 pb-20">
         <h1 className="font-serif text-3xl font-medium text-ink">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-ink-soft">Last updated 8 September 2026</p>
+        <p className="mt-2 text-sm text-ink-soft">Last updated 8 November 2026</p>
 
         <div className="mt-8 space-y-6 text-sm leading-relaxed text-ink">
           <section>
@@ -109,6 +109,13 @@ export default function PrivacyPage() {
               (payments), Cloudflare (CAPTCHA/spam protection), and Netlify
               (hosting). Each processes data only as needed to provide their
               service to us.
+            </p>
+            <p className="mt-2">
+              If an agent or agency chooses to connect their own CRM (for
+              example VaultRE), a visitor&apos;s name, email, phone and their
+              feedback or offer details are also sent to that CRM, so the
+              agent can follow up. The agent&apos;s agency is responsible for how
+              that CRM uses the information. Anonymous feedback is never sent.
             </p>
           </section>
 
