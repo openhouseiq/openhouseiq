@@ -51,8 +51,8 @@ export async function POST(request: Request) {
       },
       payment_method_collection: "always",
       managed_payments: { enabled: false },
-      success_url: `${origin}/dashboard/settings?billing=success`,
-      cancel_url: `${origin}/dashboard/settings?billing=cancelled`,
+      success_url: `${origin}/dashboard/settings?tab=billing&billing=success`,
+      cancel_url: `${origin}/dashboard/settings?tab=billing&billing=cancelled`,
     });
 
     return NextResponse.json({ url: session.url });

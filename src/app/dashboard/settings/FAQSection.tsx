@@ -4,40 +4,14 @@ import { useState } from "react";
 
 type Faq = { question: string; answer: string };
 
-const CRM_FAQS: Faq[] = [
-  {
-    question: "Which CRMs can I connect?",
-    answer:
-      'Available now: Follow Up Boss, HubSpot, Lofty and Pipedrive.\nComing soon: VaultRE, Rex, AgentBox and Box+Dice. They show as "coming soon" in Settings → Connect your CRM and switch on as each one approves us.\nYou can connect one CRM at a time. If you\'re part of an agency, the agency owner connects it once for every agency listing.',
-  },
-  {
-    question: "How do I connect my CRM?",
-    answer:
-      '1. Go to Settings → Connect your CRM.\n2. Choose your CRM from the "Which CRM do you use?" list.\n3. Copy your key from your CRM (see "Where do I find my CRM key?" below) and paste it into the box.\n4. Click Connect. We check the key with your CRM straight away, and you\'ll see "Connected" if it worked.\nThat\'s it: from then on, every open home visitor who leaves their details goes into your CRM automatically.',
-  },
-  {
-    question: "Where do I find my CRM key?",
-    answer:
-      "Follow Up Boss: Admin → API → Create API Key (account owner or admin only).\nHubSpot: Development → Keys → Service keys → Create service key. Add the scopes crm.objects.contacts.read and crm.objects.contacts.write, then copy the key.\nLofty: Settings → Integrations → API, then create and copy an API key.\nPipedrive: click your profile picture → Personal preferences → API, then copy your personal API token.\nKeep your key private, like a password. Only paste it into Open Home Hero's Settings.",
-  },
-  {
-    question: "What gets sent to my CRM?",
-    answer:
-      "Each visitor's name, email and phone, plus their feedback (interest level, ratings, timeframe, finance, comments) or their offer (amount, finance, settlement, conditions, notes), tagged \"Open Home Hero\" with the property address.\nIt's sent within seconds of the visitor submitting. Anonymous feedback isn't sent, because there are no contact details. In Follow Up Boss, HubSpot and Pipedrive, a repeat visitor with the same email is added to their existing contact rather than creating a duplicate.",
-  },
-  {
-    question: "What if my CRM is down, or my key stops working?",
-    answer:
-      "If your CRM is busy or offline, we keep trying for up to a day, so nothing is lost. If your key is removed or expires, Settings shows a warning and we hold your visitors until you reconnect, then send them. You can also export everything as a CSV from any listing at any time.",
-  },
-  {
-    question: "How do I disconnect or switch CRMs?",
-    answer:
-      "Go to Settings → Connect your CRM and click Disconnect. Visitors already sent stay in your CRM. Then choose the new CRM from the list and connect it.",
-  },
-];
+const CRM_FAQ: Faq = {
+  question: "How do I connect my CRM?",
+  answer:
+    'Open Home Hero can send every open home visitor who leaves their details straight into your CRM: their name, email and phone, plus their feedback or offer, tagged "Open Home Hero" with the property address.\n\nAvailable now: Follow Up Boss, HubSpot, Lofty and Pipedrive. Coming soon: VaultRE, Rex, AgentBox and Box+Dice.\n\nTo connect:\n1. Go to Settings → Profile → Connect your CRM.\n2. Choose your CRM from the "Which CRM do you use?" list.\n3. Copy your key from your CRM and paste it into the box:\n   • Follow Up Boss: Admin → API → Create API Key (account owner or admin).\n   • HubSpot: Development → Keys → Service keys → Create service key, with the scopes crm.objects.contacts.read and crm.objects.contacts.write.\n   • Lofty: Settings → Integrations → API → create an API key.\n   • Pipedrive: profile picture → Personal preferences → API → copy your personal API token.\n4. Click Connect. You\'ll see "Connected" once your CRM accepts the key.\n\nGood to know: you can connect one CRM at a time, and agency owners connect once for every agency listing. Anonymous feedback isn\'t sent. If your CRM is offline we keep retrying, and if a key stops working we hold your visitors until you reconnect. To switch, click Disconnect and connect the new one. Keep your key private, like a password.',
+};
 
-const GENERAL_FAQS: Faq[] = [
+const FAQS: Faq[] = [
+  CRM_FAQ,
   {
     question:
       "How do visitors submit feedback, offers, or rental applications?",
@@ -116,31 +90,12 @@ function FaqList({
 
 export function FAQSection() {
   const [openKey, setOpenKey] = useState<string | null>(null);
-
   return (
-    <div className="space-y-8">
-      <div>
-        <h3 className="mb-3 font-serif text-lg font-medium text-ink">
-          Connecting your CRM
-        </h3>
-        <FaqList
-          faqs={CRM_FAQS}
-          openKey={openKey}
-          setOpenKey={setOpenKey}
-          group="crm"
-        />
-      </div>
-      <div>
-        <h3 className="mb-3 font-serif text-lg font-medium text-ink">
-          Using Open Home Hero
-        </h3>
-        <FaqList
-          faqs={GENERAL_FAQS}
-          openKey={openKey}
-          setOpenKey={setOpenKey}
-          group="general"
-        />
-      </div>
-    </div>
+    <FaqList
+      faqs={FAQS}
+      openKey={openKey}
+      setOpenKey={setOpenKey}
+      group="faq"
+    />
   );
 }

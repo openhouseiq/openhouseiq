@@ -40,7 +40,7 @@ export function DashboardHeader({
             Refer &amp; earn
           </Link>
           <Link
-            href="/dashboard/contact"
+            href="/dashboard/settings?tab=contact"
             className="whitespace-nowrap text-navy-soft hover:text-brass"
           >
             Contact us

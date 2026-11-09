@@ -29,14 +29,19 @@ export default async function NewListingPage() {
           backLabel="Back to dashboard"
         />
         <main className="mx-auto max-w-2xl px-6 py-12">
-          <h1 className="font-serif text-2xl font-medium text-ink">New listing</h1>
+          <h1 className="font-serif text-2xl font-medium text-ink">
+            New listing
+          </h1>
           <div className="mt-6 rounded-md border border-line bg-paper-card p-6">
             <p className="text-sm text-ink">
               Your free trial has ended (or your subscription is inactive), so
               new listings are paused. Your existing listings, feedback, and
               offers are still fully available.
             </p>
-            <Link href="/dashboard/settings" className="mt-4 inline-block">
+            <Link
+              href="/dashboard/settings?tab=billing"
+              className="mt-4 inline-block"
+            >
               <Button variant="primary">Subscribe to continue</Button>
             </Link>
           </div>
@@ -54,7 +59,9 @@ export default async function NewListingPage() {
       />
 
       <main className="mx-auto max-w-2xl px-6 py-12">
-        <h1 className="font-serif text-2xl font-medium text-ink">New listing</h1>
+        <h1 className="font-serif text-2xl font-medium text-ink">
+          New listing
+        </h1>
         <NewListingForm />
       </main>
     </div>
