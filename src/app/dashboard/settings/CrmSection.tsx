@@ -21,6 +21,7 @@ export type CrmConnectionView = {
 const NOTICES: Record<string, { text: string; good?: boolean }> = {
   connected: { text: "Connected. New visitors will now go straight into your CRM.", good: true },
   cancelled: { text: "Connection cancelled. Nothing was changed." },
+  disconnected: { text: "Disconnected. New visitors won't be sent to a CRM until you connect one." },
   expired: { text: "That took too long. Please click Connect again." },
   "not-allowed": { text: "Only the agency owner can change the CRM connection." },
   unavailable: { text: "That CRM isn't available yet." },
@@ -99,6 +100,7 @@ export function CrmSection({
       setError(data.error ?? "Couldn't disconnect. Please try again.");
       return;
     }
+    router.replace("/dashboard/settings?crm=disconnected#crm");
     router.refresh();
   }
 
