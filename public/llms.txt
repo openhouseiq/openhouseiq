@@ -2,7 +2,7 @@
 
 > Open Home Hero is software for real estate agents and property managers in Australia. Each listing gets one QR code and link. Visitors scan it at an open home or rental inspection and leave feedback, submit an offer or apply to rent from their phone, with no app and no account. Every response lands in the agent's dashboard, side by side and sorted by what the seller or landlord wants.
 
-Open Home Hero is not a CRM. Agents can export every lead as a CSV to import into the CRM they already use.
+Open Home Hero is not a CRM; it adds to the CRM an agent already uses. Each open home visitor (with their feedback or offer) is sent straight into the agent's CRM: Follow Up Boss, HubSpot, Lofty and Pipedrive are supported now, with VaultRE, Rex, AgentBox and Box+Dice coming soon. Leads can also be exported as CSV.
 
 ## Who it is for
 - Real estate agents running open homes for sale listings
@@ -15,6 +15,7 @@ Open Home Hero is not a CRM. Agents can export every lead as a CSV to import int
 - Collects offers: amount, finance, settlement term and conditions
 - Collects rental applications: income, employment, references, move-in date and household details
 - Shows offers and applications side by side, sorted by how well they match the seller's or landlord's stated preferences (a guide; the agent decides)
+- Sends every visitor to the agent's CRM (Follow Up Boss, HubSpot, Lofty, Pipedrive; more coming)
 - Exports leads and reports as CSV or PDF
 
 ## Pricing (Australian dollars, one plan with every feature)

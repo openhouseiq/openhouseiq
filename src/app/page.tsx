@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   },
 };
 
-
 const FAQS = [
   {
     question: "What is Open Home Hero?",
@@ -45,9 +44,9 @@ const FAQS = [
       "Open Home Hero is one plan with every feature included: $39/month or $390/year (two months free). New accounts start with a 14-day free trial.",
   },
   {
-    question: "Is Open Home Hero a replacement for my CRM?",
+    question: "Does it replace my CRM?",
     answer:
-      "No. Open Home Hero isn't a CRM — it captures the moment someone walks into an open home or rental inspection, organises the responses by listing, and lets you export every lead as a CSV to import into whatever CRM you already use.",
+      "No, it adds to it. Open Home Hero captures the moment someone walks into an open home or rental inspection, then sends each visitor straight into the CRM you already use, with their feedback or offer attached. It connects with Follow Up Boss, HubSpot, Lofty and Pipedrive today, with VaultRE, Rex, AgentBox and Box+Dice coming soon. Using something else? Export every lead as a CSV and import it.",
   },
 ];
 
@@ -63,9 +62,9 @@ const FEATURES = [
       "Visitors leave feedback or submit an offer — right from their phone. No app to download, no login required.",
   },
   {
-    title: "Every lead, one dashboard",
+    title: "Every lead, straight to your CRM",
     description:
-      "See new feedback and offers the moment they come in, organized by listing.",
+      "See new feedback and offers the moment they come in, organised by listing, and sent automatically into the CRM you already use.",
   },
 ];
 
@@ -73,7 +72,8 @@ const STEPS = [
   {
     number: "1",
     title: "Create a listing",
-    description: "Add the address, price, and details. Add photos if you have them.",
+    description:
+      "Add the address, price, and details. Add photos if you have them.",
   },
   {
     number: "2",
@@ -89,11 +89,32 @@ const STEPS = [
   },
   {
     number: "4",
-    title: "Follow up with confidence",
+    title: "Follow up from your CRM",
     description:
-      "See every response in your dashboard as it comes in, and export a report anytime.",
+      "Every visitor is already in your CRM with their feedback or offer attached. Your dashboard has the full picture, and reports export anytime.",
   },
 ];
+
+const CRM_STEPS = [
+  {
+    title: "Visitor scans the QR code",
+    description:
+      "They enter their own name, email and phone, then leave feedback or an offer.",
+  },
+  {
+    title: "Open Home Hero captures it",
+    description:
+      "Interest level, ratings, finance, timeframe and offer terms, all structured by listing.",
+  },
+  {
+    title: "It lands in your CRM",
+    description:
+      'Within seconds, tagged "Open Home Hero" with the property address. Repeat visitors aren\'t duplicated.',
+  },
+];
+
+const CRMS_NOW = ["Follow Up Boss", "HubSpot", "Lofty", "Pipedrive"];
+const CRMS_SOON = ["VaultRE", "Rex", "AgentBox", "Box+Dice"];
 
 const COMPARISON = [
   {
@@ -113,6 +134,7 @@ const COMPARISON = [
 const INCLUDED = [
   "Unlimited listings and QR codes",
   "Structured visitor feedback & offers",
+  "Sends every lead to your CRM",
   "CSV export reports by date range",
   "CAPTCHA-protected public forms",
   "14-day free trial",
@@ -135,7 +157,10 @@ export default function Home() {
             <Wordmark tone="light" />
           </span>
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm text-navy-soft hover:text-brass">
+            <Link
+              href="/login"
+              className="text-sm text-navy-soft hover:text-brass"
+            >
               Log in
             </Link>
             <Link href="/signup">
@@ -151,9 +176,10 @@ export default function Home() {
             Run better open homes.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft lg:mx-0">
-            One QR code on your flyer, or one link in your listing. Visitors give feedback or make an
-            offer from their phone, and every offer lands in your
-            dashboard side by side, sorted by what your seller wants.
+            One QR code on your flyer, or one link in your listing. Visitors
+            give feedback or make an offer from their phone, every offer lands
+            in your dashboard sorted by what your seller wants, and every
+            visitor goes straight into your CRM.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
             <Link href="/signup">
@@ -164,7 +190,7 @@ export default function Home() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-ink-soft">
-            14-day free trial · No app for visitors · No paper sign-in sheets
+            14-day free trial · Works with your CRM · No app for visitors
           </p>
         </div>
         <HeroShowcase />
@@ -225,24 +251,61 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-line px-6 py-20">
+      <section id="crm" className="border-t border-line px-6 py-20">
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
-            <h2 className="font-serif text-3xl font-medium text-ink">
-              Not another CRM
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brass">
+              CRM integration
+            </p>
+            <h2 className="mt-2 font-serif text-3xl font-medium text-ink">
+              Makes your CRM better, not redundant
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-ink-soft">
-              Open Home Hero isn&apos;t trying to replace the CRM you already
-              use — it&apos;s built for one moment your CRM was never
-              designed for.
+            <p className="mx-auto mt-3 max-w-2xl text-ink-soft">
+              Your CRM is where you manage relationships. Open Home Hero fills
+              it with what it was never built to capture: every open home
+              visitor, what they thought, and what they&apos;d offer, sent
+              across automatically. No retyping sign-in sheets, no extra
+              subscriptions.
             </p>
           </div>
 
-          <div className="mt-12 overflow-hidden rounded-md border border-line">
+          <ol className="mt-12 grid gap-4 sm:grid-cols-3">
+            {CRM_STEPS.map((step, i) => (
+              <li
+                key={step.title}
+                className="rounded-md border border-line bg-paper-card p-6"
+              >
+                <p className="font-serif text-2xl text-brass">{i + 1}</p>
+                <h3 className="mt-2 font-medium text-ink">{step.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-ink-soft">
+                  {step.description}
+                </p>
+              </li>
+            ))}
+          </ol>
+
+          <div className="mt-10 rounded-md border border-line bg-paper-card p-6 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-soft">
+              Connects with
+            </p>
+            <ul className="mt-3 flex flex-wrap justify-center gap-x-8 gap-y-2">
+              {CRMS_NOW.map((name) => (
+                <li key={name} className="font-serif text-lg text-ink">
+                  {name}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-sm text-ink-soft">
+              Coming soon: {CRMS_SOON.join(", ")}. Using something else? Export
+              every lead to CSV and import it in seconds.
+            </p>
+          </div>
+
+          <div className="mt-10 overflow-hidden rounded-md border border-line">
             <div className="grid grid-cols-2 border-b border-line bg-paper-card text-sm font-medium">
-              <div className="px-6 py-3 text-ink-soft">Your CRM</div>
+              <div className="px-6 py-3 text-ink-soft">Your CRM does</div>
               <div className="border-l border-line px-6 py-3 text-brass">
-                Open Home Hero
+                Open Home Hero adds
               </div>
             </div>
             {COMPARISON.map((row, i) => (
@@ -250,20 +313,13 @@ export default function Home() {
                 key={row.crm}
                 className={`grid grid-cols-2 bg-paper-card ${i > 0 ? "border-t border-line" : ""}`}
               >
-                <div className="px-6 py-4 text-sm text-ink-soft">
-                  {row.crm}
-                </div>
+                <div className="px-6 py-4 text-sm text-ink-soft">{row.crm}</div>
                 <div className="border-l border-line px-6 py-4 text-sm text-ink">
                   {row.us}
                 </div>
               </div>
             ))}
           </div>
-
-          <p className="mt-8 text-center text-sm text-ink-soft">
-            Export every lead to CSV and drop it into whatever you already
-            use — Open Home Hero was never trying to replace it.
-          </p>
         </div>
       </section>
 
@@ -294,7 +350,9 @@ export default function Home() {
                 <p className="mt-3 text-xs text-ink-soft">For one agent</p>
               </div>
               <div className="flex flex-col justify-center rounded-md border-2 border-brass bg-paper-card p-8">
-                <p className="text-sm font-medium text-brass">Yearly · save 2 months</p>
+                <p className="text-sm font-medium text-brass">
+                  Yearly · save 2 months
+                </p>
                 <p className="mt-2 font-serif text-4xl font-medium text-ink">
                   $390
                   <span className="text-base font-sans font-normal text-ink-soft">
@@ -307,14 +365,18 @@ export default function Home() {
                 htmlFor="agency-pricing-toggle"
                 className="flex cursor-pointer flex-col justify-center rounded-md border-2 border-navy bg-navy p-8 text-left shadow-md transition hover:border-brass sm:text-center group-has-[:checked]:border-brass group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-brass"
               >
-                <p className="text-sm font-medium text-brass">Agency · 3+ agents</p>
+                <p className="text-sm font-medium text-brass">
+                  Agency · 3+ agents
+                </p>
                 <p className="mt-2 font-serif text-4xl font-medium text-paper">
                   $37.05
                   <span className="text-base font-sans font-normal text-navy-soft">
                     /agent/month
                   </span>
                 </p>
-                <p className="mt-3 text-xs font-medium text-paper">Save up to 15%</p>
+                <p className="mt-3 text-xs font-medium text-paper">
+                  Save up to 15%
+                </p>
                 <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-brass sm:justify-center">
                   Click here for pricing
                   <span
@@ -345,7 +407,9 @@ export default function Home() {
                         className={i > 0 ? "border-t border-line" : ""}
                       >
                         <td className="px-4 py-2.5 text-ink">{tier.range}</td>
-                        <td className="px-4 py-2.5 text-ink-soft">{tier.discount}</td>
+                        <td className="px-4 py-2.5 text-ink-soft">
+                          {tier.discount}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -365,7 +429,10 @@ export default function Home() {
 
           <ul className="mx-auto mt-10 max-w-md space-y-2 text-left">
             {INCLUDED.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm text-ink">
+              <li
+                key={item}
+                className="flex items-start gap-2 text-sm text-ink"
+              >
                 <span className="mt-0.5 text-brass">✓</span>
                 {item}
               </li>
