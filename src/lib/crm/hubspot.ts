@@ -2,9 +2,9 @@ import type { CrmRecord } from "./record";
 import { CrmSendError } from "./errors";
 import { crmRequest, noteHtml, splitName, type Fetch } from "./http";
 
-// HubSpot. The agency creates a private app (Settings → Integrations → Private Apps)
-// with the scopes crm.objects.contacts.read and crm.objects.contacts.write, and
-// pastes its access token. Built from HubSpot's CRM v3 docs:
+// HubSpot. The agency creates a service key (Development → Keys → Service keys;
+// older accounts: a private app) with the scopes crm.objects.contacts.read and
+// crm.objects.contacts.write, and pastes it. Both are sent as a Bearer token. Built from HubSpot's CRM v3 docs:
 //   - POST /crm/v3/objects/contacts creates a contact. If the email already
 //     exists HubSpot answers 409 "Contact already exists. Existing ID: 123",
 //     and we use that contact instead.

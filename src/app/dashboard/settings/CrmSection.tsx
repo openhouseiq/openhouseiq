@@ -35,7 +35,7 @@ const TOKEN_HELP: Record<string, string> = {
   lofty:
     "In Lofty, go to Settings → Integrations → API, create an API key, then copy it and paste it here.",
   hubspot:
-    "In HubSpot, go to Settings → Integrations → Private Apps → Create a private app. Name it Open Home Hero, tick the scopes crm.objects.contacts.read and crm.objects.contacts.write, create it, then copy the access token and paste it here.",
+    "In HubSpot, go to Development → Keys → Service keys → Create service key. Name it Open Home Hero, click Add new scope and tick crm.objects.contacts.read and crm.objects.contacts.write, then Create. Copy the key and paste it here. (Older HubSpot accounts can use a private app's access token instead.)",
   pipedrive:
     "In Pipedrive, click your profile picture → Personal preferences → API, then copy your personal API token and paste it here.",
 };
