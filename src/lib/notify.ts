@@ -78,7 +78,7 @@ export async function notifyAgentOfContactReply({
   baseUrl: string;
 }): Promise<void> {
   const title = "Open Home Hero support replied to your message";
-  const path = "/dashboard/settings#contact";
+  const path = "/dashboard/contact";
   const body = "You have a reply to your Contact Us message.";
 
   const emailEnabled = agentEmail

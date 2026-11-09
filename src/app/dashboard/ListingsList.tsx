@@ -51,23 +51,18 @@ function ListingCard({ listing }: { listing: ListingWithCounts }) {
   return (
     <li className="flex items-center justify-between rounded-md border border-line bg-paper-card px-6 py-4 hover:border-brass">
       <Link href={`/dashboard/listings/${listing.id}`} className="flex-1">
-        <div className="flex items-center gap-2">
-          <p className="font-medium text-ink">{listing.address}</p>
-          <span
-            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-              listing.listing_type === "rental"
-                ? "bg-brass/10 text-brass"
-                : "bg-brass/10 text-brass"
-            }`}
-          >
+        <div className="mb-1 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.08em]">
+          <span className="whitespace-nowrap text-brass">
             {listing.listing_type === "rental" ? "Rental" : "For sale"}
           </span>
           {listing.unreadCount ? (
-            <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-ink">
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-brass" />
               {listing.unreadCount} new
             </span>
           ) : null}
         </div>
+        <p className="font-medium text-ink">{listing.address}</p>
         <p className="text-sm text-ink-soft">
           ${Number(listing.price).toLocaleString()}
           {listing.listing_type === "rental" ? "/week" : ""}
@@ -84,8 +79,8 @@ function ListingCard({ listing }: { listing: ListingWithCounts }) {
           </span>
           <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">
             {listing.listing_type === "rental"
-              ? `${listing.applicantCount} applicants`
-              : `${listing.offerCount} offers`}
+              ? `${listing.applicantCount} ${listing.applicantCount === 1 ? "applicant" : "applicants"}`
+              : `${listing.offerCount} ${listing.offerCount === 1 ? "offer" : "offers"}`}
           </span>
         </div>
       </Link>

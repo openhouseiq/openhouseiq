@@ -7,7 +7,6 @@ import { PasswordSection } from "./PasswordSection";
 import { TwoStepSection } from "./TwoStepSection";
 import { BillingSection } from "./BillingSection";
 import { AgencySection } from "./AgencySection";
-import { ContactSection } from "./ContactSection";
 import { FAQSection } from "./FAQSection";
 import { InstallAppSection } from "./InstallAppSection";
 import { NotificationSettings } from "./NotificationSettings";
@@ -17,7 +16,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { PROVIDERS, getConnection, type ProviderId } from "@/lib/crm";
 import { crmManagerFor } from "@/lib/crm/owner";
 import { crmEncryptionReady } from "@/lib/crm/crypto";
-import type { Subscription, ContactMessage } from "@/lib/types";
+import type { Subscription } from "@/lib/types";
 
 export default async function SettingsPage(props: PageProps<"/dashboard/settings">) {
   const searchParams = await props.searchParams;
@@ -35,7 +34,7 @@ export default async function SettingsPage(props: PageProps<"/dashboard/settings
   const emailNotificationsEnabled =
     (user.user_metadata?.email_notifications_enabled as boolean | undefined) ?? true;
 
-  const [{ data: subscription }, { data: contactMessages }, { data: ownedAgency }] =
+  const [{ data: subscription }, { data: ownedAgency }] =
     await Promise.all([
       supabase
         .from("subscriptions")
@@ -43,12 +42,6 @@ export default async function SettingsPage(props: PageProps<"/dashboard/settings
         .eq("user_id", user.id)
         .returns<Subscription[]>()
         .maybeSingle(),
-      supabase
-        .from("contact_messages")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .returns<ContactMessage[]>(),
       supabase.from("agencies").select("id, name").eq("owner_user_id", user.id).maybeSingle(),
     ]);
 
@@ -184,14 +177,6 @@ export default async function SettingsPage(props: PageProps<"/dashboard/settings
           <section className="rounded-md border border-line bg-paper-card p-6">
             <h2 className="mb-4 font-serif text-lg font-medium text-ink">FAQ</h2>
             <FAQSection />
-          </section>
-
-          <section
-            id="contact"
-            className="scroll-mt-6 rounded-md border border-line bg-paper-card p-6"
-          >
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Contact us</h2>
-            <ContactSection initialMessages={contactMessages ?? []} />
           </section>
 
           <section className="rounded-md border border-error/30 bg-paper-card p-6">
