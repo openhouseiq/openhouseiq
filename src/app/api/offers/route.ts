@@ -93,14 +93,19 @@ export async function POST(request: Request) {
     );
   }
 
-  await notifyAgentOfSubmission({
-    agentId: listing.agent_id,
-    agentEmail: listing.agent_email,
-    kind: "offer",
-    listingAddress: listing.address,
-    listingId,
-    baseUrl: siteOrigin(request),
-  });
+  // Tell the agent (push + email) after replying, so the visitor isn't kept
+  // waiting on "Sending…" while notifications go out.
+  const baseUrl = siteOrigin(request);
+  after(() =>
+    notifyAgentOfSubmission({
+      agentId: listing.agent_id,
+      agentEmail: listing.agent_email,
+      kind: "offer",
+      listingAddress: listing.address,
+      listingId,
+      baseUrl,
+    }).catch((error) => console.error("Agent notification failed:", error)),
+  );
 
   // Send to the agency's CRM (if connected) after replying, so the visitor
   // never waits on it.

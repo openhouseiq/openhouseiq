@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
@@ -108,14 +108,19 @@ export async function POST(request: Request) {
     );
   }
 
-  await notifyAgentOfSubmission({
-    agentId: listing.agent_id,
-    agentEmail: listing.agent_email,
-    kind: "applicant",
-    listingAddress: listing.address,
-    listingId,
-    baseUrl: siteOrigin(request),
-  });
+  // Tell the agent (push + email) after replying, so the visitor isn't kept
+  // waiting on "Sending…" while notifications go out.
+  const baseUrl = siteOrigin(request);
+  after(() =>
+    notifyAgentOfSubmission({
+      agentId: listing.agent_id,
+      agentEmail: listing.agent_email,
+      kind: "applicant",
+      listingAddress: listing.address,
+      listingId,
+      baseUrl,
+    }).catch((error) => console.error("Agent notification failed:", error)),
+  );
 
   return NextResponse.json({ success: true });
 }
