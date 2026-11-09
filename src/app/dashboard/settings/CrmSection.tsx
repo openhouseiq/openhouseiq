@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
 export type CrmProviderView = {
-  id: "vaultre" | "rex" | "agentbox" | "boxdice" | "followupboss";
+  id: "vaultre" | "rex" | "agentbox" | "boxdice" | "followupboss" | "lofty" | "hubspot" | "pipedrive";
   name: string;
   available: boolean;
   oauth: boolean;
@@ -32,6 +32,12 @@ const TOKEN_HELP: Record<string, string> = {
     "In VaultRE, go to Office Integrations → Third-Party Access, choose Open Home Hero, click Create Token, then copy the token and paste it here.",
   followupboss:
     "In Follow Up Boss, go to Admin → API, click Create API Key, then copy the key and paste it here. (Only the account owner or an admin can do this.)",
+  lofty:
+    "In Lofty, go to Settings → Integrations → API, create an API key, then copy it and paste it here.",
+  hubspot:
+    "In HubSpot, go to Settings → Integrations → Private Apps → Create a private app. Name it Open Home Hero, tick the scopes crm.objects.contacts.read and crm.objects.contacts.write, create it, then copy the access token and paste it here.",
+  pipedrive:
+    "In Pipedrive, click your profile picture → Personal preferences → API, then copy your personal API token and paste it here.",
 };
 
 export function CrmSection({

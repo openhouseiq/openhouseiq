@@ -4,6 +4,9 @@ import { decryptToken, encryptToken } from "./crypto";
 import { feedbackRecord, offerRecord, type CrmFeedbackRow } from "./record";
 import { CrmSendError, sendToVaultre } from "./vaultre";
 import { sendToFollowUpBoss } from "./followupboss";
+import { sendToLofty, testLofty } from "./lofty";
+import { sendToHubSpot } from "./hubspot";
+import { sendToPipedrive } from "./pipedrive";
 import {
   disconnect,
   processDueJobs,
@@ -386,5 +389,158 @@ describe("Sending visitors automatically", () => {
     await sendSubmissionToCrm(d, "offer", "offer-1", LISTING);
     expect(fetchMock).not.toHaveBeenCalled();
     expect(tables.crm_sync_jobs[0].status).toBe("pending");
+  });
+});
+
+// ---------------------------------------------------------------------------
+
+const call = (i: number) => {
+  const [url, init] = fetchMock.mock.calls[i];
+  const req = init as RequestInit;
+  return {
+    url: String(url),
+    method: req.method,
+    headers: req.headers as Record<string, string>,
+    body: req.body ? JSON.parse(req.body as string) : undefined,
+  };
+};
+
+describe("Talking to Lofty (US agents)", () => {
+  it("sends an offer as a buyer lead with the agent's key, tags and the offer as a note", async () => {
+    seedOffer();
+    // Lofty ids can be bigger than JavaScript numbers handle exactly.
+    fetchMock.mockResolvedValueOnce(new Response('{"leadId":9007199254740993123}', { status: 200 }));
+    const id = await sendToLofty("lofty-key", offerRecord(tables.offers[0] as never, LISTING));
+    expect(id).toBe("9007199254740993123");
+    const c = call(0);
+    expect(c.url).toBe("https://api.lofty.com/v1.0/leads");
+    expect(c.method).toBe("POST");
+    expect(c.headers.Authorization).toBe("token lofty-key");
+    expect(c.headers["X-Error-Status"]).toBe("true");
+    expect(c.body).toMatchObject({
+      firstName: "Jo",
+      lastName: "Simmons",
+      emails: ["jo@example.com"],
+      phones: ["0412 000 381"],
+      source: "Open Home Hero",
+      tagsAdd: ["Open Home Hero", "Offer"],
+      leadTypes: [2],
+      property: { streetAddress: "12 Smith St, Toowoomba" },
+    });
+    expect(c.body.content).toContain("Offer amount: $812,000");
+  });
+
+  it("a revoked key asks the agent to reconnect; the key check uses a 1-lead read", async () => {
+    fetchMock.mockResolvedValueOnce(new Response("unauthorized", { status: 401 }));
+    await expect(testLofty("bad")).rejects.toMatchObject({ authFailed: true });
+    expect(call(0).url).toBe("https://api.lofty.com/v1.0/leads?limit=1&offset=0");
+  });
+});
+
+describe("Talking to HubSpot", () => {
+  it("creates the contact, then adds the offer as a note on it", async () => {
+    seedOffer();
+    fetchMock
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "701" }), { status: 201 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "9001" }), { status: 201 }));
+    const id = await sendToHubSpot("pat-token", offerRecord(tables.offers[0] as never, LISTING));
+    expect(id).toBe("701");
+    const contact = call(0);
+    expect(contact.url).toBe("https://api.hubapi.com/crm/v3/objects/contacts");
+    expect(contact.headers.Authorization).toBe("Bearer pat-token");
+    expect(contact.body).toEqual({
+      properties: { firstname: "Jo", lastname: "Simmons", email: "jo@example.com", phone: "0412 000 381" },
+    });
+    const note = call(1);
+    expect(note.url).toBe("https://api.hubapi.com/crm/v3/objects/notes");
+    expect(note.body.properties.hs_timestamp).toBe("2026-11-08T01:00:00.000Z");
+    expect(note.body.properties.hs_note_body).toContain("Offer amount: $812,000");
+    expect(note.body.associations).toEqual([
+      { to: { id: "701" }, types: [{ associationCategory: "HUBSPOT_DEFINED", associationTypeId: 202 }] },
+    ]);
+  });
+
+  it("a repeat visitor (email already in HubSpot) gets the note on their existing contact", async () => {
+    seedOffer();
+    fetchMock
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ status: "error", message: "Contact already exists. Existing ID: 555", category: "CONFLICT" }), { status: 409 }),
+      )
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "9002" }), { status: 201 }));
+    const id = await sendToHubSpot("t", offerRecord(tables.offers[0] as never, LISTING));
+    expect(id).toBe("555");
+    expect(call(1).body.associations[0].to.id).toBe("555");
+  });
+
+  it("note text is safe HTML (a visitor can't inject markup)", async () => {
+    seedOffer();
+    (tables.offers[0] as Record<string, unknown>).notes = "<script>x</script>";
+    fetchMock
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "1" }), { status: 201 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "2" }), { status: 201 }));
+    await sendToHubSpot("t", offerRecord(tables.offers[0] as never, LISTING));
+    expect(call(1).body.properties.hs_note_body).toContain("&lt;script&gt;");
+    expect(call(1).body.properties.hs_note_body).not.toContain("<script>");
+  });
+
+  it("a revoked token asks the agency to reconnect", async () => {
+    seedOffer();
+    fetchMock.mockResolvedValueOnce(new Response("expired", { status: 401 }));
+    await expect(sendToHubSpot("t", offerRecord(tables.offers[0] as never, LISTING))).rejects.toMatchObject({ authFailed: true });
+  });
+});
+
+describe("Talking to Pipedrive", () => {
+  it("a new visitor: searches by email, creates the person, adds the note", async () => {
+    seedOffer();
+    fetchMock
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, data: { items: [] } }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, data: { id: 42 } }), { status: 201 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, data: { id: 7 } }), { status: 201 }));
+    const id = await sendToPipedrive("pd-token", offerRecord(tables.offers[0] as never, LISTING));
+    expect(id).toBe("42");
+    const search = call(0);
+    expect(search.url).toBe(
+      "https://api.pipedrive.com/api/v2/persons/search?term=jo%40example.com&fields=email&exact_match=true&limit=1",
+    );
+    expect(search.headers["x-api-token"]).toBe("pd-token");
+    const person = call(1);
+    expect(person.url).toBe("https://api.pipedrive.com/api/v2/persons");
+    expect(person.body).toEqual({
+      name: "Jo Simmons",
+      emails: [{ value: "jo@example.com", primary: true, label: "work" }],
+      phones: [{ value: "0412 000 381", primary: true, label: "mobile" }],
+    });
+    const note = call(2);
+    expect(note.url).toBe("https://api.pipedrive.com/api/v1/notes");
+    expect(note.body.person_id).toBe(42);
+    expect(note.body.content).toContain("Offer amount: $812,000");
+  });
+
+  it("a repeat visitor gets the note on their existing person (no duplicate)", async () => {
+    seedOffer();
+    fetchMock
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, data: { items: [{ item: { id: 99 } }] } }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, data: { id: 8 } }), { status: 201 }));
+    const id = await sendToPipedrive("t", offerRecord(tables.offers[0] as never, LISTING));
+    expect(id).toBe("99");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(call(1).body.person_id).toBe(99);
+  });
+});
+
+describe("Lofty, HubSpot and Pipedrive through the send queue", () => {
+  it.each(["lofty", "hubspot", "pipedrive"] as const)("%s: a solo agent's offer is sent and marked sent", async (provider) => {
+    seedOffer();
+    const d = db();
+    await saveConnection(d, { userId: "agent-1" }, provider, "agent-key-123", "agent-1");
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url.includes("lofty")) return new Response('{"leadId":12}', { status: 200 });
+      if (url.includes("hubapi")) return new Response(JSON.stringify({ id: "12" }), { status: 201 });
+      if (url.includes("/search")) return new Response(JSON.stringify({ data: { items: [] } }), { status: 200 });
+      return new Response(JSON.stringify({ data: { id: 12 } }), { status: 201 });
+    });
+    await sendSubmissionToCrm(d, "offer", "offer-1", { agent_id: "agent-1", agency_id: null });
+    expect(tables.crm_sync_jobs[0]).toMatchObject({ status: "sent", external_id: "12" });
   });
 });

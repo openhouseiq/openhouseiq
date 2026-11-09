@@ -11,8 +11,19 @@ import {
 import { CrmSendError } from "./errors";
 import { sendToVaultre, testVaultre, vaultreConfigured, vaultreOauthConfigured } from "./vaultre";
 import { followUpBossConfigured, sendToFollowUpBoss, testFollowUpBoss } from "./followupboss";
+import { sendToLofty, testLofty } from "./lofty";
+import { sendToHubSpot, testHubSpot } from "./hubspot";
+import { sendToPipedrive, testPipedrive } from "./pipedrive";
 
-export type ProviderId = "vaultre" | "rex" | "agentbox" | "boxdice" | "followupboss";
+export type ProviderId =
+  | "vaultre"
+  | "rex"
+  | "agentbox"
+  | "boxdice"
+  | "followupboss"
+  | "lofty"
+  | "hubspot"
+  | "pipedrive";
 
 type Provider = {
   name: string;
@@ -39,6 +50,10 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
     send: sendToFollowUpBoss,
     test: testFollowUpBoss,
   },
+  // Agents paste their own API key; no integrator approval needed.
+  lofty: { name: "Lofty", available: () => true, oauth: () => false, send: sendToLofty, test: testLofty },
+  hubspot: { name: "HubSpot", available: () => true, oauth: () => false, send: sendToHubSpot, test: testHubSpot },
+  pipedrive: { name: "Pipedrive", available: () => true, oauth: () => false, send: sendToPipedrive, test: testPipedrive },
 };
 
 export const isProviderId = (v: unknown): v is ProviderId =>
