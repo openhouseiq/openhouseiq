@@ -12,7 +12,7 @@ export function DashboardHeader({
   backLabel?: string;
 }) {
   return (
-    <header className="bg-navy px-6 py-4">
+    <header className="bg-navy px-6 pb-6 pt-4">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <Link
           href="/dashboard"
@@ -23,10 +23,9 @@ export function DashboardHeader({
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <Link
             href="/dashboard/settings"
-            className="flex items-center gap-x-4 whitespace-nowrap text-navy-soft hover:text-brass"
+            className="whitespace-nowrap text-navy-soft hover:text-brass"
           >
-            <span>{agentLabel}</span>
-            <span>Settings</span>
+            Settings
           </Link>
           <Link
             href="/dashboard/agency"
@@ -46,11 +45,21 @@ export function DashboardHeader({
           >
             Contact us
           </Link>
-          <LogoutButton />
+          <div className="relative">
+            <LogoutButton />
+            {agentLabel ? (
+              <span className="absolute right-0 top-full mt-1 max-w-[14rem] truncate whitespace-nowrap text-xs text-navy-soft">
+                {agentLabel}
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
       {backHref ? (
-        <Link href={backHref} className="mt-2 inline-block text-sm text-brass underline">
+        <Link
+          href={backHref}
+          className="mt-2 inline-block text-sm text-brass underline"
+        >
           {backLabel ?? "Back"}
         </Link>
       ) : null}

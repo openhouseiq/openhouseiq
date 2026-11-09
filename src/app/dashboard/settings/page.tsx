@@ -11,16 +11,23 @@ import { FAQSection } from "./FAQSection";
 import { InstallAppSection } from "./InstallAppSection";
 import { NotificationSettings } from "./NotificationSettings";
 import { DeleteAccountSection } from "./DeleteAccountSection";
-import { CrmSection, type CrmConnectionView, type CrmProviderView } from "./CrmSection";
+import {
+  CrmSection,
+  type CrmConnectionView,
+  type CrmProviderView,
+} from "./CrmSection";
 import { createServiceClient } from "@/lib/supabase/service";
 import { PROVIDERS, getConnection, type ProviderId } from "@/lib/crm";
 import { crmManagerFor } from "@/lib/crm/owner";
 import { crmEncryptionReady } from "@/lib/crm/crypto";
 import type { Subscription } from "@/lib/types";
 
-export default async function SettingsPage(props: PageProps<"/dashboard/settings">) {
+export default async function SettingsPage(
+  props: PageProps<"/dashboard/settings">,
+) {
   const searchParams = await props.searchParams;
-  const crmNotice = typeof searchParams.crm === "string" ? searchParams.crm : null;
+  const crmNotice =
+    typeof searchParams.crm === "string" ? searchParams.crm : null;
   const supabase = await createClient();
   const user = await getCurrentUser();
 
@@ -32,18 +39,22 @@ export default async function SettingsPage(props: PageProps<"/dashboard/settings
   const phone = (user.user_metadata?.phone as string | undefined) ?? "";
   const photoUrl = (user.user_metadata?.photo_url as string | undefined) ?? "";
   const emailNotificationsEnabled =
-    (user.user_metadata?.email_notifications_enabled as boolean | undefined) ?? true;
+    (user.user_metadata?.email_notifications_enabled as boolean | undefined) ??
+    true;
 
-  const [{ data: subscription }, { data: ownedAgency }] =
-    await Promise.all([
-      supabase
-        .from("subscriptions")
-        .select("*")
-        .eq("user_id", user.id)
-        .returns<Subscription[]>()
-        .maybeSingle(),
-      supabase.from("agencies").select("id, name").eq("owner_user_id", user.id).maybeSingle(),
-    ]);
+  const [{ data: subscription }, { data: ownedAgency }] = await Promise.all([
+    supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", user.id)
+      .returns<Subscription[]>()
+      .maybeSingle(),
+    supabase
+      .from("agencies")
+      .select("id, name")
+      .eq("owner_user_id", user.id)
+      .maybeSingle(),
+  ]);
 
   let membership: { agencyName: string; isOwner: boolean } | null = null;
 
@@ -58,8 +69,13 @@ export default async function SettingsPage(props: PageProps<"/dashboard/settings
       .maybeSingle();
 
     if (activeMembership) {
-      const agencyRow = activeMembership.agencies as unknown as { name: string } | null;
-      membership = { agencyName: agencyRow?.name ?? "your agency", isOwner: false };
+      const agencyRow = activeMembership.agencies as unknown as {
+        name: string;
+      } | null;
+      membership = {
+        agencyName: agencyRow?.name ?? "your agency",
+        isOwner: false,
+      };
     }
   }
 
@@ -67,7 +83,9 @@ export default async function SettingsPage(props: PageProps<"/dashboard/settings
   const service = createServiceClient();
   const crmManager = await crmManagerFor(service, user.id);
   const encryptionReady = crmEncryptionReady();
-  const crmProviders: CrmProviderView[] = (Object.keys(PROVIDERS) as ProviderId[]).map((id) => ({
+  const crmProviders: CrmProviderView[] = (
+    Object.keys(PROVIDERS) as ProviderId[]
+  ).map((id) => ({
     id,
     name: PROVIDERS[id].name,
     available: encryptionReady && PROVIDERS[id].available(),
@@ -85,11 +103,20 @@ export default async function SettingsPage(props: PageProps<"/dashboard/settings
       };
     }
   } else {
-    const { data: agencyId } = await service.rpc("user_current_agency_id", { uid: user.id });
+    const { data: agencyId } = await service.rpc("user_current_agency_id", {
+      uid: user.id,
+    });
     if (agencyId) {
-      const row = await getConnection(service, { agencyId: agencyId as string });
+      const row = await getConnection(service, {
+        agencyId: agencyId as string,
+      });
       if (row && row.status !== "disconnected") {
-        crmConnection = { provider: row.provider, status: row.status, lastError: null, lastSentAt: row.last_sent_at };
+        crmConnection = {
+          provider: row.provider,
+          status: row.status,
+          lastError: null,
+          lastSentAt: row.last_sent_at,
+        };
       }
     }
   }
@@ -105,86 +132,107 @@ export default async function SettingsPage(props: PageProps<"/dashboard/settings
       <main className="mx-auto max-w-2xl px-6 py-12">
         <h1 className="font-serif text-2xl font-medium text-ink">Settings</h1>
 
-        <div className="mt-8 space-y-6">
-          <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Billing</h2>
-            <BillingSection subscription={subscription} coveredByAgency={Boolean(membership)} />
-          </section>
-
-          <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Agency</h2>
-            <AgencySection membership={membership} />
-          </section>
-
-          <section id="crm" className="scroll-mt-6 rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Connect your CRM</h2>
-            <CrmSection
-              providers={crmProviders}
-              connection={crmConnection}
-              canManage={crmManager.canManage}
-              manageNote={crmManager.canManage ? null : crmManager.reason}
-              scopeLabel={
-                crmManager.canManage
-                  ? crmManager.scope === "agency"
-                    ? `This connects ${crmManager.agencyName ?? "your agency"}: every agency listing will use it.`
-                    : ""
-                  : `${crmManager.agencyName} manages this for all its listings.`
-              }
-              notice={crmNotice}
-            />
-          </section>
-
-          <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">
-              Agent profile
+        <div className="mt-8 space-y-10">
+          <div id="profile" className="scroll-mt-6 space-y-4">
+            <h2 className="border-b border-line pb-2 font-serif text-xl font-medium text-ink">
+              Profile
             </h2>
-            <AgentProfileForm
-              userId={user.id}
-              fullName={fullName}
-              phone={phone}
-              email={user.email ?? ""}
-              photoUrl={photoUrl}
-            />
-          </section>
-
-          <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Password</h2>
-            <PasswordSection />
-          </section>
-
-          <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">Two-step login</h2>
-            <TwoStepSection />
-          </section>
-
-          <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">
-              Install as an app
+            <section className="rounded-md border border-line bg-paper-card p-6">
+              <h3 className="mb-4 font-serif text-lg font-medium text-ink">
+                Agent profile
+              </h3>
+              <AgentProfileForm
+                userId={user.id}
+                fullName={fullName}
+                phone={phone}
+                email={user.email ?? ""}
+                photoUrl={photoUrl}
+              />
+            </section>
+            <section
+              id="crm"
+              className="scroll-mt-6 rounded-md border border-line bg-paper-card p-6"
+            >
+              <h3 className="mb-4 font-serif text-lg font-medium text-ink">
+                Connect your CRM
+              </h3>
+              <CrmSection
+                providers={crmProviders}
+                connection={crmConnection}
+                canManage={crmManager.canManage}
+                manageNote={crmManager.canManage ? null : crmManager.reason}
+                scopeLabel={
+                  crmManager.canManage
+                    ? crmManager.scope === "agency"
+                      ? `This connects ${crmManager.agencyName ?? "your agency"}: every agency listing will use it.`
+                      : ""
+                    : `${crmManager.agencyName} manages this for all its listings.`
+                }
+                notice={crmNotice}
+              />
+            </section>
+            <section className="rounded-md border border-line bg-paper-card p-6">
+              <h3 className="mb-4 font-serif text-lg font-medium text-ink">
+                Password
+              </h3>
+              <PasswordSection />
+            </section>
+            <section className="rounded-md border border-line bg-paper-card p-6">
+              <h3 className="mb-4 font-serif text-lg font-medium text-ink">
+                Two-step login (2FA)
+              </h3>
+              <TwoStepSection />
+            </section>
+            <section className="rounded-md border border-line bg-paper-card p-6">
+              <h3 className="mb-4 font-serif text-lg font-medium text-ink">
+                Install as an app
+              </h3>
+              <InstallAppSection />
+            </section>
+            <section className="rounded-md border border-line bg-paper-card p-6">
+              <h3 className="mb-4 font-serif text-lg font-medium text-ink">
+                Notifications
+              </h3>
+              <NotificationSettings
+                userId={user.id}
+                initialEmailEnabled={emailNotificationsEnabled}
+              />
+            </section>
+            <section className="rounded-md border border-error/30 bg-paper-card p-6">
+              <h3 className="mb-4 font-serif text-lg font-medium text-error">
+                Delete your account
+              </h3>
+              <DeleteAccountSection />
+            </section>
+          </div>
+          <div id="billing" className="scroll-mt-6 space-y-4">
+            <h2 className="border-b border-line pb-2 font-serif text-xl font-medium text-ink">
+              Billing
             </h2>
-            <InstallAppSection />
-          </section>
-
-          <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">
-              Notifications
+            <section className="rounded-md border border-line bg-paper-card p-6">
+              <h3 className="mb-4 font-serif text-lg font-medium text-ink">
+                Billing
+              </h3>
+              <BillingSection
+                subscription={subscription}
+                coveredByAgency={Boolean(membership)}
+              />
+            </section>
+            <section className="rounded-md border border-line bg-paper-card p-6">
+              <h3 className="mb-4 font-serif text-lg font-medium text-ink">
+                Agency set-up
+              </h3>
+              <AgencySection membership={membership} />
+            </section>
+          </div>
+          <div id="faq" className="scroll-mt-6 space-y-4">
+            <h2 className="border-b border-line pb-2 font-serif text-xl font-medium text-ink">
+              FAQ
             </h2>
-            <NotificationSettings
-              userId={user.id}
-              initialEmailEnabled={emailNotificationsEnabled}
-            />
-          </section>
-
-          <section className="rounded-md border border-line bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-ink">FAQ</h2>
-            <FAQSection />
-          </section>
-
-          <section className="rounded-md border border-error/30 bg-paper-card p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium text-error">
-              Delete your account
-            </h2>
-            <DeleteAccountSection />
-          </section>
+            <section className="rounded-md border border-line bg-paper-card p-6">
+              <FAQSection />
+            </section>
+          </div>
         </div>
       </main>
     </div>
