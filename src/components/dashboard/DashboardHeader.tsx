@@ -2,6 +2,13 @@ import Link from "next/link";
 import { LogoutButton } from "@/app/dashboard/LogoutButton";
 import { Wordmark } from "@/components/Wordmark";
 
+const NAV = [
+  { label: "Profile", href: "/dashboard/settings" },
+  { label: "Billing", href: "/dashboard/settings?tab=billing" },
+  { label: "FAQ", href: "/dashboard/settings?tab=faq" },
+  { label: "Contact us", href: "/dashboard/settings?tab=contact" },
+];
+
 export function DashboardHeader({
   agentLabel,
   backHref,
@@ -21,30 +28,15 @@ export function DashboardHeader({
           <Wordmark tone="light" />
         </Link>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-          <Link
-            href="/dashboard/settings"
-            className="whitespace-nowrap text-navy-soft hover:text-brass"
-          >
-            Settings
-          </Link>
-          <Link
-            href="/dashboard/agency"
-            className="whitespace-nowrap text-navy-soft hover:text-brass"
-          >
-            Agency
-          </Link>
-          <Link
-            href="/dashboard/referrals"
-            className="whitespace-nowrap text-navy-soft hover:text-brass"
-          >
-            Refer &amp; earn
-          </Link>
-          <Link
-            href="/dashboard/settings?tab=contact"
-            className="whitespace-nowrap text-navy-soft hover:text-brass"
-          >
-            Contact us
-          </Link>
+          {NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="whitespace-nowrap text-navy-soft hover:text-brass"
+            >
+              {item.label}
+            </Link>
+          ))}
           <div className="relative">
             <LogoutButton />
             {agentLabel ? (

@@ -9,7 +9,15 @@ import { BillingSection } from "./BillingSection";
 import { AgencySection } from "./AgencySection";
 import { FAQSection } from "./FAQSection";
 import { ContactSection } from "../contact/ContactSection";
-import { SettingsTabs, isSettingsTab, type SettingsTab } from "./SettingsTabs";
+import { isSettingsTab, type SettingsTab } from "./SettingsTabs";
+import Link from "next/link";
+
+const TAB_TITLES: Record<SettingsTab, string> = {
+  profile: "Profile",
+  billing: "Billing",
+  faq: "FAQ",
+  contact: "Contact us",
+};
 import { InstallAppSection } from "./InstallAppSection";
 import { NotificationSettings } from "./NotificationSettings";
 import { DeleteAccountSection } from "./DeleteAccountSection";
@@ -147,9 +155,9 @@ export default async function SettingsPage(
       />
 
       <main className="mx-auto max-w-2xl px-6 py-12">
-        <h1 className="font-serif text-2xl font-medium text-ink">Settings</h1>
-
-        <SettingsTabs active={tab} />
+        <h1 className="font-serif text-2xl font-medium text-ink">
+          {TAB_TITLES[tab]}
+        </h1>
 
         <div className="mt-6 space-y-4">
           {tab === "profile" ? (
@@ -240,6 +248,20 @@ export default async function SettingsPage(
                   Agency set-up
                 </h3>
                 <AgencySection membership={membership} />
+              </section>
+              <section className="rounded-md border border-line bg-paper-card p-6">
+                <h3 className="mb-2 font-serif text-lg font-medium text-ink">
+                  Refer &amp; earn
+                </h3>
+                <p className="text-sm text-ink-soft">
+                  Refer other agents and earn rewards when they subscribe.
+                </p>
+                <Link
+                  href="/dashboard/referrals"
+                  className="mt-3 inline-block text-sm text-brass underline"
+                >
+                  Open Refer &amp; earn
+                </Link>
               </section>
             </>
           ) : null}
