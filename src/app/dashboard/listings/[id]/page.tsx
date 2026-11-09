@@ -20,8 +20,17 @@ import {
   LEVEL_LABELS,
   FINANCE_LABELS,
 } from "@/components/listings/sellerPreferences";
-import { PETS_LABELS, LEASE_TERM_LABELS } from "@/components/listings/landlordPreferences";
-import type { Listing, Feedback, Offer, Applicant, RentalApplication } from "@/lib/types";
+import {
+  PETS_LABELS,
+  LEASE_TERM_LABELS,
+} from "@/components/listings/landlordPreferences";
+import type {
+  Listing,
+  Feedback,
+  Offer,
+  Applicant,
+  RentalApplication,
+} from "@/lib/types";
 
 export default async function ListingDetailPage({
   params,
@@ -36,53 +45,59 @@ export default async function ListingDetailPage({
     redirect("/login");
   }
 
-  const { data: listing } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("id", id)
-    .returns<Listing[]>()
-    .maybeSingle();
-
-  const agencyId = await getUserCurrentAgencyId(supabase, user.id);
-
-  if (!listing || !canAccessListing(listing, user.id, agencyId)) {
-    notFound();
-  }
-
-  const isRental = listing.listing_type === "rental";
-
-  const [{ data: feedback }, { data: offers }, { data: applicants }, { data: rentalApps }] = await Promise.all([
+  // One round of questions instead of several in a row (each is a trip to
+  // the database in Singapore). The responses use the agent's own login, so
+  // the database only returns rows they're allowed to see; the access check
+  // below still decides whether to show the page at all.
+  const [
+    { data: listing },
+    agencyId,
+    { data: feedback },
+    { data: offersRaw },
+    { data: applicantsRaw },
+    { data: rentalAppsRaw },
+  ] = await Promise.all([
+    supabase
+      .from("listings")
+      .select("*")
+      .eq("id", id)
+      .returns<Listing[]>()
+      .maybeSingle(),
+    getUserCurrentAgencyId(supabase, user.id),
     supabase
       .from("feedback")
       .select("*")
       .eq("listing_id", id)
       .order("created_at", { ascending: false })
       .returns<Feedback[]>(),
-    isRental
-      ? Promise.resolve({ data: [] as Offer[] })
-      : supabase
-          .from("offers")
-          .select("*")
-          .eq("listing_id", id)
-          .order("created_at", { ascending: false })
-          .returns<Offer[]>(),
-    isRental
-      ? supabase
-          .from("applicants")
-          .select("*")
-          .eq("listing_id", id)
-          .order("created_at", { ascending: false })
-          .returns<Applicant[]>()
-      : Promise.resolve({ data: [] as Applicant[] }),
-    isRental
-      ? supabase
-          .from("rental_applications")
-          .select("*")
-          .eq("listing_id", id)
-          .order("created_at", { ascending: false })
-          .returns<RentalApplication[]>()
-      : Promise.resolve({ data: [] as RentalApplication[] }),
+    supabase
+      .from("offers")
+      .select("*")
+      .eq("listing_id", id)
+      .order("created_at", { ascending: false })
+      .returns<Offer[]>(),
+    supabase
+      .from("applicants")
+      .select("*")
+      .eq("listing_id", id)
+      .order("created_at", { ascending: false })
+      .returns<Applicant[]>(),
+    supabase
+      .from("rental_applications")
+      .select("*")
+      .eq("listing_id", id)
+      .order("created_at", { ascending: false })
+      .returns<RentalApplication[]>(),
   ]);
+
+  if (!listing || !canAccessListing(listing, user.id, agencyId)) {
+    notFound();
+  }
+
+  const isRental = listing.listing_type === "rental";
+  const offers: Offer[] = isRental ? [] : (offersRaw ?? []);
+  const applicants: Applicant[] = isRental ? (applicantsRaw ?? []) : [];
+  const rentalApps: RentalApplication[] = isRental ? (rentalAppsRaw ?? []) : [];
 
   const unreadFeedbackIds = (feedback ?? [])
     .filter((item) => !item.read_at)
@@ -94,35 +109,47 @@ export default async function ListingDetailPage({
     .filter((item) => !item.read_at)
     .map((item) => item.id);
 
-  if (unreadFeedbackIds.length > 0) {
-    await supabase
-      .from("feedback")
-      .update({ read_at: new Date().toISOString() })
-      .in("id", unreadFeedbackIds);
-  }
-  if (unreadOfferIds.length > 0) {
-    await supabase
-      .from("offers")
-      .update({ read_at: new Date().toISOString() })
-      .in("id", unreadOfferIds);
-  }
-  const unreadRentalIds = (rentalApps ?? []).filter((item) => !item.read_at).map((item) => item.id);
-  if (unreadRentalIds.length > 0) {
-    await supabase
-      .from("rental_applications")
-      .update({ read_at: new Date().toISOString() })
-      .in("id", unreadRentalIds);
-  }
-  if (unreadApplicantIds.length > 0) {
-    await supabase
-      .from("applicants")
-      .update({ read_at: new Date().toISOString() })
-      .in("id", unreadApplicantIds);
-  }
+  const unreadRentalIds = (rentalApps ?? [])
+    .filter((item) => !item.read_at)
+    .map((item) => item.id);
+  // Mark what the agent is now seeing as read, all at once rather than one
+  // table after another.
+  const readAt = new Date().toISOString();
+  await Promise.all([
+    unreadFeedbackIds.length
+      ? supabase
+          .from("feedback")
+          .update({ read_at: readAt })
+          .in("id", unreadFeedbackIds)
+      : null,
+    unreadOfferIds.length
+      ? supabase
+          .from("offers")
+          .update({ read_at: readAt })
+          .in("id", unreadOfferIds)
+      : null,
+    unreadRentalIds.length
+      ? supabase
+          .from("rental_applications")
+          .update({ read_at: readAt })
+          .in("id", unreadRentalIds)
+      : null,
+    unreadApplicantIds.length
+      ? supabase
+          .from("applicants")
+          .update({ read_at: readAt })
+          .in("id", unreadApplicantIds)
+      : null,
+  ]);
 
   const rental = isRental
     ? rankListingApplications(listing, rentalApps ?? [])
-    : { form: null, ready: false, items: [] as RankedItem[], notRanked: [] as string[] };
+    : {
+        form: null,
+        ready: false,
+        items: [] as RankedItem[],
+        notRanked: [] as string[],
+      };
   const rentalForm = rental.form;
   const rentalReady = rental.ready;
   const rankedItems = rental.items;
@@ -217,7 +244,8 @@ export default async function ListingDetailPage({
                   Landlord preferences
                 </h2>
                 <p className="mt-1 text-sm text-ink-soft">
-                  What the landlord cares about — use this to judge applicants below.
+                  What the landlord cares about — use this to judge applicants
+                  below.
                 </p>
               </div>
               <Link
@@ -243,7 +271,9 @@ export default async function ListingDetailPage({
                 ) : null}
                 {listing.landlord_pref_min_lease_term ? (
                   <div>
-                    <dt className="text-xs text-ink-soft">Minimum lease term</dt>
+                    <dt className="text-xs text-ink-soft">
+                      Minimum lease term
+                    </dt>
                     <dd className="text-sm text-ink">
                       {LEASE_TERM_LABELS[listing.landlord_pref_min_lease_term]}
                     </dd>
@@ -325,18 +355,21 @@ export default async function ListingDetailPage({
           <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="font-serif text-xl font-medium text-ink">Rental application</h2>
+                <h2 className="font-serif text-xl font-medium text-ink">
+                  Rental application
+                </h2>
                 {rentalForm ? (
                   <p className="mt-1 text-sm text-ink-soft">
-                    {rentalForm.stateName}: {rentalForm.formName} ({rentalForm.version}).{" "}
+                    {rentalForm.stateName}: {rentalForm.formName} (
+                    {rentalForm.version}).{" "}
                     {rentalReady
                       ? "Applications are open."
                       : "Applications open once you complete the required settings."}
                   </p>
                 ) : (
                   <p className="mt-1 text-sm text-ink-soft">
-                    Applications are switched off. Choose a state with a built form under Edit
-                    listing.
+                    Applications are switched off. Choose a state with a built
+                    form under Edit listing.
                   </p>
                 )}
               </div>
@@ -355,7 +388,11 @@ export default async function ListingDetailPage({
         ) : null}
 
         {rentalForm ? (
-          <RentalApplicationsPanel state={rentalForm.state} items={rankedItems} notRanked={notRanked} />
+          <RentalApplicationsPanel
+            state={rentalForm.state}
+            items={rankedItems}
+            notRanked={notRanked}
+          />
         ) : null}
 
         {isRental ? (

@@ -23,9 +23,43 @@ export default async function DashboardPage() {
   }
 
   const checkFeedbackPrompt = accountAgeDays(user.created_at) >= 30;
-  const agencyId = await getUserCurrentAgencyId(supabase, user.id);
 
-  const listingsQuery = agencyId
+  // Ask for everything that only needs the user at once (each question is a
+  // round trip to the database in Singapore), then the listings, then counts.
+  const [
+    agencyId,
+    { data: subscription },
+    { data: existingFeedback },
+    invites,
+  ] = await Promise.all([
+    getUserCurrentAgencyId(supabase, user.id),
+    supabase
+      .from("subscriptions")
+      .select("status")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    checkFeedbackPrompt
+      ? supabase
+          .from("product_feedback")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    getPendingInvites(user),
+  ]);
+
+  // An agent added to an agency has no solo subscription of their own — the
+  // agency plan covers them, so don't send them to start a solo trial.
+  if (subscription?.status === "incomplete") {
+    const { data: hasAccess } = await supabase.rpc("has_active_access", {
+      uid: user.id,
+    });
+    if (!hasAccess) {
+      redirect("/dashboard/welcome");
+    }
+  }
+
+  const { data: listings } = await (agencyId
     ? supabase
         .from("listings")
         .select("*")
@@ -37,27 +71,7 @@ export default async function DashboardPage() {
         .select("*")
         .eq("agent_id", user.id)
         .order("created_at", { ascending: false })
-        .returns<Listing[]>();
-
-  const [{ data: subscription }, { data: listings }, { data: existingFeedback }] =
-    await Promise.all([
-      supabase.from("subscriptions").select("status").eq("user_id", user.id).maybeSingle(),
-      listingsQuery,
-      checkFeedbackPrompt
-        ? supabase.from("product_feedback").select("id").eq("user_id", user.id).maybeSingle()
-        : Promise.resolve({ data: null }),
-    ]);
-
-  // An agent added to an agency has no solo subscription of their own — the
-  // agency plan covers them, so don't send them to start a solo trial.
-  if (subscription?.status === "incomplete") {
-    const { data: hasAccess } = await supabase.rpc("has_active_access", { uid: user.id });
-    if (!hasAccess) {
-      redirect("/dashboard/welcome");
-    }
-  }
-
-  const invites = await getPendingInvites(user);
+        .returns<Listing[]>());
 
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? "";
   const firstName = fullName.split(" ")[0] || user.email || "there";
@@ -95,15 +109,24 @@ export default async function DashboardPage() {
         .select("listing_id")
         .in("listing_id", listingIds)
         .is("read_at", null),
-      supabase.from("feedback").select("listing_id").in("listing_id", listingIds),
+      supabase
+        .from("feedback")
+        .select("listing_id")
+        .in("listing_id", listingIds),
       supabase.from("offers").select("listing_id").in("listing_id", listingIds),
-      supabase.from("applicants").select("listing_id").in("listing_id", listingIds),
+      supabase
+        .from("applicants")
+        .select("listing_id")
+        .in("listing_id", listingIds),
       supabase
         .from("rental_applications")
         .select("listing_id")
         .in("listing_id", listingIds)
         .is("read_at", null),
-      supabase.from("rental_applications").select("listing_id").in("listing_id", listingIds),
+      supabase
+        .from("rental_applications")
+        .select("listing_id")
+        .in("listing_id", listingIds),
     ]);
 
     for (const row of [
@@ -112,26 +135,40 @@ export default async function DashboardPage() {
       ...(unreadApplicants ?? []),
       ...(unreadRental ?? []),
     ]) {
-      unreadCounts.set(row.listing_id, (unreadCounts.get(row.listing_id) ?? 0) + 1);
+      unreadCounts.set(
+        row.listing_id,
+        (unreadCounts.get(row.listing_id) ?? 0) + 1,
+      );
     }
     for (const row of allFeedback ?? []) {
-      feedbackCounts.set(row.listing_id, (feedbackCounts.get(row.listing_id) ?? 0) + 1);
+      feedbackCounts.set(
+        row.listing_id,
+        (feedbackCounts.get(row.listing_id) ?? 0) + 1,
+      );
     }
     for (const row of allOffers ?? []) {
-      offerCounts.set(row.listing_id, (offerCounts.get(row.listing_id) ?? 0) + 1);
+      offerCounts.set(
+        row.listing_id,
+        (offerCounts.get(row.listing_id) ?? 0) + 1,
+      );
     }
     for (const row of [...(allApplicants ?? []), ...(allRental ?? [])]) {
-      applicantCounts.set(row.listing_id, (applicantCounts.get(row.listing_id) ?? 0) + 1);
+      applicantCounts.set(
+        row.listing_id,
+        (applicantCounts.get(row.listing_id) ?? 0) + 1,
+      );
     }
   }
 
-  const listingsWithCounts: ListingWithCounts[] = (listings ?? []).map((listing) => ({
-    ...listing,
-    feedbackCount: feedbackCounts.get(listing.id) ?? 0,
-    offerCount: offerCounts.get(listing.id) ?? 0,
-    applicantCount: applicantCounts.get(listing.id) ?? 0,
-    unreadCount: unreadCounts.get(listing.id) ?? 0,
-  }));
+  const listingsWithCounts: ListingWithCounts[] = (listings ?? []).map(
+    (listing) => ({
+      ...listing,
+      feedbackCount: feedbackCounts.get(listing.id) ?? 0,
+      offerCount: offerCounts.get(listing.id) ?? 0,
+      applicantCount: applicantCounts.get(listing.id) ?? 0,
+      unreadCount: unreadCounts.get(listing.id) ?? 0,
+    }),
+  );
 
   return (
     <div className="min-h-screen bg-paper">

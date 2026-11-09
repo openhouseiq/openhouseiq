@@ -31,3 +31,19 @@ export async function crmManagerFor(service: SupabaseClient, userId: string): Pr
   }
   return { canManage: true, owner: { userId }, scope: "agent" };
 }
+
+/** Same rules as crmManagerFor, from rows the caller already fetched (saves two database round trips). */
+export function crmManagerFromRows(
+  userId: string,
+  owned: { id: string; name: string } | null,
+  member: { agency_id: string; agencies: unknown } | null,
+): CrmManager {
+  if (owned) {
+    return { canManage: true, owner: { agencyId: owned.id }, scope: "agency", agencyName: owned.name };
+  }
+  if (member) {
+    const name = (member.agencies as { name: string } | null)?.name ?? "your agency";
+    return { canManage: false, reason: "Your agency owner manages the CRM connection.", agencyName: name };
+  }
+  return { canManage: true, owner: { userId }, scope: "agent" };
+}

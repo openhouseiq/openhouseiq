@@ -50,6 +50,12 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Don't advertise the framework in every response.
   poweredByHeader: false,
+  // Keep recently visited dashboard pages in the browser for 30 seconds, so
+  // going back and forth between sections is instant instead of a fresh
+  // server round trip each time. Saving anything still refreshes the page.
+  experimental: {
+    staleTimes: { dynamic: 30 },
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

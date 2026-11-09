@@ -53,9 +53,12 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() checks the session token's signature locally against the
+  // project's published signing key (ECC), so most requests make no network
+  // call to Supabase. It still refreshes an expired session. getUser() went to
+  // the Auth server (Singapore) on every page load, which made each click slow.
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const user = claimsData?.claims?.sub ? { id: claimsData.claims.sub } : null;
 
   const path = request.nextUrl.pathname;
   const isAuthRoute = path === "/" || AUTH_PREFIXES.some((p) => path.startsWith(p));
