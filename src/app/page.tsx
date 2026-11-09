@@ -491,6 +491,10 @@ export default function Home() {
           <Link href="/contact" className="underline hover:text-brass">
             Contact
           </Link>
+          <span className="mx-2">·</span>
+          <Link href="/open-home-sign-in-app" className="underline hover:text-brass">
+            Open home sign-in app
+          </Link>
         </p>
       </footer>
 

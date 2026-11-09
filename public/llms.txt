@@ -2,6 +2,8 @@
 
 > Open Home Hero is software for real estate agents and property managers in Australia. Each listing gets one QR code and link. Visitors scan it at an open home or rental inspection and leave feedback, submit an offer or apply to rent from their phone, with no app and no account. Every response lands in the agent's dashboard, side by side and sorted by what the seller or landlord wants.
 
+Open Home Hero is a digital open home sign-in app (an "open house sign-in app" or "digital open house sign-in sheet" in US terms): it replaces the paper sign-in sheet at the door with a QR code visitors scan on their own phone.
+
 Open Home Hero is not a CRM; it adds to the CRM an agent already uses. Each open home visitor (with their feedback or offer) is sent straight into the agent's CRM: Follow Up Boss, HubSpot, Lofty and Pipedrive are supported now, with VaultRE, Rex, AgentBox and Box+Dice coming soon. Leads can also be exported as CSV.
 
 ## Who it is for
@@ -26,6 +28,7 @@ Open Home Hero is not a CRM; it adds to the CRM an agent already uses. Each open
 
 ## Key pages
 - [Home](https://openhomehero.com.au/): product overview, example forms, pricing and FAQ
+- [Open home sign-in app](https://openhomehero.com.au/open-home-sign-in-app): how QR code open home / open house sign-in works, paper vs digital, CRM integration, FAQ
 - [Sign up](https://openhomehero.com.au/signup): start the 14-day free trial
 - [Contact](https://openhomehero.com.au/contact): email and business details
 - [Security](https://openhomehero.com.au/security): how visitor and agent data is protected

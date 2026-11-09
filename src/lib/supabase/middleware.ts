@@ -21,6 +21,7 @@ const PUBLIC_PREFIXES = [
   "/privacy",
   "/security",
   "/contact",
+  "/open-home-sign-in-app",
 ];
 
 const AUTH_PREFIXES = ["/login", "/signup", "/forgot-password"];
