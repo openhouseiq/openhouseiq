@@ -57,11 +57,16 @@ export function CrmSection({
 }) {
   const router = useRouter();
   const [pasting, setPasting] = useState<CrmProviderView["id"] | null>(null);
+  const [choice, setChoice] = useState<CrmProviderView["id"] | "">("");
   const [token, setToken] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const banner = notice ? NOTICES[notice] : null;
   const connected = connection ? providers.find((p) => p.id === connection.provider) : null;
+  const byName = (a: CrmProviderView, b: CrmProviderView) => a.name.localeCompare(b.name);
+  const available = providers.filter((p) => p.available).sort(byName);
+  const comingSoon = providers.filter((p) => !p.available).sort(byName);
+  const chosen = choice ? (providers.find((p) => p.id === choice) ?? null) : null;
 
   async function saveToken(provider: CrmProviderView["id"]) {
     setBusy(true);
@@ -78,6 +83,7 @@ export function CrmSection({
       return;
     }
     setPasting(null);
+    setChoice("");
     setToken("");
     router.replace("/dashboard/settings?crm=connected#crm");
     router.refresh();
@@ -158,32 +164,59 @@ export function CrmSection({
       ) : null}
 
       {!connection ? (
-        <ul className="divide-y divide-line rounded-md border border-line bg-white">
-          {providers.map((p) => (
-            <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
-              <span className="text-sm font-medium text-ink">{p.name}</span>
-              {!p.available ? (
-                <span className="text-xs text-[#3b4657]">Coming soon</span>
-              ) : !canManage ? (
-                <span className="text-xs text-[#3b4657]">Ask your agency owner</span>
-              ) : p.oauth ? (
-                <a href={`/api/crm/${p.id}/start`}>
-                  <Button type="button">Connect</Button>
-                </a>
-              ) : (
-                <Button type="button" onClick={() => setPasting(p.id)}>
-                  Connect
-                </Button>
-              )}
-            </li>
-          ))}
-        </ul>
+        <div className="space-y-3 rounded-md border border-line bg-white p-4">
+          <label htmlFor="crm-choice" className="block text-sm font-medium text-ink">
+            Which CRM do you use?
+          </label>
+          <select
+            id="crm-choice"
+            value={choice}
+            onChange={(e) => {
+              const id = e.target.value as CrmProviderView["id"] | "";
+              setChoice(id);
+              setToken("");
+              setError(null);
+              const p = providers.find((x) => x.id === id);
+              setPasting(p && p.available && !p.oauth && canManage ? p.id : null);
+            }}
+            className="w-full rounded-md border border-line bg-paper-card px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none sm:w-80"
+          >
+            <option value="">Select your CRM…</option>
+            {available.length ? (
+              <optgroup label="Available now">
+                {available.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </optgroup>
+            ) : null}
+            {comingSoon.length ? (
+              <optgroup label="Coming soon">
+                {comingSoon.map((p) => (
+                  <option key={p.id} value={p.id} disabled>
+                    {p.name} (coming soon)
+                  </option>
+                ))}
+              </optgroup>
+            ) : null}
+          </select>
+
+          {chosen && !canManage ? (
+            <p className="text-sm text-[#3b4657]">Ask your agency owner to connect {chosen.name}.</p>
+          ) : null}
+          {chosen && canManage && chosen.oauth ? (
+            <a href={`/api/crm/${chosen.id}/start`}>
+              <Button type="button">Connect {chosen.name}</Button>
+            </a>
+          ) : null}
+        </div>
       ) : null}
 
       {pasting ? (
         <div className="rounded-md border border-line bg-white p-4">
           <label htmlFor="crm-token" className="block text-sm font-medium text-ink">
-            Paste your {providers.find((p) => p.id === pasting)?.name} access token
+            Paste your {providers.find((p) => p.id === pasting)?.name} key
           </label>
           <p className="mt-1 text-xs text-[#3b4657]">{TOKEN_HELP[pasting]}</p>
           <textarea
@@ -199,7 +232,15 @@ export function CrmSection({
             <Button type="button" disabled={busy || token.trim().length < 10} onClick={() => saveToken(pasting)}>
               {busy ? "Checking…" : "Connect"}
             </Button>
-            <Button type="button" variant="secondary" onClick={() => setPasting(null)}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setPasting(null);
+                setChoice("");
+                setToken("");
+              }}
+            >
               Cancel
             </Button>
           </div>
