@@ -25,7 +25,7 @@ const contentSecurityPolicy = [
   `img-src 'self' data: blob: ${supabase.http} https://www.facebook.com`,
   "font-src 'self' data:",
   `connect-src 'self' ${supabase.http} ${supabase.ws} https://challenges.cloudflare.com https://www.facebook.com https://connect.facebook.net https://cloudflareinsights.com`,
-  "frame-src https://challenges.cloudflare.com",
+  "frame-src https://challenges.cloudflare.com https://www.youtube-nocookie.com",
   "worker-src 'self'",
   "manifest-src 'self'",
   "object-src 'none'",
