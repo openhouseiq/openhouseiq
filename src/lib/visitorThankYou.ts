@@ -45,7 +45,7 @@ export function buildThankYouEmail(input: ThankYouInput): { subject: string; bod
     };
   }
 
-  const followUp = input.wantsFollowup ? " and will be in touch soon" : "";
+  const followUp = input.wantsFollowup ? " and will call you back soon" : "";
   return {
     subject: `Thanks for visiting ${input.address}`,
     body: [

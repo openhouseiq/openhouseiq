@@ -84,7 +84,7 @@ describe("visitor thank-you email", () => {
     const { subject, body } = buildThankYouEmail({ ...base, kind: "feedback", wantsFollowup: true });
     expect(subject).toBe("Thanks for visiting 5 Tent St, West QLD");
     expect(body).toContain("Hi Sam,");
-    expect(body).toContain("Mick Orr has received it and will be in touch soon.");
+    expect(body).toContain("Mick Orr has received it and will call you back soon.");
     expect(body).toContain("Mick Orr\n0400 000 000\nmick@example.com");
   });
 

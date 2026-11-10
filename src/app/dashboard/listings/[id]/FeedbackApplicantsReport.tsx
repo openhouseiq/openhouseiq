@@ -148,7 +148,7 @@ export function FeedbackApplicantsReport({
       "Condition",
       "Location",
       "Layout",
-      "Wants follow-up",
+      "Callback requested",
       "Comments",
       "Your questions",
     ];
@@ -278,7 +278,7 @@ export function FeedbackApplicantsReport({
                     <ContactLine
                       email={item.email}
                       phone={item.phone}
-                      suffix={item.wants_followup ? "Wants follow-up" : null}
+                      suffix={item.wants_followup ? "Callback requested" : null}
                       className="mt-0.5 text-xs text-ink-soft"
                     />
                   ) : null}

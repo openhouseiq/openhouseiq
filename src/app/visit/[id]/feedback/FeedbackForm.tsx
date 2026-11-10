@@ -114,132 +114,147 @@ export function FeedbackForm({
 
   if (submitted) {
     return (
-      <p className="text-center text-sm text-ink">
-        Thanks for your feedback!
-      </p>
+      <div className="space-y-2 text-center">
+        <p className="font-serif text-xl text-ink">You&apos;re signed in. Thanks for your feedback!</p>
+        <p className="text-sm text-ink-soft">
+          {wantsFollowup
+            ? "The agent has your callback request and will be in touch."
+            : "The agent has your details."}
+        </p>
+      </div>
     );
   }
 
+  const sectionTitle = "font-serif text-lg font-medium text-ink";
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label className="mb-1.5 block text-sm font-medium text-ink">
-          How interested are you in this property?
-        </label>
-        <div className="space-y-1.5">
-          {interestLevels(isRental).map((level) => (
-            <button
-              key={level.value}
-              type="button"
-              onClick={() => setInterestLevel(level.value)}
-              className={`w-full rounded-md border px-3 py-2 text-left text-sm ${
-                interestLevel === level.value
-                  ? "border-brass bg-brass/5 text-ink"
-                  : "border-line text-ink-soft"
-              }`}
-            >
-              {level.label}
-            </button>
-          ))}
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <section className="space-y-4">
+        <div>
+          <h3 className={sectionTitle}>1. Sign in</h3>
+          <p className="mt-1 text-xs text-ink-soft">
+            Your details go only to the agent hosting this {isRental ? "inspection" : "open home"}.
+          </p>
         </div>
-      </div>
+        <Field label="Name" id="name" type="text" autoComplete="name" required />
+        <Field label="Email" id="email" type="email" autoComplete="email" required />
+        <Field label="Phone" id="phone" type="tel" autoComplete="tel" required />
+        <label className="flex items-start gap-3 rounded-md border border-brass/60 bg-brass/5 p-3 text-sm text-ink">
+          <input
+            type="checkbox"
+            checked={wantsFollowup}
+            onChange={(e) => setWantsFollowup(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-line text-brass focus:ring-brass"
+          />
+          <span>
+            <span className="font-medium">Please call me back</span>
+            <span className="block text-xs text-ink-soft">
+              Tick this and the agent will give you a call.
+            </span>
+          </span>
+        </label>
+      </section>
 
-      <div className="space-y-3 rounded-md border border-line p-4">
-        <StarRating label="Price" value={ratingPrice} onChange={setRatingPrice} />
-        <StarRating
-          label="Condition"
-          value={ratingCondition}
-          onChange={setRatingCondition}
-        />
-        <StarRating
-          label="Location"
-          value={ratingLocation}
-          onChange={setRatingLocation}
-        />
-        <StarRating label="Layout" value={ratingLayout} onChange={setRatingLayout} />
-      </div>
+      <section className="space-y-5 border-t border-line pt-6">
+        <h3 className={sectionTitle}>2. Your feedback</h3>
 
-      <div className="space-y-2">
-        {isRental ? null : (
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-ink">
+            How interested are you in this property?
+          </label>
+          <div className="space-y-1.5">
+            {interestLevels(isRental).map((level) => (
+              <button
+                key={level.value}
+                type="button"
+                onClick={() => setInterestLevel(level.value)}
+                className={`w-full rounded-md border px-3 py-2 text-left text-sm ${
+                  interestLevel === level.value
+                    ? "border-brass bg-brass/5 text-ink"
+                    : "border-line text-ink-soft"
+                }`}
+              >
+                {level.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-3 rounded-md border border-line p-4">
+          <StarRating label="Price" value={ratingPrice} onChange={setRatingPrice} />
+          <StarRating label="Condition" value={ratingCondition} onChange={setRatingCondition} />
+          <StarRating label="Location" value={ratingLocation} onChange={setRatingLocation} />
+          <StarRating label="Layout" value={ratingLayout} onChange={setRatingLayout} />
+        </div>
+
+        <div className="space-y-2">
+          {isRental ? null : (
+            <label className="flex items-center gap-2 text-sm text-ink">
+              <input
+                type="checkbox"
+                checked={preApproved}
+                onChange={(e) => setPreApproved(e.target.checked)}
+                className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
+              />
+              I&apos;m pre-approved for finance
+            </label>
+          )}
           <label className="flex items-center gap-2 text-sm text-ink">
             <input
               type="checkbox"
-              checked={preApproved}
-              onChange={(e) => setPreApproved(e.target.checked)}
+              checked={workingWithAgent}
+              onChange={(e) => setWorkingWithAgent(e.target.checked)}
               className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
             />
-            I&apos;m pre-approved for finance
+            I&apos;m already working with an agent
           </label>
-        )}
-        <label className="flex items-center gap-2 text-sm text-ink">
-          <input
-            type="checkbox"
-            checked={workingWithAgent}
-            onChange={(e) => setWorkingWithAgent(e.target.checked)}
-            className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
-          />
-          I&apos;m already working with an agent
-        </label>
-        {isRental ? null : (
-          <div>
-            <label
-              htmlFor="timeframe"
-              className="mb-1.5 block text-sm font-medium text-ink"
-            >
-              Purchase timeframe
-            </label>
-            <select
-              id="timeframe"
-              value={timeframe}
-              required
-              onChange={(e) => setTimeframe(e.target.value as PurchaseTimeframe)}
-              className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
-            >
-              <option value="" disabled>
-                Select one…
-              </option>
-              {TIMEFRAMES.map((tf) => (
-                <option key={tf.value} value={tf.value}>
-                  {tf.label}
+          {isRental ? null : (
+            <div>
+              <label htmlFor="timeframe" className="mb-1.5 block text-sm font-medium text-ink">
+                Purchase timeframe
+              </label>
+              <select
+                id="timeframe"
+                value={timeframe}
+                required
+                onChange={(e) => setTimeframe(e.target.value as PurchaseTimeframe)}
+                className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
+              >
+                <option value="" disabled>
+                  Select one…
                 </option>
-              ))}
-            </select>
-          </div>
-        )}
+                {TIMEFRAMES.map((tf) => (
+                  <option key={tf.value} value={tf.value}>
+                    {tf.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+
+        {customQuestions.map((question, i) => (
+          <TextAreaField
+            key={i}
+            label={`${question} (optional)`}
+            id={`customAnswer${i}`}
+            rows={2}
+            maxLength={CUSTOM_ANSWER_MAX}
+          />
+        ))}
+
+        <TextAreaField label="Comments (optional)" id="comments" rows={3} />
+      </section>
+
+      <div className="space-y-4">
+        <Turnstile />
+
+        {error ? <p className="text-sm text-error">{error}</p> : null}
+
+        <Button type="submit" variant="primary" disabled={loading} className="w-full">
+          {loading ? "Sending…" : "Sign in & send feedback"}
+        </Button>
       </div>
-
-      {customQuestions.map((question, i) => (
-        <TextAreaField
-          key={i}
-          label={`${question} (optional)`}
-          id={`customAnswer${i}`}
-          rows={2}
-          maxLength={CUSTOM_ANSWER_MAX}
-        />
-      ))}
-
-      <Field label="Name" id="name" type="text" required />
-      <Field label="Email" id="email" type="email" required />
-      <Field label="Phone" id="phone" type="tel" required />
-      <label className="flex items-center gap-2 text-sm text-ink">
-        <input
-          type="checkbox"
-          checked={wantsFollowup}
-          onChange={(e) => setWantsFollowup(e.target.checked)}
-          className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
-        />
-        I&apos;d like the agent to follow up with me
-      </label>
-
-      <TextAreaField label="Comments (optional)" id="comments" rows={4} />
-
-      <Turnstile />
-
-      {error ? <p className="text-sm text-error">{error}</p> : null}
-
-      <Button type="submit" variant="primary" disabled={loading} className="w-full">
-        {loading ? "Sending…" : "Send feedback"}
-      </Button>
     </form>
   );
 }
