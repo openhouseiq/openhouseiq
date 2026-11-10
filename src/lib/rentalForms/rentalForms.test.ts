@@ -7,9 +7,9 @@ import type { RentalFormDefinition } from "./types";
 
 const forms = Object.values(RENTAL_FORMS);
 
-function sample(form: RentalFormDefinition) {
+function sample(form: RentalFormDefinition, sections = form.applicantSections) {
   const out: Record<string, string | boolean | number> = {};
-  for (const f of form.applicantSections.flatMap((s) => s.fields)) {
+  for (const f of sections.flatMap((s) => s.fields)) {
     if (!f.required) continue;
     out[f.id] =
       f.type === "checkbox" || f.type === "yesno"
@@ -67,6 +67,14 @@ describe.each(forms.map((f) => [f.state, f] as const))("%s form", (_state, form)
 
   it("is not open for applications until the agent's required items are saved", () => {
     expect(agentConfigComplete(form, {})).toBe(false);
+  });
+
+  it("opens for applications once the agent's required items are saved, then takes and ranks an application", () => {
+    const config = sample(form, form.agentSections);
+    expect(agentConfigComplete(form, config)).toBe(true);
+    const clean = cleanApplicantAnswers(form, sample(form));
+    const ranked = rankApplicants([toRankable(form, "a1", clean, config)], rankingContext(form, 500, {}));
+    expect(ranked).toHaveLength(1);
   });
 
   it("reads the contact details from a submission", () => {

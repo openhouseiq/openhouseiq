@@ -1,4 +1,4 @@
-export type RentalState = "QLD" | "VIC" | "SA" | "WA" | "NT" | "NSW";
+export type RentalState = "QLD" | "VIC" | "SA" | "WA" | "NT" | "NSW" | "OTHER";
 
 export type FieldType =
   | "text"

@@ -101,7 +101,12 @@ export function NewListingForm() {
       return;
     }
 
-    router.push(`/dashboard/listings/${listing.id}`);
+    // A rental can't take applications until its settings are saved, so go there next.
+    router.push(
+      listingType === "rental" && rentalState
+        ? `/dashboard/listings/${listing.id}/rental-settings?new=1`
+        : `/dashboard/listings/${listing.id}`,
+    );
     router.refresh();
   }
 

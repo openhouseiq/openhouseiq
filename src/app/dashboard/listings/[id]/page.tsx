@@ -352,11 +352,15 @@ export default async function ListingDetailPage({
         )}
 
         {isRental ? (
-          <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
+          <div
+            className={`mt-10 rounded-md border p-6 ${
+              rentalReady ? "border-line bg-paper-card" : "border-2 border-brass bg-brass/10"
+            }`}
+          >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="font-serif text-xl font-medium text-ink">
-                  Rental application
+                  {rentalReady ? "Rental application" : "Rental applications are closed"}
                 </h2>
                 {rentalForm ? (
                   <p className="mt-1 text-sm text-ink-soft">
@@ -364,7 +368,7 @@ export default async function ListingDetailPage({
                     {rentalForm.version}).{" "}
                     {rentalReady
                       ? "Applications are open."
-                      : "Applications open once you complete the required settings."}
+                      : "Visitors who scan your QR code can't apply yet. Fill in the Rental settings (it takes about two minutes) to open applications."}
                   </p>
                 ) : (
                   <p className="mt-1 text-sm text-ink-soft">
@@ -379,9 +383,13 @@ export default async function ListingDetailPage({
                     ? `/dashboard/listings/${listing.id}/rental-settings`
                     : `/dashboard/listings/${listing.id}/edit`
                 }
-                className="shrink-0 text-sm text-brass underline"
+                className={
+                  rentalReady
+                    ? "shrink-0 text-sm text-brass underline"
+                    : "shrink-0 rounded-md bg-brass px-4 py-2 text-sm font-medium text-ink hover:bg-brass-deep hover:text-paper"
+                }
               >
-                {rentalForm ? "Rental settings" : "Edit listing"}
+                {rentalForm ? (rentalReady ? "Rental settings" : "Complete rental settings") : "Edit listing"}
               </Link>
             </div>
           </div>

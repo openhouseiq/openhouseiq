@@ -14,8 +14,21 @@ import {
 const inputClasses =
   "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass";
 
-function initialValues(config: Record<string, unknown>): AnswerMap {
+export type AgentDefaults = { name: string; email: string; phone: string };
+
+/** Fills the agent's own contact fields from their profile, unless already saved. */
+function initialValues(
+  config: Record<string, unknown>,
+  fieldIds: string[],
+  defaults: AgentDefaults,
+): AnswerMap {
   const out: AnswerMap = {};
+  for (const prefix of ["manager", "provider", "agent"]) {
+    for (const [key, value] of [["name", defaults.name], ["email", defaults.email], ["phone", defaults.phone]]) {
+      const id = `${prefix}_${key}`;
+      if (value && fieldIds.includes(id)) out[id] = value;
+    }
+  }
   for (const [k, v] of Object.entries(config)) {
     if (k === "ranking") continue;
     if (typeof v === "boolean" || typeof v === "string") out[k] = v;
@@ -29,16 +42,20 @@ export function RentalSettingsForm({
   state,
   config,
   leasedOn,
+  agentDefaults,
 }: {
   listingId: string;
   state: RentalState;
   config: Record<string, unknown>;
   leasedOn: string | null;
+  agentDefaults: AgentDefaults;
 }) {
   const router = useRouter();
   const form = RENTAL_FORMS[state];
   const ranking = (config.ranking ?? {}) as { maxRentShare?: number | null; preferredMoveIn?: string | null };
-  const [values, setValues] = useState<AnswerMap>(initialValues(config));
+  const [values, setValues] = useState<AnswerMap>(() =>
+    initialValues(config, form.agentSections.flatMap((s) => s.fields.map((f) => f.id)), agentDefaults),
+  );
   const [share, setShare] = useState(
     ranking.maxRentShare ? String(Math.round(ranking.maxRentShare * 100)) : "30",
   );
@@ -97,9 +114,13 @@ export function RentalSettingsForm({
   return (
     <form onSubmit={save} className="mt-8 space-y-6">
       <div className="rounded-md border border-line bg-paper-card p-4 text-sm text-ink-soft">
-        <strong className="text-ink">{form.formName}</strong> ({form.version}). These are the
-        items the official {form.stateName} form says the agent completes. Applicants see them on
-        the form, and applications open once every required item is saved.
+        <strong className="text-ink">{form.formName}</strong> ({form.version}).{" "}
+        {form.state === "OTHER"
+          ? "A general application form for properties outside the Australian states we support. Check your local rules on what you may ask applicants."
+          : `These are the items the official ${form.stateName} form says the agent completes.`}{" "}
+        Applicants see them on the form. <strong className="text-ink">Applications open as soon as
+        every item marked * is saved.</strong> Your name, email and phone are filled in from your
+        profile.
       </div>
 
       <RentalFormSections sections={form.agentSections} values={values} onChange={onChange} />

@@ -48,6 +48,11 @@ export default async function RentalSettingsPage({
             state={form.state}
             config={listing.rental_config ?? {}}
             leasedOn={listing.leased_on}
+            agentDefaults={{
+              name: fullName,
+              email: user.email ?? "",
+              phone: typeof user.user_metadata?.phone === "string" ? user.user_metadata.phone : "",
+            }}
           />
         ) : (
           <p className="mt-8 rounded-md border border-line bg-paper-card p-4 text-sm text-ink">

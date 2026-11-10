@@ -5,6 +5,7 @@ import { saForm } from "./sa";
 import { waForm } from "./wa";
 import { ntForm } from "./nt";
 import { nswForm } from "./nsw";
+import { otherForm } from "./other";
 
 export type { RentalFormDefinition, RentalState } from "./types";
 
@@ -15,6 +16,7 @@ export const RENTAL_FORMS: Record<RentalState, RentalFormDefinition> = {
   WA: waForm,
   NT: ntForm,
   NSW: nswForm,
+  OTHER: otherForm,
 };
 
 /** States researched but not built: no verified rules yet, so applications stay off. */

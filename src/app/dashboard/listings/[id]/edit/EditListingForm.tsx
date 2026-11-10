@@ -80,7 +80,12 @@ export function EditListingForm({ listing }: { listing: Listing }) {
       return;
     }
 
-    router.push(`/dashboard/listings/${listing.id}`);
+    // A new state means a different official form, so its settings need completing.
+    router.push(
+      listing.listing_type === "rental" && rentalState && rentalState !== listing.state
+        ? `/dashboard/listings/${listing.id}/rental-settings?new=1`
+        : `/dashboard/listings/${listing.id}`,
+    );
     router.refresh();
   }
 

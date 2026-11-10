@@ -17,6 +17,7 @@ function toWeekly(amount: number | null, frequency: unknown): number | null {
   if (amount === null) return null;
   if (frequency === "fortnight") return amount / 2;
   if (frequency === "month") return (amount * 12) / 52;
+  if (frequency === "year") return amount / 52;
   return amount;
 }
 
@@ -38,6 +39,8 @@ function weeklyIncome(state: RentalState, a: Answers): number | null {
     case "NT":
     case "NSW":
       return num(a.weekly_income);
+    case "OTHER":
+      return toWeekly(num(a.income_amount), a.income_frequency);
     case "WA": {
       const main = toWeekly(num(a.net_income), a.net_income_frequency);
       const other = toWeekly(num(a.other_income), a.other_income_frequency);
@@ -64,6 +67,7 @@ function refereeCount(state: RentalState, a: Answers): number {
     case "NT":
       return str(a.referee_name) ? 1 : 0;
     case "NSW":
+    case "OTHER":
       return str(a.landlord_name) ? 1 : 0;
     default:
       return [a.referee_1_name, a.referee_2_name].filter((v) => str(v)).length;
