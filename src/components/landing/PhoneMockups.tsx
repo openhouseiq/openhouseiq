@@ -109,8 +109,8 @@ export function PhoneMockups() {
 
         <div className="mx-auto mt-12 grid max-w-3xl gap-12 sm:grid-cols-2 sm:gap-6">
           <Phone
-            title="Provide feedback"
-            caption="Feedback: interest level, star ratings and contact details"
+            title="Sign in & give feedback"
+            caption="Sign-in: contact details, a callback request, interest level and star ratings"
           >
             <p className="font-medium text-ink">How interested are you?</p>
             <div className="space-y-1">

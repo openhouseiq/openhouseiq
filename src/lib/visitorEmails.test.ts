@@ -5,39 +5,59 @@ import { buildThankYouEmail, safeDisplayName } from "./visitorThankYou";
 import { feedbackRecord } from "./crm/record";
 
 describe("custom questions", () => {
-  it("keeps up to three trimmed, non-blank questions", () => {
-    expect(cleanQuestions(["  Selling too? ", "", null, "Q2", "Q3", "Q4"])).toEqual(["Selling too?", "Q2", "Q3"]);
-  });
+  const q = (text: unknown, kind: unknown = "choice") => ({ text, kind });
 
-  it("cuts very long questions to 140 characters", () => {
-    expect(cleanQuestions(["x".repeat(200)])[0]).toHaveLength(140);
-  });
-
-  it("reads saved questions defensively", () => {
-    expect(parseQuestions(null)).toEqual([]);
-    expect(parseQuestions("nope")).toEqual([]);
-    expect(parseQuestions(["A", 5, "B"])).toEqual(["A", "B"]);
-  });
-
-  it("pairs answers with questions by position and skips blanks", () => {
-    expect(buildAnswers(["Selling too?", "What would stop you?"], ["Yes, in 6 months", "  "])).toEqual([
-      { question: "Selling too?", answer: "Yes, in 6 months" },
+  it("keeps up to three trimmed, non-blank questions with their answer type", () => {
+    expect(cleanQuestions([q("  Selling too? "), q(""), q(null), q("Q2", "text"), q("Q3"), q("Q4")])).toEqual([
+      { text: "Selling too?", kind: "choice" },
+      { text: "Q2", kind: "text" },
+      { text: "Q3", kind: "choice" },
     ]);
   });
 
+  it("defaults new questions to Yes / No / Undecided", () => {
+    expect(cleanQuestions([q("Selling too?", null)])).toEqual([{ text: "Selling too?", kind: "choice" }]);
+  });
+
+  it("cuts very long questions to 140 characters", () => {
+    expect(cleanQuestions([q("x".repeat(200))])[0].text).toHaveLength(140);
+  });
+
+  it("reads saved questions defensively, treating older plain-text questions as written answers", () => {
+    expect(parseQuestions(null)).toEqual([]);
+    expect(parseQuestions("nope")).toEqual([]);
+    expect(parseQuestions(["Old question", 5, { text: "New", kind: "choice" }])).toEqual([
+      { text: "Old question", kind: "text" },
+      { text: "New", kind: "choice" },
+    ]);
+  });
+
+  const selling = { text: "Selling too?", kind: "choice" as const };
+  const stop = { text: "What would stop you?", kind: "text" as const };
+
+  it("pairs answers with questions by position and skips blanks", () => {
+    expect(buildAnswers([selling, stop], ["Undecided", "  "])).toEqual([{ question: "Selling too?", answer: "Undecided" }]);
+    expect(buildAnswers([selling, stop], ["", "Price"])).toEqual([{ question: "What would stop you?", answer: "Price" }]);
+  });
+
+  it("only accepts Yes, No or Undecided for a choice question", () => {
+    expect(buildAnswers([selling], ["Yes"])).toEqual([{ question: "Selling too?", answer: "Yes" }]);
+    expect(() => buildAnswers([selling], ["Maybe later"])).toThrow(ValidationError);
+  });
+
   it("ignores answers to questions that don't exist", () => {
-    expect(buildAnswers(["Only one"], ["a", "b"])).toEqual([{ question: "Only one", answer: "a" }]);
+    expect(buildAnswers([stop], ["a", "b"])).toEqual([{ question: "What would stop you?", answer: "a" }]);
   });
 
   it("treats missing answers as none", () => {
-    expect(buildAnswers(["Q"], undefined)).toEqual([]);
+    expect(buildAnswers([selling], undefined)).toEqual([]);
   });
 
   it("rejects bad input", () => {
-    expect(() => buildAnswers(["Q"], "text")).toThrow(ValidationError);
-    expect(() => buildAnswers(["Q"], [42])).toThrow(ValidationError);
-    expect(() => buildAnswers(["Q"], ["x".repeat(501)])).toThrow(ValidationError);
-    expect(() => buildAnswers(["Q"], ["a", "b", "c", "d"])).toThrow(ValidationError);
+    expect(() => buildAnswers([stop], "text")).toThrow(ValidationError);
+    expect(() => buildAnswers([stop], [42])).toThrow(ValidationError);
+    expect(() => buildAnswers([stop], ["x".repeat(501)])).toThrow(ValidationError);
+    expect(() => buildAnswers([stop], ["a", "b", "c", "d"])).toThrow(ValidationError);
   });
 
   it("reads saved answers defensively", () => {
@@ -84,13 +104,13 @@ describe("visitor thank-you email", () => {
     const { subject, body } = buildThankYouEmail({ ...base, kind: "feedback", wantsFollowup: true });
     expect(subject).toBe("Thanks for visiting 5 Tent St, West QLD");
     expect(body).toContain("Hi Sam,");
-    expect(body).toContain("Mick Orr has received it and will be in touch soon.");
+    expect(body).toContain("Mick Orr has your details and will call you back soon.");
     expect(body).toContain("Mick Orr\n0400 000 000\nmick@example.com");
   });
 
   it("doesn't promise a follow-up the visitor didn't ask for", () => {
     const { body } = buildThankYouEmail({ ...base, kind: "feedback", wantsFollowup: false });
-    expect(body).toContain("Mick Orr has received it.");
+    expect(body).toContain("Mick Orr has your details.");
   });
 
   it("confirms an offer without accepting it", () => {
@@ -106,5 +126,25 @@ describe("visitor thank-you email", () => {
 
   it("makes the agent's name safe for the From header", () => {
     expect(safeDisplayName('Mick "the" <Hero>\r\nBcc: x')).toBe("Mick the Hero Bcc: x");
+  });
+});
+
+import { parseOfferAmount } from "./offerAmount";
+
+describe("offer amount typing", () => {
+  it("reads the ways buyers type amounts", () => {
+    expect(parseOfferAmount("750000")).toBe(750000);
+    expect(parseOfferAmount("$750,000")).toBe(750000);
+    expect(parseOfferAmount(" 750 000 ")).toBe(750000);
+    expect(parseOfferAmount("750k")).toBe(750000);
+    expect(parseOfferAmount("1.25m")).toBe(1250000);
+    expect(parseOfferAmount("1.2M")).toBe(1200000);
+  });
+
+  it("refuses anything that isn't an amount", () => {
+    expect(parseOfferAmount("")).toBeNull();
+    expect(parseOfferAmount("abc")).toBeNull();
+    expect(parseOfferAmount("0")).toBeNull();
+    expect(parseOfferAmount("750,000 or best")).toBeNull();
   });
 });

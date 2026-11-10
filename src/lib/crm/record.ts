@@ -121,7 +121,7 @@ export function feedbackRecord(row: CrmFeedbackRow, listing: CrmListing): CrmRec
         ["Buying timeframe", row.purchase_timeframe ? TIMEFRAME[row.purchase_timeframe] ?? row.purchase_timeframe : null],
         ["Pre-approved", yesNo(row.pre_approved)],
         ["Working with another agent", yesNo(row.working_with_agent)],
-        ["Wants a follow-up", yesNo(row.wants_followup)],
+        ["Callback requested", yesNo(row.wants_followup)],
         ["Ratings", ratings.length ? ratings.join(", ") : null],
         ["Comments", row.comments],
         ...parseAnswers(row.custom_answers).map((a): [string, string] => [a.question, a.answer]),

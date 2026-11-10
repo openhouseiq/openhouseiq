@@ -21,7 +21,8 @@ export default async function FeedbackPage({
 
   return (
     <VisitLayout>
-      <h2 className="mb-6 text-center font-serif text-2xl font-medium text-ink">
+      <p className="text-center text-sm text-ink-soft">Open home sign-in</p>
+      <h2 className="mb-6 mt-1 text-center font-serif text-2xl font-medium text-ink">
         {listing.address}
       </h2>
       {listing.agent_name ? (
@@ -46,6 +47,7 @@ export default async function FeedbackPage({
         listingId={listing.id}
         isRental={listing.listing_type === "rental"}
         customQuestions={parseQuestions(listing.custom_questions)}
+        offerHref={listing.listing_type === "sale" ? `/visit/${listing.id}/offer` : undefined}
       />
     </VisitLayout>
   );

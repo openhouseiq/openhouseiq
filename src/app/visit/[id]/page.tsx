@@ -45,7 +45,7 @@ export default async function VisitLandingPage({
       <div className="mt-8 space-y-3">
         <Link href={`/visit/${listing.id}/feedback`} className="block">
           <Button variant="primary" className="w-full">
-            Provide feedback
+            Sign in &amp; give feedback
           </Button>
         </Link>
         {listing.listing_type === "rental" ? (
