@@ -40,9 +40,9 @@ export function ChoiceChips<T extends string>({
               type="button"
               aria-pressed={selected}
               onClick={() => onChange(selected ? null : option.value)}
-              className={`inline-flex min-h-11 items-center justify-center gap-1 rounded-full bg-brass/10 py-2 font-medium text-ink ${
+              className={`inline-flex min-h-11 items-center justify-center gap-1 rounded-full bg-brass/10 py-2 font-medium text-brass-deep ${
                 equalWidth ? "px-1 text-[13px] tracking-tight" : "px-4 text-sm"
-              } ${selected ? "border-[3px] border-ink" : "border-2 border-brass"}`}
+              } ${selected ? "border-[3px] border-brass-deep" : "border-2 border-brass"}`}
             >
               {selected && !equalWidth ? (
                 <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4 shrink-0 fill-current">
