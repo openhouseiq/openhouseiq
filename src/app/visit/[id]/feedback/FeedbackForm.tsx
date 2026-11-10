@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { StarRating } from "@/components/ui/StarRating";
 import { Turnstile } from "@/components/ui/Turnstile";
 import type { InterestLevel, PurchaseTimeframe } from "@/lib/types";
+import { CUSTOM_ANSWER_MAX } from "@/lib/customQuestions";
 
 function interestLevels(isRental: boolean): { value: InterestLevel; label: string }[] {
   return [
@@ -30,9 +31,11 @@ const TIMEFRAMES: { value: PurchaseTimeframe; label: string }[] = [
 export function FeedbackForm({
   listingId,
   isRental = false,
+  customQuestions = [],
 }: {
   listingId: string;
   isRental?: boolean;
+  customQuestions?: string[];
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,6 +93,7 @@ export function FeedbackForm({
           workingWithAgent,
           purchaseTimeframe: timeframe,
           wantsFollowup,
+          customAnswers: customQuestions.map((_, i) => String(formData.get(`customAnswer${i}`) ?? "")),
         }),
       });
 
@@ -203,6 +207,16 @@ export function FeedbackForm({
           </div>
         )}
       </div>
+
+      {customQuestions.map((question, i) => (
+        <TextAreaField
+          key={i}
+          label={`${question} (optional)`}
+          id={`customAnswer${i}`}
+          rows={2}
+          maxLength={CUSTOM_ANSWER_MAX}
+        />
+      ))}
 
       <Field label="Name" id="name" type="text" required />
       <Field label="Email" id="email" type="email" required />

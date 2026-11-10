@@ -1,5 +1,7 @@
 "use client";
 
+import { CustomAnswerList } from "@/components/listings/CustomAnswerList";
+import { parseAnswers } from "@/lib/customQuestions";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
@@ -148,6 +150,7 @@ export function FeedbackApplicantsReport({
       "Layout",
       "Wants follow-up",
       "Comments",
+      "Your questions",
     ];
     const rows = feedbackList.map((f) => [
       new Date(f.created_at).toLocaleString(),
@@ -162,6 +165,9 @@ export function FeedbackApplicantsReport({
       f.rating_layout ?? "",
       f.wants_followup ? "Yes" : "No",
       f.comments ?? "",
+      parseAnswers(f.custom_answers)
+        .map((a) => `${a.question}: ${a.answer}`)
+        .join(" | "),
     ]);
     downloadCsv(`${listingAddress} - feedback.csv`, toCsv([header, ...rows]));
   }
@@ -295,6 +301,8 @@ export function FeedbackApplicantsReport({
                   {item.comments ? (
                     <p className="mt-2 text-sm text-ink">{item.comments}</p>
                   ) : null}
+
+                  <CustomAnswerList value={item.custom_answers} />
 
                   <button
                     type="button"

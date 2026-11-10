@@ -5,6 +5,8 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 import { notifyAgentOfSubmission } from "@/lib/notify";
 import { siteOrigin } from "@/lib/siteUrl";
+import { buildAnswers, parseQuestions } from "@/lib/customQuestions";
+import { sendVisitorThankYou } from "@/lib/visitorThankYou";
 import {
   ValidationError,
   bool,
@@ -38,10 +40,12 @@ export async function POST(request: Request) {
   let row;
   let listingId: string;
   let turnstileToken: string;
+  let rawCustomAnswers: unknown;
   try {
     const body = await readJsonObject(request);
     turnstileToken = typeof body.turnstileToken === "string" ? body.turnstileToken : "";
     listingId = uuid(body.listingId, "listing");
+    rawCustomAnswers = body.customAnswers;
     const isAnonymous = bool(body.isAnonymous);
     row = {
       listing_id: listingId,
@@ -88,7 +92,7 @@ export async function POST(request: Request) {
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("agent_id, agency_id, agent_email, address")
+    .select("agent_id, agency_id, agent_email, agent_name, address, custom_questions")
     .eq("id", listingId)
     .maybeSingle();
 
@@ -96,7 +100,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Listing not found." }, { status: 404 });
   }
 
-  const { data: saved, error } = await supabase.from("feedback").insert(row).select("id").single();
+  let customAnswers;
+  try {
+    customAnswers = buildAnswers(parseQuestions(listing.custom_questions), rawCustomAnswers);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: "Please check the form and try again." }, { status: 400 });
+    }
+    throw error;
+  }
+
+  const { data: saved, error } = await supabase
+    .from("feedback")
+    .insert({ ...row, custom_answers: customAnswers })
+    .select("id")
+    .single();
 
   if (error) {
     console.error("Feedback insert failed:", error.message);
@@ -119,6 +137,23 @@ export async function POST(request: Request) {
       baseUrl,
     }).catch((error) => console.error("Agent notification failed:", error)),
   );
+
+  // Thank the visitor by email on the agent's behalf (unless the agent has
+  // turned this off), after replying.
+  if (row.email && row.name) {
+    const visitor = { name: row.name, email: row.email };
+    after(() =>
+      sendVisitorThankYou({
+        kind: "feedback",
+        agentId: listing.agent_id,
+        listingAgentName: listing.agent_name,
+        listingAgentEmail: listing.agent_email,
+        listingAddress: listing.address,
+        visitor,
+        wantsFollowup: row.wants_followup,
+      }).catch((error) => console.error("Visitor thank-you failed:", error)),
+    );
+  }
 
   // Send to the agency's CRM (if connected) after replying, so the visitor
   // never waits on it.

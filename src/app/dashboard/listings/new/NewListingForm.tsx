@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { SellerPreferenceFields } from "@/components/listings/SellerPreferenceFields";
 import { LandlordPreferenceFields } from "@/components/listings/LandlordPreferenceFields";
 import { LandSizeField } from "@/components/listings/LandSizeField";
+import { CustomQuestionFields, questionsFromForm } from "@/components/listings/CustomQuestionFields";
+import { cleanQuestions } from "@/lib/customQuestions";
 import { StateSelect } from "@/components/rentalForms/StateSelect";
 import { getRentalForm } from "@/lib/rentalForms";
 import { getUserCurrentAgencyId } from "@/lib/agency";
@@ -56,6 +58,8 @@ export function NewListingForm() {
       String(formData.get("landlordPrefMinLeaseTerm") ?? "") || null;
     const rentalState = getRentalForm(String(formData.get("rentalState") ?? ""))?.state ?? null;
 
+    const customQuestions = cleanQuestions(questionsFromForm(formData));
+
     const agentName = (user.user_metadata?.full_name as string | undefined) ?? "";
     const agencyId = await getUserCurrentAgencyId(supabase, user.id);
 
@@ -74,6 +78,7 @@ export function NewListingForm() {
         land_size_unit: landSizeUnit,
         agent_name: agentName,
         agent_email: user.email,
+        custom_questions: customQuestions,
         ...(listingType === "sale"
           ? {
               seller_pref_price: sellerPrefPrice,
@@ -161,6 +166,8 @@ export function NewListingForm() {
           <LandlordPreferenceFields />
         </>
       )}
+
+      <CustomQuestionFields />
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
 

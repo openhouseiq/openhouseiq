@@ -1,6 +1,8 @@
 // Turns a visitor's feedback or offer into one plain "CRM record" that any CRM
 // connector can send: who they are, which listing, and a readable summary.
 
+import { parseAnswers } from "@/lib/customQuestions";
+
 export type CrmKind = "feedback" | "offer";
 
 export type CrmListing = { id: string; address: string | null };
@@ -21,6 +23,7 @@ export type CrmFeedbackRow = {
   working_with_agent: boolean | null;
   purchase_timeframe: string | null;
   wants_followup: boolean | null;
+  custom_answers?: unknown;
   created_at: string;
 };
 
@@ -121,6 +124,7 @@ export function feedbackRecord(row: CrmFeedbackRow, listing: CrmListing): CrmRec
         ["Wants a follow-up", yesNo(row.wants_followup)],
         ["Ratings", ratings.length ? ratings.join(", ") : null],
         ["Comments", row.comments],
+        ...parseAnswers(row.custom_answers).map((a): [string, string] => [a.question, a.answer]),
       ]),
     ].join("\n"),
   };

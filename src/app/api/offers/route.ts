@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 import { notifyAgentOfSubmission } from "@/lib/notify";
 import { siteOrigin } from "@/lib/siteUrl";
+import { sendVisitorThankYou } from "@/lib/visitorThankYou";
 import {
   ValidationError,
   bool,
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("agent_id, agency_id, agent_email, address")
+    .select("agent_id, agency_id, agent_email, agent_name, address")
     .eq("id", listingId)
     .maybeSingle();
 
@@ -105,6 +106,20 @@ export async function POST(request: Request) {
       listingId,
       baseUrl,
     }).catch((error) => console.error("Agent notification failed:", error)),
+  );
+
+  // Confirm to the buyer by email on the agent's behalf (unless the agent has
+  // turned this off), after replying.
+  const visitor = { name: row.name, email: row.email };
+  after(() =>
+    sendVisitorThankYou({
+      kind: "offer",
+      agentId: listing.agent_id,
+      listingAgentName: listing.agent_name,
+      listingAgentEmail: listing.agent_email,
+      listingAddress: listing.address,
+      visitor,
+    }).catch((error) => console.error("Visitor thank-you failed:", error)),
   );
 
   // Send to the agency's CRM (if connected) after replying, so the visitor

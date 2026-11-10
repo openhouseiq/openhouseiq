@@ -16,15 +16,38 @@ function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
 export function NotificationSettings({
   userId,
   initialEmailEnabled,
+  initialVisitorThankYouEnabled,
 }: {
   userId: string;
   initialEmailEnabled: boolean;
+  initialVisitorThankYouEnabled: boolean;
 }) {
   const [status, setStatus] = useState<Status>("checking");
   const [error, setError] = useState<string | null>(null);
   const [emailEnabled, setEmailEnabled] = useState(initialEmailEnabled);
   const [emailSaving, setEmailSaving] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [thankYouEnabled, setThankYouEnabled] = useState(initialVisitorThankYouEnabled);
+  const [thankYouSaving, setThankYouSaving] = useState(false);
+  const [thankYouError, setThankYouError] = useState<string | null>(null);
+
+  async function toggleThankYou(next: boolean) {
+    setThankYouEnabled(next);
+    setThankYouSaving(true);
+    setThankYouError(null);
+
+    const supabase = createClient();
+    const { error: updateError } = await supabase.auth.updateUser({
+      data: { visitor_thank_you_enabled: next },
+    });
+
+    setThankYouSaving(false);
+
+    if (updateError) {
+      setThankYouEnabled(!next);
+      setThankYouError(updateError.message);
+    }
+  }
 
   async function toggleEmail(next: boolean) {
     setEmailEnabled(next);
@@ -154,6 +177,26 @@ export function NotificationSettings({
           Email me on new submissions
         </label>
         {emailError ? <p className="text-sm text-error">{emailError}</p> : null}
+      </div>
+
+      <div className="space-y-2 border-t border-line pt-6">
+        <p className="text-sm font-medium text-ink">Thank-you email to visitors</p>
+        <p className="text-sm text-ink-soft">
+          When someone leaves feedback or makes an offer, they get a short email from you
+          confirming you&apos;ve received it, with your name, phone and email. Replies come
+          straight to you.
+        </p>
+        <label className="flex items-center gap-2 text-sm text-ink">
+          <input
+            type="checkbox"
+            checked={thankYouEnabled}
+            disabled={thankYouSaving}
+            onChange={(e) => toggleThankYou(e.target.checked)}
+            className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
+          />
+          Send visitors a thank-you email
+        </label>
+        {thankYouError ? <p className="text-sm text-error">{thankYouError}</p> : null}
       </div>
 
       <div className="space-y-3 border-t border-line pt-6">

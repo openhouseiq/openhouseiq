@@ -44,6 +44,8 @@ export default async function SettingsPage(
   const emailNotificationsEnabled =
     (user.user_metadata?.email_notifications_enabled as boolean | undefined) ??
     true;
+  const visitorThankYouEnabled =
+    (user.user_metadata?.visitor_thank_you_enabled as boolean | undefined) ?? true;
 
   // Everything this page needs, asked for at once rather than one after
   // another: each question is a round trip to the database in Singapore.
@@ -204,6 +206,7 @@ export default async function SettingsPage(
               <NotificationSettings
                 userId={user.id}
                 initialEmailEnabled={emailNotificationsEnabled}
+                initialVisitorThankYouEnabled={visitorThankYouEnabled}
               />
             </section>
             <section className="rounded-md border border-error/30 bg-paper-card p-6">

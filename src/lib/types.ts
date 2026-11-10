@@ -65,6 +65,7 @@ export type Listing = {
   landlord_pref_employment_verification: PreferenceLevel | null;
   state: string | null;
   rental_config: Record<string, unknown>;
+  custom_questions: unknown;
   leased_on: string | null;
   created_at: string;
   updated_at: string;
@@ -119,6 +120,7 @@ export type Feedback = {
   working_with_agent: boolean | null;
   purchase_timeframe: PurchaseTimeframe | null;
   wants_followup: boolean | null;
+  custom_answers: unknown;
   read_at: string | null;
   created_at: string;
 };
