@@ -10,6 +10,8 @@ import { StateSelect } from "@/components/rentalForms/StateSelect";
 import { getRentalForm } from "@/lib/rentalForms";
 import { LandlordPreferenceFields } from "@/components/listings/LandlordPreferenceFields";
 import { LandSizeField } from "@/components/listings/LandSizeField";
+import { CustomQuestionFields, questionsFromForm } from "@/components/listings/CustomQuestionFields";
+import { cleanQuestions, parseQuestions } from "@/lib/customQuestions";
 import type { Listing } from "@/lib/types";
 
 export function EditListingForm({ listing }: { listing: Listing }) {
@@ -55,6 +57,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         land_size: landSize,
         land_size_unit: landSizeUnit,
         description,
+        custom_questions: cleanQuestions(questionsFromForm(formData)),
         ...(listing.listing_type === "sale"
           ? {
               seller_pref_price: sellerPrefPrice,
@@ -159,6 +162,8 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           />
         </>
       )}
+
+      <CustomQuestionFields defaults={parseQuestions(listing.custom_questions)} />
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
 

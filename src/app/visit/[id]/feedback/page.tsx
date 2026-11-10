@@ -3,6 +3,7 @@ import { getPublicListing } from "@/lib/publicListing";
 import { getAgentPhotoUrl } from "@/lib/agent-photo";
 import { VisitLayout } from "@/components/visit/VisitLayout";
 import { FeedbackForm } from "./FeedbackForm";
+import { parseQuestions } from "@/lib/customQuestions";
 
 export default async function FeedbackPage({
   params,
@@ -41,7 +42,11 @@ export default async function FeedbackPage({
       ) : (
         <div className="mb-6" />
       )}
-      <FeedbackForm listingId={listing.id} isRental={listing.listing_type === "rental"} />
+      <FeedbackForm
+        listingId={listing.id}
+        isRental={listing.listing_type === "rental"}
+        customQuestions={parseQuestions(listing.custom_questions)}
+      />
     </VisitLayout>
   );
 }

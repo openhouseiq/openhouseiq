@@ -20,6 +20,35 @@ export async function sendNotificationEmail(
   });
 }
 
+/** The bare address from NOTIFICATION_FROM_EMAIL, which may be "Name <addr>" or just "addr". */
+function fromAddress(): string | null {
+  if (!fromEmail) return null;
+  return fromEmail.match(/<([^>]+)>/)?.[1]?.trim() ?? fromEmail.trim();
+}
+
+/**
+ * An email to a visitor on an agent's behalf: our sending address, the
+ * agent's name as the display name, and replies going to the agent.
+ */
+export async function sendVisitorEmail(
+  to: string,
+  subject: string,
+  body: string,
+  { fromName, replyTo }: { fromName: string; replyTo?: string },
+): Promise<void> {
+  const address = fromAddress();
+  if (!resend || !address) return;
+
+  const { error } = await resend.emails.send({
+    from: `"${fromName}" <${address}>`,
+    to,
+    subject,
+    text: body,
+    ...(replyTo ? { replyTo } : {}),
+  });
+  if (error) throw new Error(`Visitor email not sent: ${error.message}`);
+}
+
 // Like sendNotificationEmail, but reports whether the email was actually
 // accepted so callers can fall back to something else when it wasn't.
 export async function sendEmailChecked(to: string, subject: string, body: string): Promise<boolean> {
