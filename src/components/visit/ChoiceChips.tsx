@@ -12,12 +12,15 @@ export function ChoiceChips<T extends string>({
   options,
   value,
   onChange,
+  equalWidth = false,
 }: {
   label: string;
   hint?: string;
   options: { value: T; label: string }[];
   value: T | null;
   onChange: (value: T | null) => void;
+  /** All options the same width, side by side on one row (for short sets like Yes / No / Undecided). */
+  equalWidth?: boolean;
 }) {
   return (
     <fieldset>
@@ -25,7 +28,10 @@ export function ChoiceChips<T extends string>({
         {label}
         {hint ? <span className="ml-1 font-normal text-ink-soft">{hint}</span> : null}
       </legend>
-      <div className="flex flex-wrap gap-2">
+      <div
+        className={equalWidth ? "grid gap-1.5" : "flex flex-wrap gap-2"}
+        style={equalWidth ? { gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` } : undefined}
+      >
         {options.map((option) => {
           const selected = value === option.value;
           return (
@@ -34,10 +40,8 @@ export function ChoiceChips<T extends string>({
               type="button"
               aria-pressed={selected}
               onClick={() => onChange(selected ? null : option.value)}
-              className={`min-h-11 rounded-full border px-4 py-2 text-sm ${
-                selected
-                  ? "border-brass bg-brass font-medium text-ink"
-                  : "border-line bg-white text-ink-soft hover:border-brass"
+              className={`min-h-11 rounded-full border-2 border-brass py-2 font-medium text-ink ${equalWidth ? "px-1 text-[13px] tracking-tight" : "px-4 text-sm"} ${
+                selected ? "bg-brass" : "bg-brass/10 hover:bg-brass/25"
               }`}
             >
               {option.label}

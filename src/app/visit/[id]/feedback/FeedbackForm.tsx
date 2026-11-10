@@ -244,6 +244,7 @@ export function FeedbackForm({
               options={CHOICE_ANSWERS.map((answer) => ({ value: answer, label: answer }))}
               value={choiceAnswers[i] ?? null}
               onChange={(answer) => setChoiceAnswers((a) => ({ ...a, [i]: answer }))}
+              equalWidth
             />
           ) : (
             <TextAreaField
