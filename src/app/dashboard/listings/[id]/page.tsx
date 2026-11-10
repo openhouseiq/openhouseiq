@@ -159,7 +159,10 @@ export default async function ListingDetailPage({
   const host = headersList.get("host");
   const protocol = host?.startsWith("localhost") ? "http" : "https";
   const visitUrl = `${protocol}://${host}/visit/${listing.id}`;
-  const qrDataUrl = await QRCode.toDataURL(visitUrl, {
+  // A rental's QR code is only issued once its application form can be
+  // submitted, so a printed code never leads visitors to a closed form.
+  const qrLocked = isRental && !rentalReady;
+  const qrDataUrl = qrLocked ? "" : await QRCode.toDataURL(visitUrl, {
     width: 220,
     margin: 1,
     color: { dark: "#1B2430", light: "#FFFFFFFF" },
@@ -218,22 +221,43 @@ export default async function ListingDetailPage({
             listing online. Visitors scan it to leave feedback or{" "}
             {isRental ? "apply to rent" : "submit an offer"}.
           </p>
-          <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={qrDataUrl}
-              alt="QR code linking to this listing's visitor page"
-              className="h-[220px] w-[220px] shrink-0 rounded-md border border-line"
-            />
-            <div className="text-center sm:text-left">
-              <p className="break-all text-sm text-ink-soft">{visitUrl}</p>
-              <CopyQrButtons
-                qrDataUrl={qrDataUrl}
-                visitUrl={visitUrl}
-                downloadName={`${listing.address.replace(/[^a-z0-9]+/gi, "-")}-qr-code.png`}
-              />
+          {qrLocked ? (
+            <div className="mt-4 rounded-md border-2 border-brass bg-brass/10 p-5">
+              <p className="font-medium text-ink">Your QR code is ready once the rental settings are done</p>
+              <p className="mt-1 text-sm text-ink-soft">
+                {rentalForm
+                  ? `The ${rentalForm.stateName} application form needs a few details from you first, so visitors who scan the code can apply straight away. It takes about two minutes.`
+                  : "Choose the property's state, or Other if it's outside Australia, under Edit listing. Then complete the rental settings."}
+              </p>
+              <Link
+                href={
+                  rentalForm
+                    ? `/dashboard/listings/${listing.id}/rental-settings`
+                    : `/dashboard/listings/${listing.id}/edit`
+                }
+                className="mt-4 inline-block rounded-md bg-brass px-4 py-2 text-sm font-medium text-ink hover:bg-brass-deep hover:text-paper"
+              >
+                {rentalForm ? "Complete rental settings" : "Edit listing"}
+              </Link>
             </div>
-          </div>
+          ) : (
+            <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={qrDataUrl}
+                alt="QR code linking to this listing's visitor page"
+                className="h-[220px] w-[220px] shrink-0 rounded-md border border-line"
+              />
+              <div className="text-center sm:text-left">
+                <p className="break-all text-sm text-ink-soft">{visitUrl}</p>
+                <CopyQrButtons
+                  qrDataUrl={qrDataUrl}
+                  visitUrl={visitUrl}
+                  downloadName={`${listing.address.replace(/[^a-z0-9]+/gi, "-")}-qr-code.png`}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {isRental ? (
@@ -368,7 +392,7 @@ export default async function ListingDetailPage({
                     {rentalForm.version}).{" "}
                     {rentalReady
                       ? "Applications are open."
-                      : "Visitors who scan your QR code can't apply yet. Fill in the Rental settings (it takes about two minutes) to open applications."}
+                      : "Fill in the Rental settings (it takes about two minutes). Your QR code appears as soon as they're saved."}
                   </p>
                 ) : (
                   <p className="mt-1 text-sm text-ink-soft">
