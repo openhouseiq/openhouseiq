@@ -22,6 +22,7 @@ const PUBLIC_PREFIXES = [
   "/security",
   "/contact",
   "/open-home-sign-in-app",
+  "/for-rex-users",
 ];
 
 const AUTH_PREFIXES = ["/login", "/signup", "/forgot-password"];

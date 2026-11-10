@@ -76,7 +76,62 @@ const CAPTURED = [
   "Ratings for the property and price",
   "Buying timeframe and finance status",
   "Offers with amount, finance and settlement terms",
+  "Answers to up to 3 questions of your own",
   "Which listing and when they visited",
+];
+
+// Compared by type of tool rather than by named product, so nothing here can
+// go stale or misdescribe someone else's software. Checked 10 Nov 2026.
+const OPTIONS = ["Paper sheet", "Typical sign-in app", "Check-in built into a CRM", "Open Home Hero"] as const;
+
+const COMPARISON: { feature: string; cells: [string, string, string, string] }[] = [
+  {
+    feature: "Visitors sign in on their own phone",
+    cells: ["No", "Often (QR code or a tablet)", "Often a shared tablet or kiosk", "Yes, by QR code or link"],
+  },
+  {
+    feature: "Name, email and phone always filled in",
+    cells: ["No", "Varies", "Usually", "Yes, all required"],
+  },
+  {
+    feature: "Structured feedback for the vendor",
+    cells: ["No", "Some, often on a paid plan", "Mostly agent notes", "Yes: interest, ratings, timeframe, finance"],
+  },
+  {
+    feature: "Offers collected and compared",
+    cells: ["No", "Rarely", "In some full CRMs", "Yes, sorted by what the vendor wants"],
+  },
+  {
+    feature: "Your own questions",
+    cells: ["Write them on the sheet", "Often", "Varies", "Yes, up to 3 per listing"],
+  },
+  {
+    feature: "Thank-you email to each visitor",
+    cells: ["No", "Often", "Often", "Yes, from you, replies come to you"],
+  },
+  {
+    feature: "Gets leads into your CRM",
+    cells: ["Retype by hand", "Often through a third-party connector", "Only that CRM", "Direct to 4 CRMs, CSV for any other"],
+  },
+];
+
+const US_POINTS = [
+  {
+    title: "Every field filled in",
+    text: "Name, email and phone are required, so you never get a lead you can't call back.",
+  },
+  {
+    title: "A real report for your seller",
+    text: "Interest level, ratings for price, condition, location and layout, timeframe and finance status from every visitor.",
+  },
+  {
+    title: "Straight into Follow Up Boss or Lofty",
+    text: "A direct connection, not a third-party relay. HubSpot and Pipedrive work too. Repeat visitors are matched, not duplicated.",
+  },
+  {
+    title: "Your brand only",
+    text: "No lender co-branding and nothing added to your visitors' details. We keep only what they type in.",
+  },
 ];
 
 const FAQS = [
@@ -108,7 +163,7 @@ const FAQS = [
   {
     question: "Is it only for Australia?",
     answer:
-      "Open Home Hero is built in Australia and uses Australian terms like open home and inspection, but it works anywhere. The CRMs it connects to today (Follow Up Boss, HubSpot, Lofty and Pipedrive) are widely used by agents in the US too.",
+      "Open Home Hero is built in Australia and uses Australian terms like open home and inspection, but it works anywhere. The CRMs it connects to today (Follow Up Boss, HubSpot, Lofty and Pipedrive) are widely used by agents in the US. Billing is in Australian dollars: A$39 a month is roughly US$27 at current exchange rates.",
   },
 ];
 
@@ -277,6 +332,87 @@ export default function OpenHomeSignInAppPage() {
                 How the CRM connection works
               </Link>
             </div>
+          </div>
+        </section>
+
+        <section id="compare" className="border-t border-line px-6 py-16">
+          <div className="mx-auto max-w-5xl">
+            <h2 className="text-center font-serif text-3xl font-medium text-ink">
+              How it compares with other open home tools
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-ink-soft">
+              Most tools stop at who came through the door. Open Home Hero carries on to what they
+              thought, what they&apos;d offer, and getting them into your CRM.
+            </p>
+            <div className="mt-10 overflow-x-auto rounded-md border border-line">
+              <table className="w-full min-w-[720px] bg-paper-card text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line">
+                    <th className="px-4 py-3 font-medium text-ink-soft"></th>
+                    {OPTIONS.map((option) => (
+                      <th
+                        key={option}
+                        className={`px-4 py-3 font-medium ${option === "Open Home Hero" ? "text-brass" : "text-ink-soft"}`}
+                      >
+                        {option}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARISON.map((row) => (
+                    <tr key={row.feature} className="border-t border-line align-top">
+                      <th scope="row" className="px-4 py-3 font-medium text-ink">
+                        {row.feature}
+                      </th>
+                      {row.cells.map((cell, i) => (
+                        <td key={i} className={`px-4 py-3 ${i === 3 ? "font-medium text-ink" : "text-ink-soft"}`}>
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                  <tr className="border-t border-line align-top">
+                    <th scope="row" className="px-4 py-3 font-medium text-ink">
+                      Price
+                    </th>
+                    <td className="px-4 py-3 text-ink-soft">Free</td>
+                    <td className="px-4 py-3 text-ink-soft">Free to about US$30 a month</td>
+                    <td className="px-4 py-3 text-ink-soft">Part of your CRM subscription</td>
+                    <td className="px-4 py-3 font-medium text-ink">A$39 a month, everything included</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-3 text-center text-xs text-ink-soft">
+              Compared by type of tool, from public product information, November 2026. Using Rex?{" "}
+              <Link href="/for-rex-users" className="underline hover:text-brass">
+                See how Open Home Hero works alongside it
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+
+        <section id="us" className="border-t border-line bg-paper-card px-6 py-16">
+          <div className="mx-auto max-w-4xl">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.12em] text-brass">
+              Agents in the US
+            </p>
+            <h2 className="mt-2 text-center font-serif text-3xl font-medium text-ink">
+              An open house sign-in app that plugs into Follow Up Boss and Lofty
+            </h2>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2">
+              {US_POINTS.map((point) => (
+                <div key={point.title} className="rounded-md border border-line bg-paper p-6">
+                  <h3 className="font-serif text-lg font-medium text-ink">{point.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">{point.text}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-8 text-center text-sm text-ink-soft">
+              14-day free trial, then A$39 a month (roughly US$27; billed in Australian dollars).
+            </p>
           </div>
         </section>
 
