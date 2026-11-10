@@ -1,3 +1,4 @@
+import { parseCountry } from "@/lib/country";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -62,7 +63,7 @@ export default async function NewListingPage() {
         <h1 className="font-serif text-2xl font-medium text-ink">
           New listing
         </h1>
-        <NewListingForm />
+        <NewListingForm country={parseCountry(user.user_metadata?.country)} />
       </main>
     </div>
   );

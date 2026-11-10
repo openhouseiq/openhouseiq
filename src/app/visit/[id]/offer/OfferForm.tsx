@@ -10,6 +10,7 @@ import { saveVisitorDetails, useVisitorDetails } from "@/lib/visitorDetails";
 import { resetTurnstile, waitForTurnstileToken } from "@/lib/turnstileClient";
 import { SETTLEMENT_OPTIONS } from "@/components/listings/sellerPreferences";
 import { parseOfferAmount } from "@/lib/offerAmount";
+import { terms } from "@/lib/country";
 
 // Quick on a phone: details pre-filled for returning visitors, the amount
 // accepts "750,000" or "$750k"-style typing and shows what it read, and
@@ -23,7 +24,8 @@ const FINANCE_OPTIONS: { value: Financing; label: string }[] = [
   { value: "financing", label: "Arranging finance" },
 ];
 
-export function OfferForm({ listingId }: { listingId: string }) {
+export function OfferForm({ listingId, country }: { listingId: string; country?: string | null }) {
+  const t = terms(country);
   const visitor = useVisitorDetails();
   const errorRef = useRef<HTMLParagraphElement>(null);
   const [loading, setLoading] = useState(false);
@@ -46,7 +48,7 @@ export function OfferForm({ listingId }: { listingId: string }) {
 
     if (!amount) return showError("Please enter your offer amount, for example 750,000.");
     if (!financing) return showError("Please tap how you'll pay: cash, pre-approved or arranging finance.");
-    if (!settlement) return showError("Please tap your preferred settlement.");
+    if (!settlement) return showError(`Please tap your preferred ${t.settlement}.`);
 
     setLoading(true);
     const form = e.currentTarget;
@@ -133,7 +135,7 @@ export function OfferForm({ listingId }: { listingId: string }) {
         <ChoiceChips label="How will you pay?" options={FINANCE_OPTIONS} value={financing} onChange={setFinancing} />
 
         <ChoiceChips
-          label="Preferred settlement"
+          label={`Preferred ${t.settlement}`}
           options={SETTLEMENT_OPTIONS.map((o) => (o.value === "flexible" ? { ...o, label: "Flexible" } : o))}
           value={settlement}
           onChange={setSettlement}
@@ -145,7 +147,7 @@ export function OfferForm({ listingId }: { listingId: string }) {
             name="waive_inspection"
             className="h-5 w-5 rounded border-line text-brass focus:ring-brass"
           />
-          Willing to waive building &amp; pest inspection
+          {t.waiveInspection}
         </label>
 
         <TextAreaField label="Conditions or notes (optional)" id="notes" rows={3} />

@@ -1,5 +1,6 @@
 "use client";
 
+import { terms } from "@/lib/country";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { DeleteListingButton } from "./listings/[id]/DeleteListingButton";
@@ -65,7 +66,7 @@ function ListingCard({ listing }: { listing: ListingWithCounts }) {
         <p className="font-medium text-ink">{listing.address}</p>
         <p className="text-sm text-ink-soft">
           ${Number(listing.price).toLocaleString()}
-          {listing.listing_type === "rental" ? "/week" : ""}
+          {listing.listing_type === "rental" ? `/${terms(listing.country).rentPeriod}` : ""}
           {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
           {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
           {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}

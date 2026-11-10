@@ -64,6 +64,7 @@ export type Listing = {
   landlord_pref_smoking: SmokingPreference | null;
   landlord_pref_employment_verification: PreferenceLevel | null;
   state: string | null;
+  country: string | null;
   rental_config: Record<string, unknown>;
   custom_questions: unknown;
   leased_on: string | null;

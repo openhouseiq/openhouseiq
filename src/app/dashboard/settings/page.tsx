@@ -1,3 +1,4 @@
+import { parseCountry } from "@/lib/country";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
@@ -157,6 +158,7 @@ export default async function SettingsPage(
                 phone={phone}
                 email={user.email ?? ""}
                 photoUrl={photoUrl}
+                country={parseCountry(user.user_metadata?.country)}
               />
             </section>
             <section

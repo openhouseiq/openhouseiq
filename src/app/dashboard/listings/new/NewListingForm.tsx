@@ -1,5 +1,6 @@
 "use client";
 
+import { parseCountry, terms } from "@/lib/country";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -15,7 +16,7 @@ import { getRentalForm } from "@/lib/rentalForms";
 import { getUserCurrentAgencyId } from "@/lib/agency";
 import type { ListingType } from "@/lib/types";
 
-export function NewListingForm() {
+export function NewListingForm({ country = "AU" }: { country?: string }) {
   const router = useRouter();
   const [listingType, setListingType] = useState<ListingType>("sale");
   const [loading, setLoading] = useState(false);
@@ -78,6 +79,7 @@ export function NewListingForm() {
         land_size_unit: landSizeUnit,
         agent_name: agentName,
         agent_email: user.email,
+        country: parseCountry(user.user_metadata?.country),
         custom_questions: customQuestions,
         ...(listingType === "sale"
           ? {
@@ -148,7 +150,7 @@ export function NewListingForm() {
         required
       />
       <Field
-        label={listingType === "rental" ? "Weekly rent" : "Price"}
+        label={listingType === "rental" ? terms(country).rentLabel : "Price"}
         id="price"
         type="number"
         min={0}
@@ -167,7 +169,7 @@ export function NewListingForm() {
         <SellerPreferenceFields />
       ) : (
         <>
-          <StateSelect />
+          <StateSelect country={country} />
           <LandlordPreferenceFields />
         </>
       )}

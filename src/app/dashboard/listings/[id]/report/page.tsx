@@ -1,3 +1,4 @@
+import { terms } from "@/lib/country";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -205,7 +206,7 @@ export default async function ListingReportPage({
             </h1>
             <p className="mt-2 text-sm text-ink-soft">
               ${Number(listing.price).toLocaleString()}
-              {isRental ? "/week" : ""}
+              {isRental ? `/${terms(listing.country).rentPeriod}` : ""}
               {listing.bedrooms ? ` · ${listing.bedrooms} bd` : ""}
               {listing.bathrooms ? ` · ${listing.bathrooms} ba` : ""}
               {listing.car_spaces ? ` · ${listing.car_spaces} car` : ""}

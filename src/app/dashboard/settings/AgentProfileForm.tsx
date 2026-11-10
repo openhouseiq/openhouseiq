@@ -1,5 +1,6 @@
 "use client";
 
+import { COUNTRIES, parseCountry, type Country } from "@/lib/country";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Field } from "@/components/ui/Field";
@@ -35,12 +36,14 @@ export function AgentProfileForm({
   phone,
   email,
   photoUrl,
+  country,
 }: {
   userId: string;
   fullName: string;
   phone: string;
   email: string;
   photoUrl: string;
+  country: Country;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +61,7 @@ export function AgentProfileForm({
     const formData = new FormData(form);
     const photoFile = formData.get("photo");
     const newEmail = String(formData.get("email") ?? "");
+    const newCountry = parseCountry(formData.get("country"));
 
     try {
       const newPhotoUrl =
@@ -71,11 +75,23 @@ export function AgentProfileForm({
           full_name: String(formData.get("full_name") ?? ""),
           phone: String(formData.get("phone") ?? ""),
           photo_url: newPhotoUrl,
+          country: newCountry,
         },
       });
 
       if (profileError) {
         throw profileError;
+      }
+
+      // Existing listings follow the agent's country (rent period and wording).
+      if (newCountry !== country) {
+        const { error: listingsError } = await supabase
+          .from("listings")
+          .update({ country: newCountry })
+          .eq("agent_id", userId);
+        if (listingsError) {
+          throw listingsError;
+        }
       }
 
       if (newEmail && newEmail !== email) {
@@ -101,6 +117,28 @@ export function AgentProfileForm({
       <Field label="Full name" id="full_name" type="text" defaultValue={fullName} required />
       <Field label="Phone" id="phone" type="tel" defaultValue={phone} />
       <Field label="Email" id="email" type="email" defaultValue={email} required />
+
+      <div>
+        <label htmlFor="country" className="mb-1.5 block text-sm font-medium text-ink">
+          Country
+        </label>
+        <select
+          id="country"
+          name="country"
+          defaultValue={country}
+          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
+        >
+          {COUNTRIES.map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-ink-soft">
+          Sets local wording for your visitors (for example open house and closing in the USA and
+          Canada) and whether rent is weekly or monthly.
+        </p>
+      </div>
 
       <div>
         <label htmlFor="photo" className="mb-1.5 block text-sm font-medium text-ink">

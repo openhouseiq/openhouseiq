@@ -148,3 +148,26 @@ describe("offer amount typing", () => {
     expect(parseOfferAmount("750,000 or best")).toBeNull();
   });
 });
+
+import { parseCountry, terms, weeklyRent } from "./country";
+
+describe("country setting", () => {
+  it("defaults to Australia", () => {
+    expect(parseCountry(undefined)).toBe("AU");
+    expect(parseCountry("XX")).toBe("AU");
+    expect(terms(null).openHome).toBe("open home");
+  });
+
+  it("uses North American wording and monthly rent for the USA and Canada", () => {
+    expect(terms("US").openHome).toBe("open house");
+    expect(terms("CA").settlement).toBe("closing");
+    expect(terms("US").rentLabel).toBe("Monthly rent");
+    expect(weeklyRent(2600, "US")).toBe(600);
+  });
+
+  it("keeps weekly rent in Australia and New Zealand", () => {
+    expect(weeklyRent(500, "AU")).toBe(500);
+    expect(weeklyRent(500, "NZ")).toBe(500);
+    expect(terms("NZ").waiveInspection).toBe("Willing to waive the building inspection");
+  });
+});

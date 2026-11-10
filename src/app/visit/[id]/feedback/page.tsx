@@ -4,6 +4,7 @@ import { getAgentPhotoUrl } from "@/lib/agent-photo";
 import { VisitLayout } from "@/components/visit/VisitLayout";
 import { FeedbackForm } from "./FeedbackForm";
 import { parseQuestions } from "@/lib/customQuestions";
+import { terms } from "@/lib/country";
 
 export default async function FeedbackPage({
   params,
@@ -21,7 +22,7 @@ export default async function FeedbackPage({
 
   return (
     <VisitLayout>
-      <p className="text-center text-sm text-ink-soft">Open home sign-in</p>
+      <p className="text-center text-sm text-ink-soft">{terms(listing.country).OpenHome} sign-in</p>
       <h2 className="mb-6 mt-1 text-center font-serif text-2xl font-medium text-ink">
         {listing.address}
       </h2>
@@ -46,6 +47,7 @@ export default async function FeedbackPage({
       <FeedbackForm
         listingId={listing.id}
         isRental={listing.listing_type === "rental"}
+        country={listing.country}
         customQuestions={parseQuestions(listing.custom_questions)}
         offerHref={listing.listing_type === "sale" ? `/visit/${listing.id}/offer` : undefined}
       />

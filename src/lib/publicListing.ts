@@ -14,13 +14,14 @@ export type PublicListing = {
   agent_name: string | null;
   agent_email: string | null;
   state: string | null;
+  country: string | null;
   custom_questions: unknown;
 };
 
 /** Visitor-safe rental settings: only what the applicant is shown on the form. */
 export type PublicRentalConfig = Record<string, unknown>;
 
-const PUBLIC_COLUMNS = "id, agent_id, listing_type, address, agent_name, agent_email, state, custom_questions";
+const PUBLIC_COLUMNS = "id, agent_id, listing_type, address, agent_name, agent_email, state, country, custom_questions";
 
 export async function getPublicListing(id: string): Promise<PublicListing | null> {
   if (!isUuid(id)) return null;

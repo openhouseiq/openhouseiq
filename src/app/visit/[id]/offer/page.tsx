@@ -42,7 +42,7 @@ export default async function OfferPage({
       ) : (
         <div className="mb-6" />
       )}
-      <OfferForm listingId={listing.id} />
+      <OfferForm listingId={listing.id} country={listing.country} />
     </VisitLayout>
   );
 }

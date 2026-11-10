@@ -1,3 +1,4 @@
+import { weeklyRent } from "@/lib/country";
 // Ranks a listing's rental applications for the dashboard and the printable report.
 
 import { getRentalForm } from "./index";
@@ -32,7 +33,7 @@ export function rankListingApplications(listing: Listing, apps: RentalApplicatio
     maxRentShare?: number | null;
     preferredMoveIn?: string | null;
   };
-  const ctx = rankingContext(form, listing.price, {
+  const ctx = rankingContext(form, weeklyRent(listing.price, listing.country), {
     ...settings,
     minLeaseMonths: listing.landlord_pref_min_lease_term
       ? (LEASE_MONTHS[listing.landlord_pref_min_lease_term] ?? null)

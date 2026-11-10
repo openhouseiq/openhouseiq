@@ -1,5 +1,6 @@
 "use client";
 
+import { terms } from "@/lib/country";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { TextAreaField } from "@/components/ui/Field";
@@ -39,9 +40,11 @@ export function FeedbackForm({
   isRental = false,
   customQuestions = [],
   offerHref,
+  country,
 }: {
   listingId: string;
   isRental?: boolean;
+  country?: string | null;
   customQuestions?: CustomQuestion[];
   /** Where "Make an offer" goes after signing in (sale listings only). */
   offerHref?: string;
@@ -155,7 +158,7 @@ export function FeedbackForm({
         <div>
           <h3 className={sectionTitle}>Sign in</h3>
           <p className="mt-1 text-xs text-ink-soft">
-            Your details go only to the agent hosting this {isRental ? "inspection" : "open home"}.
+            Your details go only to the agent hosting this {isRental ? "inspection" : terms(country).openHome}.
           </p>
         </div>
         <VisitorDetailsFields visitor={visitor} />

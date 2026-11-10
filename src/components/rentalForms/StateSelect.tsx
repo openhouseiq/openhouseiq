@@ -1,10 +1,21 @@
+import { parseCountry } from "@/lib/country";
 import { RENTAL_FORMS, UNBUILT_STATES, type RentalState } from "@/lib/rentalForms";
 
 const selectClasses =
   "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass";
 
 /** The property's state or territory: it decides which official form applicants see. */
-export function StateSelect({ defaultValue }: { defaultValue?: string | null }) {
+export function StateSelect({
+  defaultValue,
+  country,
+}: {
+  defaultValue?: string | null;
+  country?: string | null;
+}) {
+  // Outside Australia there is one general form, so there is nothing to choose.
+  if (parseCountry(country) !== "AU") {
+    return <input type="hidden" name="rentalState" value="OTHER" />;
+  }
   return (
     <div>
       <label htmlFor="rentalState" className="mb-1.5 block text-sm font-medium text-ink">

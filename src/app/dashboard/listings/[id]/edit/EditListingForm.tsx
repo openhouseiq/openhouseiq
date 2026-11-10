@@ -1,5 +1,6 @@
 "use client";
 
+import { terms } from "@/lib/country";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -100,7 +101,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         required
       />
       <Field
-        label={listing.listing_type === "rental" ? "Weekly rent" : "Price"}
+        label={listing.listing_type === "rental" ? terms(listing.country).rentLabel : "Price"}
         id="price"
         type="number"
         min={0}
@@ -158,7 +159,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         />
       ) : (
         <>
-          <StateSelect defaultValue={listing.state} />
+          <StateSelect defaultValue={listing.state} country={listing.country} />
           <LandlordPreferenceFields
             defaults={{
               landlordPrefPets: listing.landlord_pref_pets,
