@@ -39,6 +39,8 @@ function weeklyIncome(state: RentalState, a: Answers): number | null {
     case "NT":
     case "NSW":
       return num(a.weekly_income);
+    case "ACT":
+    case "TAS":
     case "OTHER":
       return toWeekly(num(a.income_amount), a.income_frequency);
     case "WA": {
@@ -67,6 +69,8 @@ function refereeCount(state: RentalState, a: Answers): number {
     case "NT":
       return str(a.referee_name) ? 1 : 0;
     case "NSW":
+    case "ACT":
+    case "TAS":
     case "OTHER":
       return str(a.landlord_name) ? 1 : 0;
     default:

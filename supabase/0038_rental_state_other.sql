@@ -1,5 +1,5 @@
--- Allow 'OTHER' as a rental state: a general application form for agents
--- outside the built Australian states (New Zealand, USA, Canada and elsewhere).
+-- Allow 'ACT', 'TAS' and 'OTHER' as rental states: forms for the ACT and
+-- Tasmania, and a general form for agents outside Australia (NZ, USA, Canada).
 -- Replaces the state check on two tables; no data is changed. Run once in the
 -- Supabase SQL Editor.
 
@@ -19,10 +19,10 @@ begin
 end $$;
 
 alter table listings add constraint listings_state_check
-  check (state in ('QLD', 'VIC', 'SA', 'WA', 'NT', 'NSW', 'OTHER'));
+  check (state in ('QLD', 'VIC', 'SA', 'WA', 'NT', 'NSW', 'ACT', 'TAS', 'OTHER'));
 
 alter table rental_applications add constraint rental_applications_state_check
-  check (state in ('QLD', 'VIC', 'SA', 'WA', 'NT', 'NSW', 'OTHER'));
+  check (state in ('QLD', 'VIC', 'SA', 'WA', 'NT', 'NSW', 'ACT', 'TAS', 'OTHER'));
 
 -- Check: should list both constraints, each including 'OTHER'.
 select conrelid::regclass as table_name, conname, pg_get_constraintdef(oid) as rule

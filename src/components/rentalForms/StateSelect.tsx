@@ -39,7 +39,7 @@ export function StateSelect({ defaultValue }: { defaultValue?: string | null }) 
         </optgroup>
       </select>
       <p className="mt-1 text-xs text-ink-soft">
-        Each Australian state has its own official application form. Outside Australia, choose
+        Each state and territory has its own rules, and the form follows them. Outside Australia, choose
         Other for a general application form.
       </p>
     </div>

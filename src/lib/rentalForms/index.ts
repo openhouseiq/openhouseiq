@@ -5,6 +5,8 @@ import { saForm } from "./sa";
 import { waForm } from "./wa";
 import { ntForm } from "./nt";
 import { nswForm } from "./nsw";
+import { actForm } from "./act";
+import { tasForm } from "./tas";
 import { otherForm } from "./other";
 
 export type { RentalFormDefinition, RentalState } from "./types";
@@ -16,14 +18,13 @@ export const RENTAL_FORMS: Record<RentalState, RentalFormDefinition> = {
   WA: waForm,
   NT: ntForm,
   NSW: nswForm,
+  ACT: actForm,
+  TAS: tasForm,
   OTHER: otherForm,
 };
 
-/** States researched but not built: no verified rules yet, so applications stay off. */
-export const UNBUILT_STATES = [
-  { value: "ACT", label: "Australian Capital Territory" },
-  { value: "TAS", label: "Tasmania" },
-] as const;
+/** Every state and territory now has a form; kept so older imports still work. */
+export const UNBUILT_STATES: readonly { value: string; label: string }[] = [];
 
 export const RENTAL_STATES = Object.values(RENTAL_FORMS).map((f) => ({
   value: f.state,

@@ -12,6 +12,8 @@ export const UNSUCCESSFUL_DAYS_AFTER_LEASED: Record<RentalState, number> = {
   WA: 30, // not stated on Form 18: conservative default
   NSW: 30, // not stated in the Commissioner's guidance: conservative default
   NT: 30, // sections 18A(4) and 18B not read in full: conservative default
+  ACT: 30, // no period found: conservative default
+  TAS: 30, // no period found: conservative default
   OTHER: 30, // general form outside the built states: conservative default
 };
 
