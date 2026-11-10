@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { YouTubeVideo } from "@/components/marketing/YouTubeVideo";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/Wordmark";
@@ -198,6 +199,18 @@ const STRUCTURED_DATA = [
   },
   {
     "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: "Open Home Sign-In App for Real Estate Agents: QR Code Sign-In in 7 Steps",
+    description:
+      "How to run a QR code open home sign-in with Open Home Hero: add a listing, put the QR code at the door, visitors sign in on their own phone, and every lead goes to your CRM.",
+    thumbnailUrl: `${SITE_URL}/videos/qr-sign-in-tutorial.jpg`,
+    uploadDate: "2026-11-10",
+    duration: "PT1M28S",
+    contentUrl: "https://www.youtube.com/watch?v=dLj65xJ5eYc",
+    embedUrl: "https://www.youtube.com/embed/dLj65xJ5eYc",
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "HowTo",
     name: "How to run a digital open home sign-in with a QR code",
     step: STEPS.map((s, i) => ({ "@type": "HowToStep", position: i + 1, name: s.title, text: s.text })),
@@ -272,6 +285,24 @@ export default function OpenHomeSignInAppPage() {
                 </li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        <section className="border-t border-line px-6 py-16">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="text-center font-serif text-3xl font-medium text-ink">
+              Watch a QR code open home sign-in, start to finish
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-center text-ink-soft">
+              From adding a listing to every visitor landing in your CRM. Under 90 seconds.
+            </p>
+            <div className="mt-8">
+              <YouTubeVideo
+                id="dLj65xJ5eYc"
+                title="Open Home Sign-In App for Real Estate Agents: QR Code Sign-In in 7 Steps"
+                thumbnail="/videos/qr-sign-in-tutorial.jpg"
+              />
+            </div>
           </div>
         </section>
 
