@@ -47,6 +47,7 @@ export default async function FeedbackPage({
         listingId={listing.id}
         isRental={listing.listing_type === "rental"}
         customQuestions={parseQuestions(listing.custom_questions)}
+        offerHref={listing.listing_type === "sale" ? `/visit/${listing.id}/offer` : undefined}
       />
     </VisitLayout>
   );

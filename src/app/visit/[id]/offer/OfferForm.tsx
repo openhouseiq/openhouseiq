@@ -1,52 +1,95 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Field, TextAreaField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { Turnstile } from "@/components/ui/Turnstile";
+import { ChoiceChips } from "@/components/visit/ChoiceChips";
+import { VisitorDetailsFields } from "@/components/visit/VisitorDetailsFields";
+import { saveVisitorDetails, useVisitorDetails } from "@/lib/visitorDetails";
+import { resetTurnstile, waitForTurnstileToken } from "@/lib/turnstileClient";
 import { SETTLEMENT_OPTIONS } from "@/components/listings/sellerPreferences";
+import { parseOfferAmount } from "@/lib/offerAmount";
+
+// Quick on a phone: details pre-filled for returning visitors, the amount
+// accepts "750,000" or "$750k"-style typing and shows what it read, and
+// finance and settlement are one tap each instead of dropdowns.
+
+type Financing = "cash" | "pre_approved" | "financing";
+
+const FINANCE_OPTIONS: { value: Financing; label: string }[] = [
+  { value: "cash", label: "Cash" },
+  { value: "pre_approved", label: "Pre-approved" },
+  { value: "financing", label: "Arranging finance" },
+];
 
 export function OfferForm({ listingId }: { listingId: string }) {
+  const visitor = useVisitorDetails();
+  const errorRef = useRef<HTMLParagraphElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [amountText, setAmountText] = useState("");
+  const [financing, setFinancing] = useState<Financing | null>(null);
+  const [settlement, setSettlement] = useState<string | null>(null);
+
+  const amount = parseOfferAmount(amountText);
+
+  function showError(message: string) {
+    setError(message);
+    requestAnimationFrame(() => errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }));
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
+    if (!amount) return showError("Please enter your offer amount, for example 750,000.");
+    if (!financing) return showError("Please tap how you'll pay: cash, pre-approved or arranging finance.");
+    if (!settlement) return showError("Please tap your preferred settlement.");
+
+    setLoading(true);
     const form = e.currentTarget;
     const formData = new FormData(form);
+    const { name, email, phone } = visitor.details;
 
     try {
+      const turnstileToken = await waitForTurnstileToken(form);
       const res = await fetch("/api/offers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
+          turnstileToken,
           listingId,
-          name: String(formData.get("name") ?? ""),
-          email: String(formData.get("email") ?? ""),
-          phone: String(formData.get("phone") ?? "") || null,
-          offerAmount: Number(formData.get("offer_amount")),
-          financingType: String(formData.get("financing_type") ?? "") || null,
-          settlementTerm: String(formData.get("settlement_term") ?? "") || null,
+          name,
+          email,
+          phone: phone || null,
+          offerAmount: amount,
+          financingType: financing,
+          settlementTerm: settlement,
           waiveInspection: formData.get("waive_inspection") === "on",
           notes: String(formData.get("notes") ?? "") || null,
         }),
       });
 
-      const result = await res.json();
+      const result = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setError(result.error ?? "Something went wrong.");
+        resetTurnstile();
+        showError(
+          res.status === 400 && String(result.error ?? "").includes("CAPTCHA")
+            ? "We couldn't confirm you're not a robot. Please tap the button again."
+            : result.error ?? "Something went wrong. Please tap the button again.",
+        );
         return;
       }
 
+      saveVisitorDetails({ name, email, phone });
       setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
-      setError("Something went wrong. Please try again.");
+      resetTurnstile();
+      showError("No connection. Check your signal and tap the button again. Nothing you've typed is lost.");
     } finally {
       setLoading(false);
     }
@@ -54,76 +97,73 @@ export function OfferForm({ listingId }: { listingId: string }) {
 
   if (submitted) {
     return (
-      <p className="text-center text-sm text-ink">
-        Thanks — your offer has been submitted.
-      </p>
+      <div className="space-y-2 text-center">
+        <p className="font-serif text-2xl text-ink">Your offer has been sent.</p>
+        <p className="text-sm text-ink-soft">The agent will be in touch about next steps.</p>
+      </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Field label="Name" id="name" type="text" required />
-      <Field label="Email" id="email" type="email" required />
-      <Field label="Phone" id="phone" type="tel" />
-      <Field label="Offer amount" id="offer_amount" type="number" min={0} step="1" required />
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <VisitorDetailsFields visitor={visitor} phoneRequired={false} />
 
-      <div>
-        <label htmlFor="financing_type" className="mb-1.5 block text-sm font-medium text-ink">
-          Finance
-        </label>
-        <select
-          id="financing_type"
-          name="financing_type"
-          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
-        >
-          <option value="cash">Cash buyer</option>
-          <option value="pre_approved">Pre-approved financing</option>
-          <option value="financing">Financing (not yet approved)</option>
-        </select>
-      </div>
+      <div className="space-y-6 border-t border-line pt-6">
+        <div>
+          <Field
+            label="Your offer"
+            id="offer_amount"
+            type="text"
+            inputMode="decimal"
+            autoComplete="off"
+            placeholder="e.g. 750,000"
+            value={amountText}
+            onChange={(e) => setAmountText(e.target.value)}
+            required
+          />
+          {amountText ? (
+            <p className={`mt-1 text-sm ${amount ? "text-ink" : "text-error"}`}>
+              {amount
+                ? `$${amount.toLocaleString("en-AU")}`
+                : "Type the amount in numbers, for example 750,000"}
+            </p>
+          ) : null}
+        </div>
 
-      <div>
-        <label
-          htmlFor="settlement_term"
-          className="mb-1.5 block text-sm font-medium text-ink"
-        >
-          Preferred settlement term
-        </label>
-        <select
-          id="settlement_term"
-          name="settlement_term"
-          required
-          className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
-        >
-          <option value="" disabled selected>
-            Select one…
-          </option>
-          {SETTLEMENT_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
+        <ChoiceChips label="How will you pay?" options={FINANCE_OPTIONS} value={financing} onChange={setFinancing} />
 
-      <label className="flex items-center gap-2 text-sm text-ink">
-        <input
-          type="checkbox"
-          name="waive_inspection"
-          className="h-4 w-4 rounded border-line text-brass focus:ring-brass"
+        <ChoiceChips
+          label="Preferred settlement"
+          options={SETTLEMENT_OPTIONS.map((o) => (o.value === "flexible" ? { ...o, label: "Flexible" } : o))}
+          value={settlement}
+          onChange={setSettlement}
         />
-        Willing to waive building & pest inspection
-      </label>
 
-      <TextAreaField label="Notes (optional)" id="notes" rows={3} />
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-ink">
+          <input
+            type="checkbox"
+            name="waive_inspection"
+            className="h-5 w-5 rounded border-line text-brass focus:ring-brass"
+          />
+          Willing to waive building &amp; pest inspection
+        </label>
 
-      <Turnstile />
+        <TextAreaField label="Conditions or notes (optional)" id="notes" rows={3} />
+      </div>
 
-      {error ? <p className="text-sm text-error">{error}</p> : null}
+      <div className="space-y-4">
+        <Turnstile />
 
-      <Button type="submit" variant="primary" disabled={loading} className="w-full">
-        {loading ? "Submitting…" : "Submit offer"}
-      </Button>
+        {error ? (
+          <p ref={errorRef} role="alert" className="rounded-md bg-error/10 px-3 py-2 text-sm text-error">
+            {error}
+          </p>
+        ) : null}
+
+        <Button type="submit" variant="primary" disabled={loading} className="w-full py-3 text-base">
+          {loading ? "Sending your offer…" : "Send offer"}
+        </Button>
+      </div>
     </form>
   );
 }

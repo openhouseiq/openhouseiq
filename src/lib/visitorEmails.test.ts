@@ -84,13 +84,13 @@ describe("visitor thank-you email", () => {
     const { subject, body } = buildThankYouEmail({ ...base, kind: "feedback", wantsFollowup: true });
     expect(subject).toBe("Thanks for visiting 5 Tent St, West QLD");
     expect(body).toContain("Hi Sam,");
-    expect(body).toContain("Mick Orr has received it and will call you back soon.");
+    expect(body).toContain("Mick Orr has your details and will call you back soon.");
     expect(body).toContain("Mick Orr\n0400 000 000\nmick@example.com");
   });
 
   it("doesn't promise a follow-up the visitor didn't ask for", () => {
     const { body } = buildThankYouEmail({ ...base, kind: "feedback", wantsFollowup: false });
-    expect(body).toContain("Mick Orr has received it.");
+    expect(body).toContain("Mick Orr has your details.");
   });
 
   it("confirms an offer without accepting it", () => {
@@ -106,5 +106,25 @@ describe("visitor thank-you email", () => {
 
   it("makes the agent's name safe for the From header", () => {
     expect(safeDisplayName('Mick "the" <Hero>\r\nBcc: x')).toBe("Mick the Hero Bcc: x");
+  });
+});
+
+import { parseOfferAmount } from "./offerAmount";
+
+describe("offer amount typing", () => {
+  it("reads the ways buyers type amounts", () => {
+    expect(parseOfferAmount("750000")).toBe(750000);
+    expect(parseOfferAmount("$750,000")).toBe(750000);
+    expect(parseOfferAmount(" 750 000 ")).toBe(750000);
+    expect(parseOfferAmount("750k")).toBe(750000);
+    expect(parseOfferAmount("1.25m")).toBe(1250000);
+    expect(parseOfferAmount("1.2M")).toBe(1200000);
+  });
+
+  it("refuses anything that isn't an amount", () => {
+    expect(parseOfferAmount("")).toBeNull();
+    expect(parseOfferAmount("abc")).toBeNull();
+    expect(parseOfferAmount("0")).toBeNull();
+    expect(parseOfferAmount("750,000 or best")).toBeNull();
   });
 });

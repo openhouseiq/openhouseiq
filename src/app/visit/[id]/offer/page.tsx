@@ -20,7 +20,8 @@ export default async function OfferPage({
 
   return (
     <VisitLayout>
-      <h2 className="mb-6 text-center font-serif text-2xl font-medium text-ink">
+      <p className="text-center text-sm text-ink-soft">Make an offer</p>
+      <h2 className="mb-6 mt-1 text-center font-serif text-2xl font-medium text-ink">
         {listing.address}
       </h2>
       {listing.agent_name ? (

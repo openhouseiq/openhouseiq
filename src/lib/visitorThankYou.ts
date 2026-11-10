@@ -51,14 +51,14 @@ export function buildThankYouEmail(input: ThankYouInput): { subject: string; bod
     body: [
       `Hi ${firstName},`,
       "",
-      `Thanks for coming through ${input.address} and for sharing your feedback. ${agent} has received it${followUp}.`,
+      `Thanks for coming through ${input.address} and signing in. ${agent} has your details${followUp}.`,
       "",
       `If you have any questions about the property, just reply to this email to reach ${agent} directly.`,
       "",
       signature,
       "",
       "--",
-      `You're receiving this one-off email because you left feedback at the open home for ${input.address}. Sent by Open Home Hero on behalf of ${agent}.`,
+      `You're receiving this one-off email because you signed in at the open home for ${input.address}. Sent by Open Home Hero on behalf of ${agent}.`,
     ].join("\n"),
   };
 }
