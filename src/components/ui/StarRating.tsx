@@ -24,7 +24,7 @@ export function StarRating({
             onClick={() => onChange(allowClear && star === value ? 0 : star)}
             aria-label={`${label}: ${star} star${star > 1 ? "s" : ""}`}
             aria-pressed={star <= value}
-            className={`flex h-10 w-9 items-center justify-center ${star <= value ? "text-brass" : "text-line"}`}
+            className={`flex h-10 w-10 items-center justify-center first:-ml-1.5 ${star <= value ? "text-brass" : "text-line"}`}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7 fill-current">
               <path d="M12 2.5l2.94 6.06 6.66.92-4.85 4.65 1.18 6.62L12 17.6l-5.93 3.15 1.18-6.62L2.4 9.48l6.66-.92L12 2.5z" />

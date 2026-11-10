@@ -11,7 +11,7 @@ import { VisitorDetailsFields } from "@/components/visit/VisitorDetailsFields";
 import { saveVisitorDetails, useVisitorDetails } from "@/lib/visitorDetails";
 import { resetTurnstile, waitForTurnstileToken } from "@/lib/turnstileClient";
 import type { InterestLevel, PurchaseTimeframe } from "@/lib/types";
-import { CUSTOM_ANSWER_MAX } from "@/lib/customQuestions";
+import { CHOICE_ANSWERS, CUSTOM_ANSWER_MAX, type CustomQuestion } from "@/lib/customQuestions";
 
 // The open home sign-in form. Built to be quick on a phone: only name, email
 // and mobile are required, everything else is one tap and can be skipped,
@@ -42,7 +42,7 @@ export function FeedbackForm({
 }: {
   listingId: string;
   isRental?: boolean;
-  customQuestions?: string[];
+  customQuestions?: CustomQuestion[];
   /** Where "Make an offer" goes after signing in (sale listings only). */
   offerHref?: string;
 }) {
@@ -60,6 +60,7 @@ export function FeedbackForm({
   const [workingWithAgent, setWorkingWithAgent] = useState(false);
   const [timeframe, setTimeframe] = useState<PurchaseTimeframe | null>(null);
   const [wantsFollowup, setWantsFollowup] = useState(false);
+  const [choiceAnswers, setChoiceAnswers] = useState<Record<number, string | null>>({});
 
   function showError(message: string) {
     setError(message);
@@ -97,7 +98,9 @@ export function FeedbackForm({
           workingWithAgent,
           purchaseTimeframe: timeframe,
           wantsFollowup,
-          customAnswers: customQuestions.map((_, i) => String(formData.get(`customAnswer${i}`) ?? "")),
+          customAnswers: customQuestions.map((q, i) =>
+            q.kind === "choice" ? choiceAnswers[i] ?? "" : String(formData.get(`customAnswer${i}`) ?? ""),
+          ),
         }),
       });
 
@@ -195,7 +198,7 @@ export function FeedbackForm({
               ] as const
             ).map(([label, value, set]) => (
               <div key={label} className="py-1.5">
-                <StarRating label={label} value={value} onChange={set} allowClear inline />
+                <StarRating label={label} value={value} onChange={set} allowClear />
               </div>
             ))}
           </div>
@@ -233,15 +236,25 @@ export function FeedbackForm({
           </label>
         </div>
 
-        {customQuestions.map((question, i) => (
-          <TextAreaField
-            key={i}
-            label={question}
-            id={`customAnswer${i}`}
-            rows={2}
-            maxLength={CUSTOM_ANSWER_MAX}
-          />
-        ))}
+        {customQuestions.map((question, i) =>
+          question.kind === "choice" ? (
+            <ChoiceChips
+              key={i}
+              label={question.text}
+              options={CHOICE_ANSWERS.map((answer) => ({ value: answer, label: answer }))}
+              value={choiceAnswers[i] ?? null}
+              onChange={(answer) => setChoiceAnswers((a) => ({ ...a, [i]: answer }))}
+            />
+          ) : (
+            <TextAreaField
+              key={i}
+              label={question.text}
+              id={`customAnswer${i}`}
+              rows={2}
+              maxLength={CUSTOM_ANSWER_MAX}
+            />
+          ),
+        )}
 
         <TextAreaField label="Anything else? (optional)" id="comments" rows={3} />
       </section>
