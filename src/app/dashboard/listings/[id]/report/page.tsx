@@ -417,8 +417,8 @@ export default async function ListingReportPage({
         <div className="mt-10 flex items-center justify-end gap-1.5 border-t border-line pt-5">
           <span className="text-xs text-ink-soft">Powered by</span>
           <span className="font-serif text-sm font-semibold">
-            <span className="text-brass">Cue</span>
-            <span className="text-ink">Property</span>
+            <span className="text-ink">Open Home </span>
+            <span className="text-brass">Hero</span>
           </span>
         </div>
       </div>
