@@ -2,7 +2,7 @@ import { NextResponse, after } from "next/server";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
-import { notifyAgentOfSubmission } from "@/lib/notify";
+import { notifyListingAgents } from "@/lib/listingAlerts";
 import { siteOrigin } from "@/lib/siteUrl";
 import {
   ValidationError,
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("agent_id, agent_email, address")
+    .select("agent_id, agency_id, agent_email, address")
     .eq("id", listingId)
     .maybeSingle();
 
@@ -123,12 +123,9 @@ export async function POST(request: Request) {
   // waiting on "Sending…" while notifications go out.
   const baseUrl = siteOrigin(request);
   after(() =>
-    notifyAgentOfSubmission({
-      agentId: listing.agent_id,
-      agentEmail: listing.agent_email,
+    notifyListingAgents(supabase, {
+      listing: { ...listing, id: listingId },
       kind: "applicant",
-      listingAddress: listing.address,
-      listingId,
       baseUrl,
     }).catch((error) => console.error("Agent notification failed:", error)),
   );
