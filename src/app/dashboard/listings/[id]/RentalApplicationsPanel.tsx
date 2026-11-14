@@ -77,7 +77,7 @@ export function RentalApplicationsPanel({
                     <p className="font-serif text-lg text-ink">
                       {i + 1}. {a.name}
                       {a.isNew ? (
-                        <span className="ml-2 rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
+                        <span className="ml-2 rounded-full bg-brass/15 px-2 py-0.5 text-xs font-medium text-brass-deep">
                           New
                         </span>
                       ) : null}
@@ -86,7 +86,7 @@ export function RentalApplicationsPanel({
                       {[a.email, a.phone].filter(Boolean).join(" · ")}
                     </p>
                   </div>
-                  <span className="rounded-full bg-brass px-3 py-1 text-sm font-semibold text-ink">
+                  <span className="rounded-full bg-brass/15 px-3 py-1 text-sm font-semibold text-brass-deep">
                     {a.score}% match
                   </span>
                 </div>

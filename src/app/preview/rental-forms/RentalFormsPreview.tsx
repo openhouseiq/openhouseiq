@@ -273,7 +273,7 @@ export function RentalFormsPreview() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="rounded-full bg-brass px-3 py-1 text-sm font-semibold text-ink">
+                    <span className="rounded-full bg-brass/15 px-3 py-1 text-sm font-semibold text-brass-deep">
                       {a.score}% match
                     </span>
                   </div>

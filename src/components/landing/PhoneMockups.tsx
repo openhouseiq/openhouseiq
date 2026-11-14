@@ -83,7 +83,7 @@ export function Check({ label, checked }: { label: string; checked?: boolean }) 
     <div className="flex items-center gap-1.5 text-ink">
       <span
         className={`flex h-3 w-3 items-center justify-center rounded-sm border text-[8px] leading-none ${
-          checked ? "border-brass bg-brass text-ink" : "border-line bg-white"
+          checked ? "border-navy bg-navy text-paper" : "border-line bg-white"
         }`}
       >
         {checked ? "✓" : ""}

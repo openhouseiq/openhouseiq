@@ -35,8 +35,8 @@ export default async function ProductFeedbackPage() {
           How&apos;s Open Home Hero working for you?
         </h1>
         <p className="mt-2 text-sm text-ink-soft">
-          You&apos;re one of the first agents trying this out — your honest
-          feedback directly shapes what we build next. Takes about 2 minutes.
+          Your honest feedback directly shapes what we build next. Takes about
+          2 minutes.
         </p>
 
         <div className="mt-8">

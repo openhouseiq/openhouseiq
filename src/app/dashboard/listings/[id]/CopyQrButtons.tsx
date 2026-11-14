@@ -44,7 +44,7 @@ export function CopyQrButtons({
   const base =
     "rounded-md px-4 py-2.5 text-sm font-medium text-ink transition-opacity hover:opacity-90";
   const secondary = `${base} border border-line bg-white`;
-  const primary = `${base} bg-brass`;
+  const primary = `${base} bg-navy !text-paper`;
 
   return (
     <div className="mt-3">

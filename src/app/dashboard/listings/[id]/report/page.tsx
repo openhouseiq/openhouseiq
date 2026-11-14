@@ -61,7 +61,7 @@ function MatchBadge({
   }
   if (matchPercent === null) return null;
   return (
-    <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-semibold text-ink">
+    <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs font-semibold text-brass-deep">
       {matchPercent}% match
     </span>
   );
@@ -258,7 +258,7 @@ export default async function ListingReportPage({
                         {item.is_anonymous ? "Anonymous" : item.name || "—"}
                       </p>
                       {item.interest_level ? (
-                        <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-semibold text-ink">
+                        <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs font-semibold text-brass-deep">
                           {INTEREST_LEVEL_LABELS[item.interest_level] ?? item.interest_level}
                         </span>
                       ) : null}
@@ -417,8 +417,8 @@ export default async function ListingReportPage({
         <div className="mt-10 flex items-center justify-end gap-1.5 border-t border-line pt-5">
           <span className="text-xs text-ink-soft">Powered by</span>
           <span className="font-serif text-sm font-semibold">
-            <span className="text-brass">Cue</span>
-            <span className="text-ink">Property</span>
+            <span className="text-ink">Open Home </span>
+            <span className="text-brass">Hero</span>
           </span>
         </div>
       </div>
