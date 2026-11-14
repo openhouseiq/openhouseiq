@@ -3,7 +3,7 @@ import { sendSubmissionToCrm } from "@/lib/crm";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
-import { notifyAgentOfSubmission } from "@/lib/notify";
+import { notifyListingAgents } from "@/lib/listingAlerts";
 import { siteOrigin } from "@/lib/siteUrl";
 import { buildAnswers, parseQuestions } from "@/lib/customQuestions";
 import { sendVisitorThankYou } from "@/lib/visitorThankYou";
@@ -128,12 +128,9 @@ export async function POST(request: Request) {
   // waiting on "Sending…" while notifications go out.
   const baseUrl = siteOrigin(request);
   after(() =>
-    notifyAgentOfSubmission({
-      agentId: listing.agent_id,
-      agentEmail: listing.agent_email,
+    notifyListingAgents(supabase, {
+      listing: { ...listing, id: listingId },
       kind: "feedback",
-      listingAddress: listing.address,
-      listingId,
       baseUrl,
     }).catch((error) => console.error("Agent notification failed:", error)),
   );

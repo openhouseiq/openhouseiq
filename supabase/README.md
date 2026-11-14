@@ -25,3 +25,4 @@ one is idempotent-ish (safe to re-run individual statements won't be, since
 | `0034_crm_connections.sql` | Adds `crm_connections` (an agency's or agent's link to their CRM, token stored encrypted) and `crm_sync_jobs` (each visitor sent to the CRM, with retries). Server-only: RLS on, no policies |
 | `0035_crm_more_providers.sql` | Allows Follow Up Boss and Box+Dice as CRM connection providers |
 | `0036_crm_lofty_hubspot_pipedrive.sql` | Allows Lofty, HubSpot and Pipedrive as CRM connection providers |
+| `0040_listing_alert_agents.sql` | Adds `listing_alert_agents`: which agents in an agency get email/push alerts for each listing (the creating agent by default; co-agents can be added per listing). Server-only: RLS on, no policies |

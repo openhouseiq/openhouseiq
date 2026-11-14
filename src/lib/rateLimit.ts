@@ -16,6 +16,7 @@ const LIMITS: Record<string, number> = {
   "offers-listing": 30,
   "applicants-listing": 30,
   "rental-settings": 20,
+  "listing-alerts": 30,
 };
 
 /**

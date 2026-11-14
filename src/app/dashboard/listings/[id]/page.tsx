@@ -12,6 +12,9 @@ import { DeleteListingButton } from "./DeleteListingButton";
 import { FeedbackOffersReport } from "./FeedbackOffersReport";
 import { FeedbackApplicantsReport } from "./FeedbackApplicantsReport";
 import { RentalApplicationsPanel } from "./RentalApplicationsPanel";
+import { ListingAlertsPanel } from "./ListingAlertsPanel";
+import { createServiceClient } from "@/lib/supabase/service";
+import { alertsOn, getAgencyAgents, getListingAlertChoices } from "@/lib/listingAlerts";
 import type { RankedItem } from "@/lib/rentalForms/rankListing";
 import { rankListingApplications } from "@/lib/rentalForms/rankListing";
 import { getUserCurrentAgencyId, canAccessListing } from "@/lib/agency";
@@ -163,6 +166,20 @@ export default async function ListingDetailPage({
   // A rental's QR code is only issued once its application form can be
   // submitted, so a printed code never leads visitors to a closed form.
   const qrLocked = isRental && !rentalReady;
+  // Agency listings: who in the agency gets alerts for this property.
+  let alertAgents: { userId: string; name: string; on: boolean }[] = [];
+  if (listing.agency_id) {
+    const service = createServiceClient();
+    const [agents, choices] = await Promise.all([
+      getAgencyAgents(service, listing.agency_id),
+      getListingAlertChoices(service, listing.id),
+    ]);
+    alertAgents = agents.map((a) => ({
+      userId: a.userId,
+      name: a.name,
+      on: alertsOn(choices, a.userId, listing.agent_id),
+    }));
+  }
   const qrDataUrl = qrLocked ? "" : await QRCode.toDataURL(visitUrl, {
     width: 220,
     margin: 1,
@@ -260,6 +277,15 @@ export default async function ListingDetailPage({
             </div>
           )}
         </div>
+
+        {alertAgents.length > 1 ? (
+          <ListingAlertsPanel
+            listingId={listing.id}
+            currentUserId={user.id}
+            creatorId={listing.agent_id}
+            agents={alertAgents}
+          />
+        ) : null}
 
         {isRental ? (
           <div className="mt-10 rounded-md border border-line bg-paper-card p-6">
