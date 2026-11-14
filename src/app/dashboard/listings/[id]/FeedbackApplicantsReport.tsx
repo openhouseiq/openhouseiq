@@ -32,8 +32,8 @@ const INTEREST_LEVEL_LABELS: Record<string, string> = {
 const INTEREST_LEVEL_STYLES: Record<string, string> = {
   not_interested: "bg-line text-ink-soft",
   considering: "bg-line text-ink-soft",
-  very_interested: "bg-brass text-ink",
-  ready_to_offer: "bg-brass text-ink",
+  very_interested: "bg-brass/15 text-brass-deep",
+  ready_to_offer: "bg-brass/15 text-brass-deep",
 };
 
 function CategoryStars({ label, value }: { label: string; value: number | null }) {
@@ -56,9 +56,9 @@ function MatchBadge({ score }: { score: ApplicantScore }) {
   if (score.matchPercent === null) return null;
   const style =
     score.matchPercent >= 75
-      ? "bg-brass text-ink"
+      ? "bg-brass/15 text-brass-deep"
       : score.matchPercent >= 40
-        ? "bg-brass text-ink"
+        ? "bg-brass/15 text-brass-deep"
         : "bg-line text-ink-soft";
   return (
     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${style}`}>
@@ -257,7 +257,7 @@ export function FeedbackApplicantsReport({
                         {item.is_anonymous ? "Anonymous" : item.name || "—"}
                       </p>
                       {unreadFeedbackIds.includes(item.id) ? (
-                        <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
+                        <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs font-medium text-brass-deep">
                           New
                         </span>
                       ) : null}
@@ -349,7 +349,7 @@ export function FeedbackApplicantsReport({
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-medium text-ink">{applicant.name}</p>
                       {unreadApplicantIds.includes(applicant.id) ? (
-                        <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
+                        <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs font-medium text-brass-deep">
                           New
                         </span>
                       ) : null}

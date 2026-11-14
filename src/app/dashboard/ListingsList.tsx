@@ -169,7 +169,7 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
               aria-pressed={showSale}
               className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                 showSale
-                  ? "border-brass bg-brass text-ink"
+                  ? "border-navy bg-navy text-paper"
                   : "border-line bg-white text-ink-soft hover:border-brass hover:text-ink"
               }`}
             >
@@ -181,7 +181,7 @@ export function ListingsList({ listings }: { listings: ListingWithCounts[] }) {
               aria-pressed={showRental}
               className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                 showRental
-                  ? "border-brass bg-brass text-ink"
+                  ? "border-navy bg-navy text-paper"
                   : "border-line bg-white text-ink-soft hover:border-brass hover:text-ink"
               }`}
             >

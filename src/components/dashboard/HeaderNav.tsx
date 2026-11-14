@@ -33,7 +33,7 @@ export function HeaderNav() {
               window.history.pushState(null, "", href);
               window.scrollTo({ top: 0 });
             }}
-            className="whitespace-nowrap text-navy-soft hover:text-brass"
+            className="whitespace-nowrap text-ink-soft hover:text-ink"
           >
             {item.label}
           </Link>

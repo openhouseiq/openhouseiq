@@ -161,7 +161,7 @@ export function CreateAgencyForm({ initialName }: { initialName?: string }) {
               onClick={() => setInterval(value)}
               className={`flex-1 rounded-md border px-4 py-2.5 text-sm font-medium ${
                 interval === value
-                  ? "border-brass bg-brass text-ink"
+                  ? "border-navy bg-navy text-paper"
                   : "border-line bg-white text-ink-soft hover:border-brass hover:text-ink"
               }`}
             >

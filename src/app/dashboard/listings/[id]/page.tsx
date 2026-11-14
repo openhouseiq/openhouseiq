@@ -236,7 +236,7 @@ export default async function ListingDetailPage({
                     ? `/dashboard/listings/${listing.id}/rental-settings`
                     : `/dashboard/listings/${listing.id}/edit`
                 }
-                className="mt-4 inline-block rounded-md bg-brass px-4 py-2 text-sm font-medium text-ink hover:bg-brass-deep hover:text-paper"
+                className="mt-4 inline-block rounded-md bg-navy px-4 py-2 text-sm font-medium text-paper hover:opacity-90"
               >
                 {rentalForm ? "Complete rental settings" : "Edit listing"}
               </Link>
@@ -411,7 +411,7 @@ export default async function ListingDetailPage({
                 className={
                   rentalReady
                     ? "shrink-0 text-sm text-brass underline"
-                    : "shrink-0 rounded-md bg-brass px-4 py-2 text-sm font-medium text-ink hover:bg-brass-deep hover:text-paper"
+                    : "shrink-0 rounded-md bg-navy px-4 py-2 text-sm font-medium text-paper hover:opacity-90"
                 }
               >
                 {rentalForm ? (rentalReady ? "Rental settings" : "Complete rental settings") : "Edit listing"}

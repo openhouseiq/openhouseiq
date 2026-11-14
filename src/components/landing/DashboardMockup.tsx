@@ -36,14 +36,14 @@ export function OfferCard({ offer }: { offer: SampleOffer }) {
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium text-ink">{offer.name}</p>
           {offer.top ? (
-            <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-medium text-ink">
+            <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs font-medium text-brass-deep">
               New
             </span>
           ) : null}
         </div>
         <span
           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-            "warn" in offer && offer.warn ? "bg-error/10 text-error" : "bg-brass text-ink"
+            "warn" in offer && offer.warn ? "bg-error/10 text-error" : "bg-brass/15 text-brass-deep"
           }`}
         >
           {offer.match}

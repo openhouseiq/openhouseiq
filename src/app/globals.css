@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #efeae0;
+  --background: #faf7f2;
   --foreground: #1b2430;
 }
 
@@ -10,19 +10,30 @@
   --color-foreground: var(--foreground);
 
   /* Open Home Hero brand palette — light content, dark navy header/brand accents */
-  --color-paper: #efeae0;
+  --color-paper: #faf7f2;
   --color-paper-card: #ffffff;
   --color-ink: #1b2430;
-  --color-ink-soft: #3b4657;
+  --color-ink-soft: #57524a;
   --color-navy: #1b2430;
-  --color-navy-soft: #efeae0cc;
+  --color-navy-soft: #faf7f2cc;
   --color-brass: #b08d57;
   --color-brass-deep: #7a5c2e;
-  --color-line: #dad3c2;
+  --color-line: #e8e1d6;
   --color-error: #a83e2c;
 
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-source-serif);
+  --font-serif: var(--font-inter);
+  --font-display: var(--font-source-serif);
+}
+
+/* Headings use Inter, set tight and semibold. The logo keeps its serif via font-display. */
+.font-serif {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.font-display {
+  font-weight: 400;
+  letter-spacing: normal;
 }
 
 body {

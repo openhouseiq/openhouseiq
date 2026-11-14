@@ -3,9 +3,9 @@ import { Wordmark } from "@/components/Wordmark";
 export default function ListingLoading() {
   return (
     <div className="min-h-screen bg-paper">
-      <header className="bg-navy px-6 pb-6 pt-4">
+      <header className="border-b border-line bg-white px-6 pb-5 pt-4">
         <span className="font-serif text-xl tracking-tight">
-          <Wordmark tone="light" />
+          <Wordmark tone="dark" />
         </span>
       </header>
       <main className="mx-auto max-w-4xl px-6 py-12" aria-busy="true">

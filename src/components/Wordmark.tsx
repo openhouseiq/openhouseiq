@@ -16,8 +16,8 @@ export function Wordmark({ tone, showMark = true }: { tone: "light" | "dark"; sh
       {showMark ? (
         <LogoMark tone={tone} className="mr-[0.45em] inline-block h-[1.15em] w-auto align-[-0.22em]" />
       ) : null}
-      <span className={base}>{first} </span>
-      <span className="text-brass">{last}</span>
+      <span className={`font-display ${base}`}>{first} </span>
+      <span className="font-display text-brass">{last}</span>
     </>
   );
 }

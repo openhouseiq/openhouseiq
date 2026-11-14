@@ -136,7 +136,7 @@ function SignUpForm() {
                   onClick={() => setAccountType(value)}
                   className={`flex-1 rounded-md border px-3 py-2.5 text-sm font-medium ${
                     accountType === value
-                      ? "border-brass bg-brass text-ink"
+                      ? "border-navy bg-navy text-paper"
                       : "border-line bg-white text-[#3b4657] hover:border-brass hover:text-ink"
                   }`}
                 >

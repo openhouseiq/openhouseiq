@@ -61,7 +61,7 @@ function MatchBadge({
   }
   if (matchPercent === null) return null;
   return (
-    <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-semibold text-ink">
+    <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs font-semibold text-brass-deep">
       {matchPercent}% match
     </span>
   );
@@ -258,7 +258,7 @@ export default async function ListingReportPage({
                         {item.is_anonymous ? "Anonymous" : item.name || "—"}
                       </p>
                       {item.interest_level ? (
-                        <span className="rounded-full bg-brass px-2 py-0.5 text-xs font-semibold text-ink">
+                        <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs font-semibold text-brass-deep">
                           {INTEREST_LEVEL_LABELS[item.interest_level] ?? item.interest_level}
                         </span>
                       ) : null}

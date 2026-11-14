@@ -2,9 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/Wordmark";
-import { PhoneMockups } from "@/components/landing/PhoneMockups";
-import { DashboardMockup } from "@/components/landing/DashboardMockup";
-import { HeroShowcase } from "@/components/landing/HeroShowcase";
+import { HeroPanel } from "@/components/landing/HeroPanel";
+import { WorkflowTabs } from "@/components/landing/WorkflowTabs";
 import { DEFAULT_SITE_URL, SOCIAL_LINKS } from "@/lib/brand";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
@@ -47,51 +46,6 @@ const FAQS = [
     question: "Does it replace my CRM?",
     answer:
       "No, it adds to it. Open Home Hero captures the moment someone walks into an open home or rental inspection, then sends each visitor straight into the CRM you already use, with their feedback or offer attached. It connects with Follow Up Boss, HubSpot, Lofty and Pipedrive today, with VaultRE, Rex, AgentBox and Box+Dice coming soon. Using something else? Export every lead as a CSV and import it.",
-  },
-];
-
-const FEATURES = [
-  {
-    title: "A QR code for every listing",
-    description:
-      "Generated automatically the moment you create a listing. Copy it onto your open home flyer, or attach the link to your online listing.",
-  },
-  {
-    title: "Instant feedback & offers",
-    description:
-      "Visitors leave feedback or submit an offer — right from their phone. No app to download, no login required.",
-  },
-  {
-    title: "Every lead, straight to your CRM",
-    description:
-      "See new feedback and offers the moment they come in, organised by listing, and sent automatically into the CRM you already use.",
-  },
-];
-
-const STEPS = [
-  {
-    number: "1",
-    title: "Create a listing",
-    description:
-      "Add the address, price, and details. Add photos if you have them.",
-  },
-  {
-    number: "2",
-    title: "Copy your QR code",
-    description:
-      "Every listing gets its own QR code and link. Paste the code onto your flyer, or attach the link to your online listing.",
-  },
-  {
-    number: "3",
-    title: "Visitors scan or tap and respond",
-    description:
-      "No app to download, no account to create. Feedback or an offer in under a minute.",
-  },
-  {
-    number: "4",
-    title: "Follow up from your CRM",
-    description:
-      "Every visitor is already in your CRM with their feedback or offer attached. Your dashboard has the full picture, and reports export anytime.",
   },
 ];
 
@@ -148,110 +102,158 @@ const AGENCY_TIERS = [
   { range: "More than 20 agents", discount: "Contact us for pricing" },
 ];
 
+const PRODUCT_CARDS = [
+  {
+    tag: "01 / OFFERS",
+    title: "Every offer, sorted by what your seller wants.",
+    body: "Buyers submit an offer from their phone while interest peaks: amount, finance and settlement terms. Each one is matched against your seller's priorities and shown side by side. You still make the call.",
+    wide: true,
+  },
+  {
+    tag: "02 / FEEDBACK",
+    title: "Structured feedback, not scribbles on a clipboard.",
+    body: "Every visitor rates price, condition and location, tells you how interested they are and whether finance is pre-approved. No app, no account.",
+    wide: false,
+  },
+  {
+    tag: "03 / REPORTING",
+    title: "Proof for your seller, in one click.",
+    body: "Show sellers what buyers really thought and every offer on the table. Print the report or save it as a PDF, and export everything as a CSV.",
+    wide: false,
+  },
+  {
+    tag: "04 / CRM",
+    title: "Makes your CRM better, not redundant.",
+    body: "Your CRM already holds the contact. Open Home Hero adds what it was never built to capture: each buyer's feedback and offer, sent into Follow Up Boss, HubSpot, Lofty or Pipedrive within seconds, tagged with the property.",
+    wide: true,
+  },
+];
+
+const METRICS = [
+  { value: "< 1 min", label: "For a buyer to give feedback or submit an offer" },
+  { value: "4", label: "CRMs connected directly, with CSV export for the rest" },
+  { value: "0", label: "Apps or accounts your visitors need" },
+];
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-paper">
-      <header className="bg-navy px-6 py-6">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <span className="whitespace-nowrap font-serif text-lg tracking-tight sm:text-xl">
-            <Wordmark tone="light" />
-          </span>
+    <div className="min-h-screen bg-white">
+      <header className="sticky top-0 z-40 border-b border-line bg-white/85 px-6 py-4 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6">
+          <Link href="/" className="whitespace-nowrap font-serif text-lg sm:text-xl" aria-label="Open Home Hero home">
+            <Wordmark tone="dark" />
+          </Link>
+          <nav className="hidden items-center gap-7 text-sm font-medium text-ink-soft md:flex" aria-label="Main">
+            <a href="#product" className="hover:text-ink">Product</a>
+            <a href="#workflow" className="hover:text-ink">How it works</a>
+            <a href="#crm" className="hover:text-ink">Integrations</a>
+            <a href="#pricing" className="hover:text-ink">Pricing</a>
+          </nav>
           <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-sm text-navy-soft hover:text-brass"
-            >
+            <Link href="/login" className="text-sm font-medium text-ink hover:text-brass-deep">
               Log in
             </Link>
             <Link href="/signup">
-              <Button variant="primary">Sign up</Button>
+              <Button variant="primary" className="rounded-full px-5">Start free trial</Button>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-10 lg:grid-cols-[1fr_540px] lg:gap-12 lg:py-14">
-        <div className="text-center lg:text-left">
-          <h1 className="font-serif text-4xl font-medium leading-tight text-ink sm:text-5xl">
-            Run better open homes.
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft lg:mx-0">
-            One QR code on your flyer, or one link in your listing. Visitors
-            give feedback or make an offer from their phone, every offer lands
-            in your dashboard sorted by what your seller wants, and every
-            visitor goes straight into your CRM.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-            <Link href="/signup">
-              <Button variant="primary">Get started free</Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="secondary">Log in</Button>
-            </Link>
-          </div>
-          <p className="mt-4 text-sm text-ink-soft">
-            14-day free trial · Works with your CRM · No app for visitors
-          </p>
+      <main
+        id="top"
+        className="px-6 pb-24 pt-20 text-center sm:pt-28"
+        style={{ background: "radial-gradient(ellipse 700px 380px at 50% 78%, rgba(176,141,87,0.13), rgba(176,141,87,0) 70%)" }}
+      >
+        <p className="mx-auto inline-block rounded-full border border-line bg-paper px-4 py-1.5 text-xs tracking-[0.08em] text-brass-deep">
+          OFFERS AND FEEDBACK FROM EVERY OPEN HOME
+        </p>
+        <h1 className="mx-auto mt-6 max-w-4xl text-balance font-serif text-5xl leading-[1.05] text-ink sm:text-6xl lg:text-7xl">
+          Turn foot traffic into closed pipeline.
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
+          One QR code on your flyer. Buyers give structured feedback or submit an offer from their phone, and every
+          offer lands in your dashboard side by side, sorted by what your seller wants.
+        </p>
+        <div className="mt-9 flex flex-wrap justify-center gap-3">
+          <Link href="/signup">
+            <Button variant="primary" className="px-6 py-3.5 text-base">Start free trial</Button>
+          </Link>
+          <a href="#workflow">
+            <Button variant="secondary" className="px-6 py-3.5 text-base">See how it works →</Button>
+          </a>
         </div>
-        <HeroShowcase />
+        <p className="mt-5 text-sm text-ink-soft">14-day free trial · Works with your CRM · No app for visitors</p>
+        <HeroPanel />
       </main>
 
-      <section className="mx-auto max-w-5xl px-6 pb-20">
-        <div className="grid gap-6 sm:grid-cols-3">
-          {FEATURES.map((feature) => (
-            <div
-              key={feature.title}
-              className="rounded-md border border-line bg-paper-card p-6"
-            >
-              <h2 className="font-serif text-lg font-medium text-ink">
-                {feature.title}
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                {feature.description}
-              </p>
-            </div>
+      <section aria-label="CRM integrations" className="border-y border-line px-6 py-10">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-11 gap-y-4">
+          <span className="text-xs tracking-[0.08em] text-ink-soft">CONNECTS WITH</span>
+          {CRMS_NOW.map((crm) => (
+            <span key={crm} className="text-xl font-bold tracking-tight text-ink-soft">{crm}</span>
+          ))}
+          <span className="text-xs text-ink-soft">+ CSV export for any other CRM</span>
+        </div>
+        <div className="mx-auto mt-5 flex max-w-6xl flex-wrap items-center justify-center gap-3">
+          <span className="mr-2 text-xs tracking-[0.08em] text-brass-deep">COMING SOON</span>
+          {CRMS_SOON.map((crm) => (
+            <span key={crm} className="rounded-full border border-dashed border-[#d9d0c3] px-3.5 py-1.5 text-sm font-semibold text-ink-soft">
+              {crm}
+            </span>
           ))}
         </div>
       </section>
 
-      <PhoneMockups />
-
-      <DashboardMockup />
-
-      <section className="border-t border-line bg-paper-card px-6 py-20">
-        <div className="mx-auto max-w-4xl">
-          <div className="text-center">
-            <h2 className="font-serif text-3xl font-medium text-ink">
-              How it works
-            </h2>
-            <p className="mt-3 text-ink-soft">
-              From new listing to your first lead, in four steps.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map((step) => (
-              <div key={step.number}>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brass font-serif text-sm font-medium text-ink">
-                  {step.number}
-                </div>
-                <h3 className="mt-4 font-serif text-lg font-medium text-ink">
-                  {step.title}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-                  {step.description}
-                </p>
+      <section id="product" className="scroll-mt-20 px-6 py-24 sm:py-28">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-xs tracking-[0.08em] text-brass-deep">PRODUCT</p>
+          <h2 className="mt-3 max-w-3xl font-serif text-3xl leading-tight text-ink sm:text-4xl">
+            Your CRM knows who came. This tells you what they thought, and what they would pay.
+          </h2>
+          <div className="mt-12 grid gap-5 lg:grid-cols-3">
+            {PRODUCT_CARDS.map((card) => (
+              <div
+                key={card.tag}
+                className={`rounded-2xl border border-line bg-paper p-8 ${card.wide ? "lg:col-span-2" : ""}`}
+              >
+                <p className="text-xs tracking-[0.08em] text-ink-soft">{card.tag}</p>
+                <h3 className="mt-3 font-serif text-2xl leading-snug text-ink">{card.title}</h3>
+                <p className="mt-3 leading-relaxed text-ink-soft">{card.body}</p>
               </div>
             ))}
-          </div>
-          <div className="mt-12 text-center">
-            <Link href="/signup">
-              <Button variant="primary">Get started free</Button>
-            </Link>
           </div>
         </div>
       </section>
 
-      <section id="crm" className="border-t border-line px-6 py-20">
+      <section id="workflow" className="scroll-mt-20 border-y border-line bg-paper px-6 py-24 sm:py-28">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-xs tracking-[0.08em] text-brass-deep">HOW IT WORKS</p>
+          <h2 className="mt-3 font-serif text-3xl text-ink sm:text-4xl">From new listing to first offer in three steps.</h2>
+          <p className="mt-3 max-w-2xl text-ink-soft">
+            Know what every buyer thinks and what they would offer before the seller calls on Monday.
+          </p>
+          <div className="mt-10">
+            <WorkflowTabs />
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="At a glance" className="px-6 py-20">
+        <div className="mx-auto grid max-w-6xl gap-10 text-center sm:grid-cols-3">
+          {METRICS.map((m) => (
+            <div key={m.value}>
+              <p className="font-serif text-5xl text-ink">{m.value}</p>
+              <p className="mx-auto mt-2 max-w-xs text-sm text-ink-soft">{m.label}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mx-auto mt-12 max-w-6xl text-center text-sm text-ink-soft">
+          CAPTCHA-protected forms · No app for visitors · Export your data anytime
+        </p>
+      </section>
+
+      <section id="crm" className="scroll-mt-20 border-t border-line px-6 py-20">
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brass">
@@ -323,7 +325,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-line px-6 py-20">
+      <section id="pricing" className="scroll-mt-20 border-t border-line px-6 py-20">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="font-serif text-3xl font-medium text-ink">
             Simple pricing
@@ -470,6 +472,18 @@ export default function Home() {
               </details>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section id="start" className="px-6 py-24">
+        <div className="mx-auto max-w-5xl rounded-3xl bg-navy px-8 py-16 text-center">
+          <h2 className="font-serif text-3xl text-paper sm:text-4xl">Ready to see every offer side by side?</h2>
+          <p className="mx-auto mt-4 max-w-xl text-[#d9d0c3]">
+            Set up your first listing in minutes. Every feature included in a 14-day free trial.
+          </p>
+          <Link href="/signup" className="mt-8 inline-block rounded-full bg-brass px-7 py-3.5 font-semibold text-navy hover:opacity-90">
+            Start free trial →
+          </Link>
         </div>
       </section>
 

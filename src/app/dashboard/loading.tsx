@@ -3,10 +3,10 @@ import { Wordmark } from "@/components/Wordmark";
 export default function DashboardLoading() {
   return (
     <div className="min-h-screen bg-paper">
-      <header className="bg-navy px-6 pb-6 pt-4">
+      <header className="border-b border-line bg-white px-6 pb-5 pt-4">
         <div className="flex items-center justify-between gap-3">
           <span className="font-serif text-xl tracking-tight">
-            <Wordmark tone="light" />
+            <Wordmark tone="dark" />
           </span>
         </div>
       </header>
