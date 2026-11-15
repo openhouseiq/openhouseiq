@@ -5,7 +5,8 @@ import { parseAnswers } from "@/lib/customQuestions";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
-import { scoreOffer, type OfferScore } from "@/lib/offerScoring";
+import { scoreOffer } from "@/lib/offerScoring";
+import { OffersBoard } from "./OffersBoard";
 import { toCsv, downloadCsv } from "@/lib/csv";
 import { ContactLine } from "@/components/ui/ContactLine";
 import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
@@ -54,28 +55,6 @@ function CategoryStars({ label, value }: { label: string; value: number | null }
     <p className="text-xs text-ink-soft">
       {label}: <span className="text-brass">{"★".repeat(value)}{"☆".repeat(5 - value)}</span>
     </p>
-  );
-}
-
-function MatchBadge({ score }: { score: OfferScore }) {
-  if (score.unmetRequired.length > 0) {
-    return (
-      <span className="rounded-full bg-error/10 px-2 py-0.5 text-xs font-medium text-error">
-        Missing: {score.unmetRequired.join(", ")}
-      </span>
-    );
-  }
-  if (score.matchPercent === null) return null;
-  const style =
-    score.matchPercent >= 75
-      ? "bg-brass/15 text-brass-deep"
-      : score.matchPercent >= 40
-        ? "bg-brass/15 text-brass-deep"
-        : "bg-line text-ink-soft";
-  return (
-    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${style}`}>
-      {score.matchPercent}% match
-    </span>
   );
 }
 
@@ -230,7 +209,18 @@ export function FeedbackOffersReport({
 
   return (
     <>
-      <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <OffersBoard
+        rankedOffers={rankedOffers}
+        unreadOfferIds={unreadOfferIds}
+        listingAddress={listingAddress}
+        listing={listing}
+        hasSellerPreferences={hasSellerPreferences}
+        deletingId={deletingId}
+        onDelete={deleteOffer}
+        onExport={exportOffers}
+      />
+
+      <div className="mt-10">
         <div>
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-serif text-xl font-medium text-ink">
@@ -244,7 +234,7 @@ export function FeedbackOffersReport({
               Export CSV
             </Button>
           </div>
-          <div className="mt-3 space-y-3">
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {feedbackList.length === 0 ? (
               <p className="text-sm text-ink-soft">No feedback yet.</p>
             ) : (
@@ -336,87 +326,6 @@ export function FeedbackOffersReport({
           </div>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="font-serif text-xl font-medium text-ink">
-              Offers ({rankedOffers.length})
-            </h2>
-            <Button
-              variant="secondary"
-              onClick={exportOffers}
-              disabled={rankedOffers.length === 0}
-            >
-              Export CSV
-            </Button>
-          </div>
-          {hasSellerPreferences && rankedOffers.length > 1 ? (
-            <p className="mt-1 text-xs text-ink-soft">
-              Sorted by match to the seller&apos;s preferences. You still make the call.
-            </p>
-          ) : null}
-          <div className="mt-3 space-y-3">
-            {rankedOffers.length === 0 ? (
-              <p className="text-sm text-ink-soft">No offers yet.</p>
-            ) : (
-              rankedOffers.map(({ offer, score }) => (
-                <div
-                  key={offer.id}
-                  className="rounded-md border border-line bg-paper-card p-4"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-ink">{offer.name}</p>
-                      {unreadOfferIds.includes(offer.id) ? (
-                        <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs font-medium text-brass-deep">
-                          New
-                        </span>
-                      ) : null}
-                    </div>
-                    <p className="text-sm font-medium text-brass">
-                      ${Number(offer.offer_amount).toLocaleString()}
-                    </p>
-                  </div>
-                  <ContactLine
-                    email={offer.email}
-                    phone={offer.phone}
-                    className="mt-0.5 text-xs text-ink-soft"
-                  />
-                  {hasSellerPreferences ? (
-                    <div className="mt-2">
-                      <MatchBadge score={score} />
-                    </div>
-                  ) : null}
-                  <p className="mt-2 text-xs text-ink-soft">
-                    {[
-                      FINANCING_LABELS[offer.financing_type ?? ""] ??
-                        offer.financing_type,
-                      offer.settlement_term
-                        ? `Settlement: ${SETTLEMENT_LABELS[offer.settlement_term] ?? offer.settlement_term}`
-                        : null,
-                      offer.waive_inspection
-                        ? "Waiving building & pest inspection"
-                        : null,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                  {offer.notes ? (
-                    <p className="mt-2 text-sm text-ink">{offer.notes}</p>
-                  ) : null}
-
-                  <button
-                    type="button"
-                    onClick={() => deleteOffer(offer.id)}
-                    disabled={deletingId === offer.id}
-                    className="mt-2 text-xs text-error underline disabled:opacity-60"
-                  >
-                    {deletingId === offer.id ? "Deleting…" : "Delete"}
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
       </div>
     </>
   );
