@@ -11,6 +11,7 @@ import {
   bool,
   email,
   oneOf,
+  optionalPercent,
   positiveAmount,
   readJsonObject,
   requiredText,
@@ -31,6 +32,7 @@ export async function POST(request: Request) {
   }
 
   let row;
+  let terms;
   let listingId: string;
   let turnstileToken: string;
   try {
@@ -47,6 +49,11 @@ export async function POST(request: Request) {
       settlement_term: oneOf(body.settlementTerm, SETTLEMENT_TERMS, "settlement"),
       waive_inspection: bool(body.waiveInspection),
       notes: text(body.notes, "notes", 4000),
+    };
+    terms = {
+      deposit_percent: optionalPercent(body.depositPercent, "deposit"),
+      subject_to_finance: bool(body.subjectToFinance),
+      subject_to_sale: bool(body.subjectToSale),
     };
   } catch (error) {
     if (error instanceof ValidationError) {
@@ -74,9 +81,10 @@ export async function POST(request: Request) {
 
   const supabase = createServiceClient();
 
+  // "*" so this still works before database update 0041 adds offers_open.
   const { data: listing } = await supabase
     .from("listings")
-    .select("agent_id, agency_id, agent_email, agent_name, address")
+    .select("*")
     .eq("id", listingId)
     .maybeSingle();
 
@@ -84,7 +92,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Listing not found." }, { status: 404 });
   }
 
-  const { data: saved, error } = await supabase.from("offers").insert(row).select("id").single();
+  if (listing.offers_open === false) {
+    return NextResponse.json(
+      { error: "This property is no longer taking offers. Please contact the agent." },
+      { status: 409 },
+    );
+  }
+
+  let { data: saved, error } = await supabase
+    .from("offers")
+    .insert({ ...row, ...terms })
+    .select("id")
+    .single();
+
+  // Before database update 0041 runs, the deposit and condition columns don't
+  // exist yet: save the offer without them rather than losing it.
+  if (error && /deposit_percent|subject_to_(finance|sale)/.test(error.message)) {
+    ({ data: saved, error } = await supabase.from("offers").insert(row).select("id").single());
+  }
 
   if (error) {
     console.error("Offer insert failed:", error.message);

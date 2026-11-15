@@ -54,6 +54,8 @@ export function NewListingForm({ country = "AU" }: { country?: string }) {
       String(formData.get("sellerPrefWaiveInspection") ?? "") || null;
     const sellerPrefFinance =
       String(formData.get("sellerPrefFinance") ?? "") || null;
+    const sellerPrefConditions =
+      String(formData.get("sellerPrefConditions") ?? "") || null;
     const landlordPrefPets = String(formData.get("landlordPrefPets") ?? "") || null;
     const landlordPrefMinLeaseTerm =
       String(formData.get("landlordPrefMinLeaseTerm") ?? "") || null;
@@ -87,6 +89,9 @@ export function NewListingForm({ country = "AU" }: { country?: string }) {
               seller_pref_settlement: sellerPrefSettlement,
               seller_pref_waive_inspection: sellerPrefWaiveInspection,
               seller_pref_finance: sellerPrefFinance,
+              // Only sent when chosen, so listings still save if the
+              // database update (0041) hasn't been run yet.
+              ...(sellerPrefConditions ? { seller_pref_conditions: sellerPrefConditions } : {}),
             }
           : {
               landlord_pref_pets: landlordPrefPets,

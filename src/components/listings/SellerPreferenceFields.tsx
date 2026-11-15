@@ -3,6 +3,7 @@ import {
   SETTLEMENT_OPTIONS,
   LEVEL_OPTIONS,
   FINANCE_OPTIONS,
+  CONDITIONS_OPTIONS,
 } from "./sellerPreferences";
 
 const selectClasses =
@@ -49,6 +50,7 @@ export function SellerPreferenceFields({
     sellerPrefSettlement?: string | null;
     sellerPrefWaiveInspection?: string | null;
     sellerPrefFinance?: string | null;
+    sellerPrefConditions?: string | null;
   };
 }) {
   return (
@@ -59,7 +61,8 @@ export function SellerPreferenceFields({
       <div>
         <p className="text-sm font-medium text-ink">Seller preferences</p>
         <p className="mt-1 text-xs text-ink-soft">
-          What matters most to the seller, used to judge offers against.
+          What matters most to the seller. Offers are ranked by how well they match, and the
+          more important a preference is, the more it counts.
         </p>
       </div>
 
@@ -86,6 +89,12 @@ export function SellerPreferenceFields({
         label="Finance"
         options={FINANCE_OPTIONS}
         defaultValue={defaults?.sellerPrefFinance}
+      />
+      <PreferenceSelect
+        id="sellerPrefConditions"
+        label="Conditions (finance, building & pest, sale of the buyer's home)"
+        options={CONDITIONS_OPTIONS}
+        defaultValue={defaults?.sellerPrefConditions}
       />
     </div>
   );

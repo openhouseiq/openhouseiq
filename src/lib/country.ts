@@ -35,6 +35,11 @@ export function terms(country: unknown) {
       : c === "NZ"
         ? "Willing to waive the building inspection"
         : "Willing to waive building & pest inspection",
+    inspectionCondition: na
+      ? "Subject to a home inspection"
+      : c === "NZ"
+        ? "Subject to a building inspection"
+        : "Subject to building & pest inspection",
   };
 }
 

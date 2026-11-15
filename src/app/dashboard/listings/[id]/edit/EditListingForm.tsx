@@ -42,6 +42,8 @@ export function EditListingForm({ listing }: { listing: Listing }) {
       String(formData.get("sellerPrefWaiveInspection") ?? "") || null;
     const sellerPrefFinance =
       String(formData.get("sellerPrefFinance") ?? "") || null;
+    const sellerPrefConditions =
+      String(formData.get("sellerPrefConditions") ?? "") || null;
     const landlordPrefPets = String(formData.get("landlordPrefPets") ?? "") || null;
     const landlordPrefMinLeaseTerm =
       String(formData.get("landlordPrefMinLeaseTerm") ?? "") || null;
@@ -65,6 +67,11 @@ export function EditListingForm({ listing }: { listing: Listing }) {
               seller_pref_settlement: sellerPrefSettlement,
               seller_pref_waive_inspection: sellerPrefWaiveInspection,
               seller_pref_finance: sellerPrefFinance,
+              // Only sent once the column exists (database update 0041) or a
+              // value is chosen, so saving never breaks before the update runs.
+              ...(sellerPrefConditions || listing.seller_pref_conditions !== undefined
+                ? { seller_pref_conditions: sellerPrefConditions }
+                : {}),
             }
           : {
               landlord_pref_pets: landlordPrefPets,
@@ -155,6 +162,7 @@ export function EditListingForm({ listing }: { listing: Listing }) {
             sellerPrefSettlement: listing.seller_pref_settlement,
             sellerPrefWaiveInspection: listing.seller_pref_waive_inspection,
             sellerPrefFinance: listing.seller_pref_finance,
+            sellerPrefConditions: listing.seller_pref_conditions,
           }}
         />
       ) : (

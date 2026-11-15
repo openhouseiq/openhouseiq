@@ -10,6 +10,14 @@ import { saveVisitorDetails, useVisitorDetails } from "@/lib/visitorDetails";
 import { resetTurnstile, waitForTurnstileToken } from "@/lib/turnstileClient";
 import { SETTLEMENT_OPTIONS } from "@/components/listings/sellerPreferences";
 import { parseOfferAmount } from "@/lib/offerAmount";
+
+/** "10", "10%", "7.5 %" -> 10 / 7.5. Anything else (or out of range) -> null. */
+function parseDepositPercent(text: string): number | null {
+  const cleaned = text.replace(/[%\s]/g, "");
+  if (!/^\d+(\.\d+)?$/.test(cleaned)) return null;
+  const n = Number(cleaned);
+  return n > 0 && n <= 100 ? Math.round(n * 10) / 10 : null;
+}
 import { terms } from "@/lib/country";
 
 // Quick on a phone: details pre-filled for returning visitors, the amount
@@ -34,8 +42,20 @@ export function OfferForm({ listingId, country }: { listingId: string; country?:
   const [amountText, setAmountText] = useState("");
   const [financing, setFinancing] = useState<Financing | null>(null);
   const [settlement, setSettlement] = useState<string | null>(null);
+  const [depositText, setDepositText] = useState("");
+  const [subjectToFinance, setSubjectToFinance] = useState(false);
+  const [subjectToInspection, setSubjectToInspection] = useState(true);
+  const [subjectToSale, setSubjectToSale] = useState(false);
 
   const amount = parseOfferAmount(amountText);
+  const depositPercent = parseDepositPercent(depositText);
+
+  function chooseFinancing(value: Financing | null) {
+    setFinancing(value);
+    // Arranging finance usually means the offer is subject to it; the buyer can untick.
+    if (value === "financing") setSubjectToFinance(true);
+    if (value === "cash") setSubjectToFinance(false);
+  }
 
   function showError(message: string) {
     setError(message);
@@ -49,6 +69,9 @@ export function OfferForm({ listingId, country }: { listingId: string; country?:
     if (!amount) return showError("Please enter your offer amount, for example 750,000.");
     if (!financing) return showError("Please tap how you'll pay: cash, pre-approved or arranging finance.");
     if (!settlement) return showError(`Please tap your preferred ${t.settlement}.`);
+    if (depositText.trim() && depositPercent === null) {
+      return showError("Please enter your deposit as a percentage, for example 10.");
+    }
 
     setLoading(true);
     const form = e.currentTarget;
@@ -69,7 +92,10 @@ export function OfferForm({ listingId, country }: { listingId: string; country?:
           offerAmount: amount,
           financingType: financing,
           settlementTerm: settlement,
-          waiveInspection: formData.get("waive_inspection") === "on",
+          waiveInspection: !subjectToInspection,
+          depositPercent,
+          subjectToFinance,
+          subjectToSale,
           notes: String(formData.get("notes") ?? "") || null,
         }),
       });
@@ -132,7 +158,29 @@ export function OfferForm({ listingId, country }: { listingId: string; country?:
           ) : null}
         </div>
 
-        <ChoiceChips label="How will you pay?" options={FINANCE_OPTIONS} value={financing} onChange={setFinancing} />
+        <ChoiceChips label="How will you pay?" options={FINANCE_OPTIONS} value={financing} onChange={chooseFinancing} />
+
+        <div>
+          <Field
+            label="Deposit (% of your offer, optional)"
+            id="deposit_percent"
+            type="text"
+            inputMode="decimal"
+            autoComplete="off"
+            placeholder="e.g. 10"
+            value={depositText}
+            onChange={(e) => setDepositText(e.target.value)}
+          />
+          {depositText.trim() ? (
+            <p className={`mt-1 text-sm ${depositPercent !== null ? "text-ink" : "text-error"}`}>
+              {depositPercent === null
+                ? "Type a percentage, for example 10"
+                : amount
+                  ? `${depositPercent}% deposit · $${Math.round((amount * depositPercent) / 100).toLocaleString("en-AU")}`
+                  : `${depositPercent}% deposit`}
+            </p>
+          ) : null}
+        </div>
 
         <ChoiceChips
           label={`Preferred ${t.settlement}`}
@@ -141,16 +189,27 @@ export function OfferForm({ listingId, country }: { listingId: string; country?:
           onChange={setSettlement}
         />
 
-        <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-ink">
-          <input
-            type="checkbox"
-            name="waive_inspection"
-            className="h-5 w-5 rounded border-line text-brass focus:ring-brass"
-          />
-          {t.waiveInspection}
-        </label>
+        <fieldset>
+          <legend className="mb-1 text-sm font-medium text-ink">Conditions</legend>
+          <p className="mb-2 text-xs text-ink-soft">Tick any your offer depends on. Leave them all unticked for an unconditional offer.</p>
+          {[
+            { label: "Subject to finance", checked: subjectToFinance, set: setSubjectToFinance },
+            { label: t.inspectionCondition, checked: subjectToInspection, set: setSubjectToInspection },
+            { label: "Subject to the sale of my home", checked: subjectToSale, set: setSubjectToSale },
+          ].map((c) => (
+            <label key={c.label} className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-ink">
+              <input
+                type="checkbox"
+                checked={c.checked}
+                onChange={(e) => c.set(e.target.checked)}
+                className="h-5 w-5 rounded border-line accent-navy text-brass focus:ring-brass"
+              />
+              {c.label}
+            </label>
+          ))}
+        </fieldset>
 
-        <TextAreaField label="Conditions or notes (optional)" id="notes" rows={3} />
+        <TextAreaField label="Other conditions or notes (optional)" id="notes" rows={3} />
       </div>
 
       <div className="space-y-4">

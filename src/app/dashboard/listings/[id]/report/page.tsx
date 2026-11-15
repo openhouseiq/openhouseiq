@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { getAgentPhotoUrl } from "@/lib/agent-photo";
-import { scoreOffer } from "@/lib/offerScoring";
+import { offerConditions, scoreOffer } from "@/lib/offerScoring";
 import { scoreApplicant } from "@/lib/rentalScoring";
 import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
 import { LEASE_TERM_LABELS, INCOME_RANGE_LABELS } from "@/components/listings/landlordPreferences";
@@ -134,7 +134,8 @@ export default async function ListingReportPage({
     listing.seller_pref_price ||
       listing.seller_pref_settlement ||
       listing.seller_pref_waive_inspection ||
-      listing.seller_pref_finance,
+      listing.seller_pref_finance ||
+      (listing.seller_pref_conditions && listing.seller_pref_conditions !== "no_preference"),
   );
   const hasLandlordPreferences = Boolean(
     listing.landlord_pref_pets ||
@@ -399,6 +400,10 @@ export default async function ListingReportPage({
                           offer.settlement_term
                             ? `Settlement: ${SETTLEMENT_LABELS[offer.settlement_term]}`
                             : null,
+                          offer.deposit_percent ? `${Number(offer.deposit_percent)}% deposit` : null,
+                          offerConditions(offer).length
+                            ? `Subject to ${offerConditions(offer).join(", ").toLowerCase()}`
+                            : "No conditions",
                         ]
                           .filter(Boolean)
                           .join(" · ")}

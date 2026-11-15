@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPublicListing } from "@/lib/publicListing";
+import { getOffersOpen, getPublicListing } from "@/lib/publicListing";
 import { getAgentPhotoUrl } from "@/lib/agent-photo";
 import { VisitLayout } from "@/components/visit/VisitLayout";
 import { OfferForm } from "./OfferForm";
@@ -16,7 +16,10 @@ export default async function OfferPage({
     notFound();
   }
 
-  const agentPhotoUrl = await getAgentPhotoUrl(listing.agent_id);
+  const [agentPhotoUrl, offersOpen] = await Promise.all([
+    getAgentPhotoUrl(listing.agent_id),
+    getOffersOpen(listing.id),
+  ]);
 
   return (
     <VisitLayout>
@@ -42,7 +45,16 @@ export default async function OfferPage({
       ) : (
         <div className="mb-6" />
       )}
-      <OfferForm listingId={listing.id} country={listing.country} />
+      {offersOpen ? (
+        <OfferForm listingId={listing.id} country={listing.country} />
+      ) : (
+        <div className="rounded-md border border-line bg-paper-card p-5 text-center">
+          <p className="font-serif text-lg text-ink">This property is no longer taking offers.</p>
+          <p className="mt-1 text-sm text-ink-soft">
+            Please contact the agent{listing.agent_email ? ` at ${listing.agent_email}` : ""} if you have questions.
+          </p>
+        </div>
+      )}
     </VisitLayout>
   );
 }

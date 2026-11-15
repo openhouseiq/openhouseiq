@@ -1,3 +1,5 @@
+import { offerConditions } from "@/lib/offerScoring";
+
 // Turns a visitor's feedback or offer into one plain "CRM record" that any CRM
 // connector can send: who they are, which listing, and a readable summary.
 
@@ -36,6 +38,9 @@ export type CrmOfferRow = {
   financing_type: string | null;
   settlement_term: string | null;
   waive_inspection: boolean;
+  deposit_percent?: number | string | null;
+  subject_to_finance?: boolean | null;
+  subject_to_sale?: boolean | null;
   notes: string | null;
   created_at: string;
 };
@@ -149,6 +154,10 @@ export function offerRecord(row: CrmOfferRow, listing: CrmListing): CrmRecord {
         ["Finance", row.financing_type ? FINANCE[row.financing_type] ?? row.financing_type : null],
         ["Settlement", row.settlement_term ? SETTLEMENT[row.settlement_term] ?? row.settlement_term : null],
         ["Willing to waive building & pest", yesNo(row.waive_inspection)],
+        ["Deposit", row.deposit_percent ? `${Number(row.deposit_percent)}%` : null],
+        ...(row.subject_to_finance === undefined || row.subject_to_finance === null
+          ? []
+          : ([["Conditions", offerConditions(row).join(", ") || "None (unconditional)"]] as [string, string][])),
         ["Notes", row.notes],
       ]),
     ].join("\n"),

@@ -5,21 +5,14 @@ import { parseAnswers } from "@/lib/customQuestions";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
-import { scoreOffer } from "@/lib/offerScoring";
+import { offerConditions, scoreOffer, type ScoringListing } from "@/lib/offerScoring";
 import { OffersBoard } from "./OffersBoard";
 import { toCsv, downloadCsv } from "@/lib/csv";
 import { ContactLine } from "@/components/ui/ContactLine";
 import { SETTLEMENT_LABELS } from "@/components/listings/sellerPreferences";
 import type { Feedback, Offer, Listing } from "@/lib/types";
 
-type ScoringListing = Pick<
-  Listing,
-  | "price"
-  | "seller_pref_price"
-  | "seller_pref_settlement"
-  | "seller_pref_waive_inspection"
-  | "seller_pref_finance"
->;
+type BoardListing = ScoringListing & Partial<Pick<Listing, "id" | "offers_open">>;
 
 const FINANCING_LABELS: Record<string, string> = {
   cash: "Cash buyer",
@@ -71,7 +64,7 @@ export function FeedbackOffersReport({
   unreadFeedbackIds: string[];
   unreadOfferIds: string[];
   listingAddress: string;
-  listing: ScoringListing;
+  listing: BoardListing;
 }) {
   const [feedbackList, setFeedbackList] = useState(feedback);
   const [offersList, setOffersList] = useState(offers);
@@ -103,7 +96,8 @@ export function FeedbackOffersReport({
     listing.seller_pref_price ||
       listing.seller_pref_settlement ||
       listing.seller_pref_waive_inspection ||
-      listing.seller_pref_finance,
+      listing.seller_pref_finance ||
+      (listing.seller_pref_conditions && listing.seller_pref_conditions !== "no_preference"),
   );
 
   const rankedOffers = useMemo(() => {
@@ -183,6 +177,8 @@ export function FeedbackOffersReport({
       "Financing",
       "Settlement term",
       "Waive inspection",
+      "Deposit %",
+      "Conditions",
       "Match %",
       "Missing seller requirements",
       "Notes",
@@ -200,6 +196,8 @@ export function FeedbackOffersReport({
         ? SETTLEMENT_LABELS[o.settlement_term] ?? o.settlement_term
         : "",
       o.waive_inspection ? "Yes" : "No",
+      o.deposit_percent ?? "",
+      offerConditions(o).join(", ") || "None",
       score.matchPercent ?? "",
       score.unmetRequired.join(", "),
       o.notes ?? "",
@@ -210,6 +208,8 @@ export function FeedbackOffersReport({
   return (
     <>
       <OffersBoard
+        listingId={listing.id}
+        offersOpen={listing.offers_open}
         rankedOffers={rankedOffers}
         unreadOfferIds={unreadOfferIds}
         listingAddress={listingAddress}
