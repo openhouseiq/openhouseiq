@@ -75,6 +75,13 @@ export function positiveAmount(value: unknown, field: string, max = 1_000_000_00
   return value > 0 && value <= max ? value : fail(field);
 }
 
+/** An optional percentage above 0 and up to 100, rounded to one decimal place. */
+export function optionalPercent(value: unknown, field: string): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value !== "number" || !Number.isFinite(value)) return fail(field);
+  return value > 0 && value <= 100 ? Math.round(value * 10) / 10 : fail(field);
+}
+
 export function isoDate(value: unknown, field: string): string | null {
   if (value === null || value === undefined || value === "") return null;
   if (typeof value !== "string" || !ISO_DATE.test(value)) return fail(field);

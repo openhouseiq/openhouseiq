@@ -59,6 +59,8 @@ export type Listing = {
   seller_pref_settlement: SettlementPreference | null;
   seller_pref_waive_inspection: PreferenceLevel | null;
   seller_pref_finance: FinancePreference | null;
+  seller_pref_conditions: PreferenceLevel | null;
+  offers_open: boolean;
   landlord_pref_pets: PetsPreference | null;
   landlord_pref_min_lease_term: LeaseTermPreference | null;
   landlord_pref_smoking: SmokingPreference | null;
@@ -224,6 +226,9 @@ export type Offer = {
   financing_type: string | null;
   settlement_term: string | null;
   waive_inspection: boolean;
+  deposit_percent: number | null;
+  subject_to_finance: boolean | null;
+  subject_to_sale: boolean | null;
   notes: string | null;
   read_at: string | null;
   created_at: string;

@@ -25,3 +25,4 @@ one is idempotent-ish (safe to re-run individual statements won't be, since
 | `0034_crm_connections.sql` | Adds `crm_connections` (an agency's or agent's link to their CRM, token stored encrypted) and `crm_sync_jobs` (each visitor sent to the CRM, with retries). Server-only: RLS on, no policies |
 | `0035_crm_more_providers.sql` | Allows Follow Up Boss and Box+Dice as CRM connection providers |
 | `0036_crm_lofty_hubspot_pipedrive.sql` | Allows Lofty, HubSpot and Pipedrive as CRM connection providers |
+| `0041_offer_terms_and_offers_open.sql` | Adds deposit % and "subject to finance" / "subject to sale" conditions to offers, a "fewer conditions" seller preference, and `listings.offers_open` (the Live / closed switch for taking offers) |

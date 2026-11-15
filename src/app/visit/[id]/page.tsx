@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPublicListing } from "@/lib/publicListing";
+import { getOffersOpen, getPublicListing } from "@/lib/publicListing";
 import { getAgentPhotoUrl } from "@/lib/agent-photo";
 import { VisitLayout } from "@/components/visit/VisitLayout";
 import { Button } from "@/components/ui/Button";
@@ -17,7 +17,10 @@ export default async function VisitLandingPage({
     notFound();
   }
 
-  const agentPhotoUrl = await getAgentPhotoUrl(listing.agent_id);
+  const [agentPhotoUrl, offersOpen] = await Promise.all([
+    getAgentPhotoUrl(listing.agent_id),
+    listing.listing_type === "sale" ? getOffersOpen(listing.id) : Promise.resolve(true),
+  ]);
 
   return (
     <VisitLayout>
@@ -54,12 +57,16 @@ export default async function VisitLandingPage({
               Apply to rent
             </Button>
           </Link>
-        ) : (
+        ) : offersOpen ? (
           <Link href={`/visit/${listing.id}/offer`} className="block">
             <Button variant="primary" className="w-full">
               Submit an offer
             </Button>
           </Link>
+        ) : (
+          <p className="rounded-md border border-line px-4 py-3 text-center text-sm text-ink-soft">
+            This property is no longer taking offers.
+          </p>
         )}
       </div>
     </VisitLayout>

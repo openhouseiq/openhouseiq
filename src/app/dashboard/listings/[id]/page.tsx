@@ -20,6 +20,7 @@ import {
   SETTLEMENT_LABELS,
   LEVEL_LABELS,
   FINANCE_LABELS,
+  CONDITIONS_LABELS,
 } from "@/components/listings/sellerPreferences";
 import {
   PETS_LABELS,
@@ -333,7 +334,8 @@ export default async function ListingDetailPage({
             {listing.seller_pref_price ||
             listing.seller_pref_settlement ||
             listing.seller_pref_waive_inspection ||
-            listing.seller_pref_finance ? (
+            listing.seller_pref_finance ||
+            listing.seller_pref_conditions ? (
               <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
                 {listing.seller_pref_price ? (
                   <div>
@@ -364,6 +366,14 @@ export default async function ListingDetailPage({
                     <dt className="text-xs text-ink-soft">Finance</dt>
                     <dd className="text-sm text-ink">
                       {FINANCE_LABELS[listing.seller_pref_finance]}
+                    </dd>
+                  </div>
+                ) : null}
+                {listing.seller_pref_conditions ? (
+                  <div>
+                    <dt className="text-xs text-ink-soft">Conditions</dt>
+                    <dd className="text-sm text-ink">
+                      {CONDITIONS_LABELS[listing.seller_pref_conditions]}
                     </dd>
                   </div>
                 ) : null}

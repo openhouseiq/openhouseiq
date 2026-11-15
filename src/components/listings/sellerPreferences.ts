@@ -28,6 +28,12 @@ export const FINANCE_OPTIONS: { value: string; label: string }[] = [
   { value: "cash_required", label: "Cash buyer — required" },
 ];
 
+export const CONDITIONS_OPTIONS: { value: string; label: string }[] = [
+  { value: "no_preference", label: "No preference" },
+  { value: "preferred", label: "Fewer conditions preferred" },
+  { value: "required", label: "Unconditional offers only" },
+];
+
 export const PRICE_LABELS = Object.fromEntries(
   PRICE_OPTIONS.map((o) => [o.value, o.label]),
 );
@@ -39,4 +45,7 @@ export const LEVEL_LABELS = Object.fromEntries(
 );
 export const FINANCE_LABELS = Object.fromEntries(
   FINANCE_OPTIONS.map((o) => [o.value, o.label]),
+);
+export const CONDITIONS_LABELS = Object.fromEntries(
+  CONDITIONS_OPTIONS.map((o) => [o.value, o.label]),
 );
