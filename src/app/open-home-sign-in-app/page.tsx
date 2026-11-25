@@ -149,7 +149,7 @@ const FAQS = [
   {
     question: "Does it work with my CRM?",
     answer:
-      "Yes. Open Home Hero sends every visitor to Follow Up Boss, HubSpot, Lofty or Pipedrive today, with VaultRE, Rex, AgentBox and Box+Dice coming soon. Repeat visitors are matched, not duplicated. If you use another CRM, you can export every lead as a CSV and import it.",
+      "Yes. Open Home Hero sends every visitor to Follow Up Boss, HubSpot, Lofty or Pipedrive today, with VaultRE, Rex and Box+Dice coming soon. Repeat visitors are matched, not duplicated. If you use another CRM, you can export every lead as a CSV and import it.",
   },
   {
     question: "Can I use a QR code for open house sign-in instead of an iPad?",
@@ -357,7 +357,7 @@ export default function OpenHomeSignInAppPage() {
               </p>
               <p className="mt-3 font-serif text-lg text-ink">Follow Up Boss · HubSpot · Lofty · Pipedrive</p>
               <p className="mt-3 text-sm text-ink-soft">
-                Coming soon: VaultRE, Rex, AgentBox and Box+Dice. Any other CRM: export a CSV.
+                Coming soon: VaultRE, Rex and Box+Dice. Any other CRM: export a CSV.
               </p>
               <Link href="/#crm" className="mt-4 inline-block text-sm text-brass underline">
                 How the CRM connection works
