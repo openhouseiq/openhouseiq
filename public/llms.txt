@@ -1,10 +1,10 @@
 # Open Home Hero
 
-> Open Home Hero is software for real estate agents and property managers in Australia. Each listing gets one QR code and link. Visitors scan it at an open home or rental inspection and leave feedback, submit an offer or apply to rent from their phone, with no app and no account. Every response lands in the agent's dashboard, side by side and sorted by what the seller or landlord wants.
+> Open Home Hero is software for real estate agents and property managers in Australia. Each listing gets one QR code and link. Visitors scan it at an open home or rental inspection and leave feedback, submit an offer or apply to rent from their phone, with no app and no account. Every response lands in the agent's dashboard, side by side for the agent and seller to compare.
 
 Open Home Hero is a digital open home sign-in app (an "open house sign-in app" or "digital open house sign-in sheet" in US terms): it replaces the paper sign-in sheet at the door with a QR code visitors scan on their own phone.
 
-Open Home Hero is not a CRM; it adds to the CRM an agent already uses. Each open home visitor (with their feedback or offer) is sent straight into the agent's CRM: Follow Up Boss, HubSpot, Lofty and Pipedrive are supported now, with VaultRE, Rex, AgentBox and Box+Dice coming soon. Leads can also be exported as CSV.
+Open Home Hero is not a CRM; it adds to the CRM an agent already uses. Each open home visitor (with their feedback or offer) is sent straight into the agent's CRM within seconds, tagged "Open Home Hero" with the property address, and repeat visitors are not duplicated. Follow Up Boss, HubSpot, Lofty and Pipedrive are supported now, with VaultRE, Rex and Box+Dice coming soon. Agents on any other CRM (including Rex today) export leads as a CSV spreadsheet.
 
 ## Who it is for
 - Real estate agents running open homes for sale listings
@@ -13,12 +13,12 @@ Open Home Hero is not a CRM; it adds to the CRM an agent already uses. Each open
 
 ## What it does
 - Creates a QR code and a shareable link for every listing
-- Collects visitor feedback with interest level, star ratings and contact details
+- Collects visitor feedback: interest level, star ratings for price, condition, location and layout, timeframe, finance and contact details
 - Collects offers: amount, finance, settlement term and conditions
 - Collects rental applications: income, employment, references, move-in date and household details
-- Shows offers and applications side by side, sorted by how well they match the seller's or landlord's stated preferences (a guide; the agent decides)
+- Shows offers and applications side by side so the agent and seller can compare them (the agent decides)
 - Sends every visitor to the agent's CRM (Follow Up Boss, HubSpot, Lofty, Pipedrive; more coming)
-- Exports leads and reports as CSV or PDF
+- Builds a seller report that can be printed or exported, and exports leads as CSV
 
 ## Pricing (Australian dollars, one plan with every feature)
 - Monthly: $39 per month
@@ -29,6 +29,10 @@ Open Home Hero is not a CRM; it adds to the CRM an agent already uses. Each open
 ## Key pages
 - [Home](https://openhomehero.com.au/): product overview, example forms, pricing and FAQ
 - [Open home sign-in app](https://openhomehero.com.au/open-home-sign-in-app): how QR code open home / open house sign-in works, paper vs digital, CRM integration, FAQ
+- [CRM integrations](https://openhomehero.com.au/integrations): Follow Up Boss, HubSpot, Lofty and Pipedrive open home integrations, plus Rex and CSV
+- [Free open home sign-in sheet template](https://openhomehero.com.au/open-home-sign-in-sheet-template): printable sheet and what to collect
+- [How to follow up after an open home](https://openhomehero.com.au/open-home-follow-up): a practical guide for agents
+- [For Rex users](https://openhomehero.com.au/for-rex-users): using Open Home Hero alongside Rex
 - [Sign up](https://openhomehero.com.au/signup): start the 14-day free trial
 - [Contact](https://openhomehero.com.au/contact): email and business details
 - [Security](https://openhomehero.com.au/security): how visitor and agent data is protected

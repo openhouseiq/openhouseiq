@@ -45,7 +45,7 @@ const FAQS = [
   {
     question: "Does it replace my CRM?",
     answer:
-      "No, it adds to it. Open Home Hero captures the moment someone walks into an open home or rental inspection, then sends each visitor straight into the CRM you already use, with their feedback or offer attached. It connects with Follow Up Boss, HubSpot, Lofty and Pipedrive today, with VaultRE, Rex, AgentBox and Box+Dice coming soon. Using something else? Export every lead as a CSV and import it.",
+      "No, it adds to it. Open Home Hero captures the moment someone walks into an open home or rental inspection, then sends each visitor straight into the CRM you already use, with their feedback or offer attached. It connects with Follow Up Boss, HubSpot, Lofty and Pipedrive today, with VaultRE, Rex and Box+Dice coming soon. Using something else? Export every lead as a CSV and import it.",
   },
 ];
 
@@ -68,7 +68,7 @@ const CRM_STEPS = [
 ];
 
 const CRMS_NOW = ["Follow Up Boss", "HubSpot", "Lofty", "Pipedrive"];
-const CRMS_SOON = ["VaultRE", "Rex", "AgentBox", "Box+Dice"];
+const CRMS_SOON = ["VaultRE", "Rex", "Box+Dice"];
 
 const COMPARISON = [
   {
