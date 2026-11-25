@@ -23,6 +23,9 @@ const PUBLIC_PREFIXES = [
   "/contact",
   "/open-home-sign-in-app",
   "/for-rex-users",
+  "/integrations",
+  "/open-home-sign-in-sheet-template",
+  "/open-home-follow-up",
 ];
 
 const AUTH_PREFIXES = ["/login", "/signup", "/forgot-password"];
